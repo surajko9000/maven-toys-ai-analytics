@@ -371,7 +371,7 @@ function renderStart(){
 }
 
 /* ================= TAB 1: DASHBOARD ================= */
-const dash={cats:new Set(CATS),pid:null,m0:0,m1:20,preset:"all",metric:"rev",trend:"values",sort:{k:"gp",d:-1}};
+const dash={cats:new Set(CATS),pid:null,m0:0,m1:20,preset:"all",metric:"rev",trend:"values",show:"val",sort:{k:"gp",d:-1}};
 const MET={rev:{n:"Revenue",f:fmt$},gp:{n:"Est. gross profit",f:fmt$},units:{n:"Units sold",f:fmtN},mg:{n:"Gross margin %",f:v=>pct(v)}};
 const val=(b,m)=>m=="mg"?(b.rev?b.gp/b.rev:0):b[m];
 const shr=(x,t)=>t?pct(x/t):"–";
@@ -389,12 +389,12 @@ function renderDash(){
   const mgd=mgB==null?null:`<span class="${mg>=mgB?"up":"down"}">${mg>=mgB?"▲":"▼"} ${Math.abs((mg-mgB)*100).toFixed(1)} pts</span> vs prior ${len} mo`;
   const nprod=Object.keys(A.byProd).length;
   const T=m=="mg"?null:A.tot[m];
-  const vt=b=>m=="mg"?`${pct(val(b,m))} on ${fmt$(b.rev)}`:`${MET[m].f(b[m])} · ${shr(b[m],T)}`;
+  const vt=b=>m=="mg"?pct(val(b,m)):dash.show=="pct"?shr(b[m],T):MET[m].f(b[m]);
   const tipFor=(name,b)=>`<b>${name}</b><br>Revenue ${fmt$(b.rev)} · ${shr(b.rev,A.tot.rev)} of selection<br>Est. profit ${fmt$(b.gp)} · ${shr(b.gp,A.tot.gp)}<br>Units ${fmtN(b.units)} · ${shr(b.units,A.tot.units)}<br>Margin ${pct(b.rev?b.gp/b.rev:0)}`;
   const catRows=CATS.filter(c=>A.byCat[c]).sort((a,b)=>val(A.byCat[b],m)-val(A.byCat[a],m)).map(c=>({label:c,v:val(A.byCat[c],m),vtext:vt(A.byCat[c]),color:CCOL[c],tip:tipFor(c,A.byCat[c])}));
   const top=Object.entries(A.byProd).sort((a,b)=>val(b[1],m)-val(a[1],m)).slice(0,10).map(([pid,b])=>({label:P[pid].name,v:val(b,m),vtext:vt(b),color:CCOL[P[pid].cat],tip:tipFor(`${P[pid].name} · ${P[pid].cat}`,b)}));
   const stores=Object.entries(A.byStore).sort((a,b)=>val(b[1],m)-val(a[1],m)).slice(0,8).map(([sid,b])=>({label:`${ST[sid].city} #${ST[sid].name.split(" ").pop()}`,v:val(b,m),vtext:vt(b),tip:tipFor(`${ST[sid].name} (${ST[sid].loc})`,b)}));
-  const shareNote=m=="mg"?"Margin on the revenue shown":"% = share of the current selection";
+  const shareNote=m=="mg"?"Hover a bar for the revenue behind each margin":dash.show=="pct"?"Labels = % share of the current selection":"Hover a bar for share, profit and units";
   const ser=A.byMonth.slice(dash.m0,dash.m1+1).map(b=>val(b,m));
   const asPct=dash.trend=="pct"&&ser.length>1;
   let tvals=ser,tfmt=MET[m].f,tlabels=i=>mlabel(i+dash.m0);
@@ -417,6 +417,7 @@ function renderDash(){
     <div class="combo" id="combo"><input type="text" id="prodin" placeholder="All toys (type to search)" autocomplete="off" value="${dash.pid?esc(P[dash.pid].name):""}" onfocus="comboOpen()" oninput="comboOpen(this.value)" onkeydown="comboKey(event)">
       ${dash.pid?`<span class="x" onclick="comboPick(0)" title="Clear">✕</span>`:""}<div class="list" id="combolist"></div></div></div>
   <div class="fgroup"><span class="lbl">📐 Chart measure</span><span class="seg">${Object.entries(MET).map(([k,v])=>`<button class="${m==k?"on":""}" onclick="dash.metric='${k}';renderDash()">${v.n}</button>`).join("")}</span></div>
+  <div class="fgroup"><span class="lbl">🔢 Bar labels</span><span class="seg">${m=="mg"?`<button class="on" disabled>Margin %</button>`:`<button class="${dash.show=="val"?"on":""}" onclick="dash.show='val';renderDash()">Value</button><button class="${dash.show=="pct"?"on":""}" onclick="dash.show='pct';renderDash()">% of selection</button>`}</span></div>
   <div class="kpis">
     <div class="kpi" style="background:#e3eefb"><div class="e">💰</div><div class="l">Revenue</div><div class="v">${fmt$(A.tot.rev)}</div><div class="d">${delta(A.tot.rev,B?.tot.rev)??"units × price"}</div></div>
     <div class="kpi" style="background:#def5ec"><div class="e">🪙</div><div class="l">Est. gross profit</div><div class="v">${fmt$(A.tot.gp)}</div><div class="d">${delta(A.tot.gp,B?.tot.gp)??"units × (price − cost)"}</div></div>
@@ -428,11 +429,11 @@ function renderDash(){
   <div class="grid2">
     <div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><h3>${MET[m].n} by month${asPct?" (change vs prior month)":""}</h3><div class="note">Hover a dot for the value</div></div>
       <span class="seg"><button class="${asPct?"":"on"}" onclick="dash.trend='values';renderDash()">Values</button><button class="${asPct?"on":""}" onclick="dash.trend='pct';renderDash()">% change</button></span></div>${line(tvals,{fmt:tfmt,labels:tlabels})}</div>
-    <div class="card"><h3>${MET[m].n} by category</h3><div class="note">Colors match the category buttons · ${shareNote}</div>${hbars(catRows,{fmt:MET[m].f,vw:130})}</div>
+    <div class="card"><h3>${MET[m].n} by category</h3><div class="note">Colors match the category buttons · ${shareNote}</div>${hbars(catRows,{fmt:MET[m].f,vw:80})}</div>
   </div>
   <div class="grid3">
-    <div class="card"><h3>Top 10 toys by ${MET[m].n.toLowerCase()}</h3><div class="note">Bar color = category · ${shareNote}</div>${hbars(top,{fmt:MET[m].f,vw:130})}</div>
-    <div class="card"><h3>Top 8 stores by ${MET[m].n.toLowerCase()}</h3><div class="note">Same time window and filters · ${shareNote}</div>${hbars(stores,{fmt:MET[m].f,vw:130})}</div>
+    <div class="card"><h3>Top 10 toys by ${MET[m].n.toLowerCase()}</h3><div class="note">Bar color = category · ${shareNote}</div>${hbars(top,{fmt:MET[m].f,vw:80})}</div>
+    <div class="card"><h3>Top 8 stores by ${MET[m].n.toLowerCase()}</h3><div class="note">Same time window and filters · ${shareNote}</div>${hbars(stores,{fmt:MET[m].f,vw:80})}</div>
   </div>
   <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>All toys in this view</h3><div class="note">Click a column to sort</div></div>
     <button class="btn" onclick="csvDownload('toys_filtered.csv',[['Toy','Category','Units','Revenue','% of revenue','Est gross profit','% of profit','Margin'],...dashRows.map(r=>[r.name,r.cat,r.units,r.rev.toFixed(2),(r.shRev*100).toFixed(1)+'%',r.gp.toFixed(2),(r.shGp*100).toFixed(1)+'%',(r.mg*100).toFixed(1)+'%'])])">⬇ Export CSV</button></div>
@@ -689,7 +690,7 @@ function show(t){current=t;history.replaceState(null,"","#"+t);
   else if(h.startsWith("dash:")){dash.cats=new Set([h.slice(5)]);show("dashboard")}
   else if(h.startsWith("pid:")){dash.pid=+h.slice(4);show("dashboard")}
   else if(h=="dash-mg"){dash.metric="mg";dash.trend="pct";show("dashboard")}
-  else if(h=="dash-pct"){dash.trend="pct";show("dashboard")}
+  else if(h=="dash-pct"){dash.trend="pct";dash.show="pct";show("dashboard")}
   else if(h.startsWith("deck:")){slide=+h.slice(5);show("presentation")}
   else if(h=="ask-demo"){show("ask");["which toys made the most profit last quarter","best selling toys in games in 2022","which stores sell the most lego","how satisfied are our customers?","which toy is the best?","wich category has the best margn"].forEach(q=>ask(q,true))}
   else if(h=="ask-ex"){show("ask")}
