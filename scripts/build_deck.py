@@ -88,7 +88,7 @@ rgb = lambda h: RGBColor.from_string(h)
 prs = Presentation()
 prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
 BLANK = prs.slide_layouts[6]
-prs.core_properties.title = "Colorbuds is fading: what to do next"
+prs.core_properties.title = "Our #1 profit toy, Colorbuds, is in decline"
 prs.core_properties.author = "Maven Toys Analytics"
 prs.core_properties.subject = "Business review"
 LM = 0.6          # left/right margin
@@ -147,10 +147,14 @@ def bullets(slide, items, x, y, w, h, size=18, color=INK, space=10, name="Bullet
         etree.SubElement(buClr, qn("a:srgbClr")).set("val", BLUE)
         etree.SubElement(pPr, qn("a:buFont")).set("typeface", "Arial")
         etree.SubElement(pPr, qn("a:buChar")).set("char", "•")
-        r = p.add_run()
-        r.text = s
-        r.font.size, r.font.name = Pt(size), BODY
-        r.font.color.rgb = rgb(color)
+        for k, part in enumerate(s.split("**")):
+            if not part:
+                continue
+            r = p.add_run()
+            r.text = part
+            r.font.size, r.font.name = Pt(size), BODY
+            r.font.bold = (k % 2 == 1)          # odd segments sit between ** markers
+            r.font.color.rgb = rgb(color)
     return tb
 
 
@@ -191,15 +195,17 @@ _rows = [[BLUE, ORANGE, PINK, YELLOW], [MINT, BLUE, ORANGE], [PINK, MINT], [YELL
 for r_i, row in enumerate(_rows):
     for c_i, col in enumerate(row):
         shape(s1, MSO_SHAPE.RECTANGLE, 8.55 + r_i * 0.5 + c_i * 1.0, 6.15 - r_i * 1.0, 0.9, 0.9, col, f"Block r{r_i}c{c_i}")
-_tb = text(s1, "Colorbuds is fading:", LM, 1.9, 7.6, 2.55, 44, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
+_tb = text(s1, "Colorbuds, our #1 profit toy,", LM, 1.6, 7.9, 2.7, 40, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
 _p = _tb.text_frame.paragraphs[0]
 _p.add_line_break()
 _r = _p.add_run()
-_r.text = "what to do next"
-_r.font.size, _r.font.bold, _r.font.name = Pt(44), True, HEAD
+_r.text = "is in decline"
+_r.font.size, _r.font.bold, _r.font.name = Pt(40), True, HEAD
 _r.font.color.rgb = rgb("FFFFFF")
-text(s1, "Business review  |  Data through Sep 30, 2023", LM, 4.75, 10, 0.5, 20, "A9B8CC", name="Subtitle")
-notes(s1, "Open with the one-line answer: Colorbuds, our top profit toy, is fading. The plan is simple: back newer, "
+text(s1, "A plan to protect profit by backing newer, higher-margin toys", LM, 4.55, 7.6, 0.9, 22, "D6E0EE", name="Subtitle")
+text(s1, "Colorbuds are our line of kids' wireless earbuds", LM, 5.55, 7.6, 0.4, 14, "A9B8CC", name="Descriptor")
+text(s1, "Business review  |  Data through Sep 30, 2023", LM, 6.75, 8, 0.4, 14, "A9B8CC", name="Date line")
+notes(s1, "Open with the one-line answer: Colorbuds (our line of kids' wireless earbuds), our #1 profit toy, is in decline. The plan is simple: back newer, "
           "higher-margin toys, test one cheap fix for Colorbuds, and review in 8 weeks. Keep the intro under 20 seconds.")
 
 # ================================================================= slide 2: the answer
@@ -213,9 +219,9 @@ for i, (big, lab, cap, bx, bcol) in enumerate([
     label(s2, lab, bx + 0.4, 2.1, w - 0.8, f"Panel label {i+1}")
     text(s2, big, bx + 0.4, 2.55, w - 0.8, 1.2, 56, bcol, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Big number {i+1}")
     text(s2, cap, bx + 0.4, 3.95, w - 0.8, 0.4, 16, MUTED, name=f"Caption {i+1}")
-bullets(s2, [f"Colorbuds is still our #1 profit toy, but its share has more than halved",
-             f"Playfoam launched in mid-August and is already a top-{pf_rank} profit toy",
-             f"Playfoam's September pace is nearly half of the ${gap_k}K a month Colorbuds has lost"],
+bullets(s2, ["Colorbuds is still our **#1 profit toy**, but its share has **more than halved**",
+             f"Playfoam launched in mid-August and is already a **top-{pf_rank} profit toy**",
+             f"Playfoam's September pace is **nearly half** of the ${gap_k}K a month Colorbuds has lost"],
         LM, 4.95, CW, 1.8, 20, name="Key points")
 notes(s2, f"Colorbuds earned about {share_22}% of Q3 2022 profit and {share_23}% of Q3 2023 profit; it is still our #1 profit toy, "
           f"so it is fading, not dead. Playfoam launched in mid-August 2023; at its September pace ({pf_sep:,} units x "
@@ -282,9 +288,9 @@ for idx, lbl, when, pos in ((0, f"{cb_first:,}", "Jan 2022", XL_LABEL_POSITION.A
     r2.font.color.rgb = rgb(MUTED)
 shape(s3, MSO_SHAPE.RECTANGLE, 8.95, 1.85, 13.333 - LM - 8.95, 4.9, LIGHT, "Takeaways panel")
 label(s3, "What we see", 9.3, 2.1, 3.2, "Takeaways label")
-bullets(s3, [f"Down in {stores_down} of 50 stores, in every store type",
-             "Every store still carries it, so this is weaker demand, not empty shelves",
-             f"Quarterly profit has roughly halved: ${q3_22_k}K to ${q3_23_k}K"],
+bullets(s3, [f"Down in **{stores_down} of 50 stores**, in every store type",
+             "Every store still carries it, so this is **weaker demand, not empty shelves**",
+             f"Quarterly profit has **roughly halved**: ${q3_22_k}K to ${q3_23_k}K"],
         9.3, 2.6, 3.15, 4.0, 18, space=14, name="Key points")
 notes(s3, f"Monthly Colorbuds units fell from {cb_first:,} (Jan 2022) to {cb_last:,} (Sep 2023), down {cb_drop}%. "
           f"The drop is steady and broad: {stores_down} of 50 stores are down (Jan-Sep 2023 vs Jan-Sep 2022), in every store type. All 50 stores carry it and none is at zero stock, "
@@ -301,10 +307,10 @@ for i in range(len(launched)):
     c = ORANGE if i < len(faded) else MID
     shape(s4, MSO_SHAPE.RECTANGLE, bx, 5.45, 0.42, 0.42, c, f"Toy marker {i+1}")
 label(s4, "Examples", 7.4, 1.95, 5, "Examples label")
-bullets(s4, [f"Jenga peaked in Jul 2022 and is now down {jenga_drop}%",
-             f"Etch A Sketch peaked its second month and is down {etch_drop}%",
-             f"Hot Wheels is the lone exception, down just {hw_drop}%",
-             "Colorbuds follows the same pattern"],
+bullets(s4, [f"Jenga peaked in Jul 2022 and is now **down {jenga_drop}%**",
+             f"Etch A Sketch peaked its second month and is **down {etch_drop}%**",
+             f"Hot Wheels is the **lone exception**, down just {hw_drop}%",
+             "Colorbuds follows the **same pattern**"],
         7.4, 2.45, CW - (7.4 - LM), 4.2, 20, space=16, name="Key points")
 notes(s4, "This is the likely explanation, not a proven cause. Of the 10 toys that started selling during this data (excluding Playfoam, "
           "which is too new), 9 now sell at least 40% less per month than in their peak month. Jenga -92%, Supersoaker -66%, "
@@ -349,8 +355,8 @@ for i, (big, small, by) in enumerate([(f"{pf_margin}% margin", f"${pf_unit_profi
     shape(s5, MSO_SHAPE.RECTANGLE, 7.5, by, 13.333 - LM - 7.5, 1.4, LIGHT, f"Stat panel {i+1}")
     text(s5, big, 7.8, by + 0.2, 4.7, 0.6, 26, MINT_T if i == 0 else ORANGE_T, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Stat title {i+1}")
     text(s5, small, 7.8, by + 0.88, 4.7, 0.4, 16, INK, name=f"Stat note {i+1}")
-bullets(s5, [f"Launched Aug 17 and already a top-{pf_rank} profit toy",
-             "New toys often cool off, so the window to act is short"],
+bullets(s5, [f"Launched Aug 17 and already a **top-{pf_rank} profit toy**",
+             "New toys often cool off, so **the window to act is short**"],
         7.5, 5.1, 13.333 - LM - 7.5, 1.6, 18, space=10, name="Key points")
 notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in about six weeks ({pf_aug:,} in August from the 17th, "
           f"{pf_sep:,} in September). It earns ${pf_unit_profit:.0f} per unit at a {pf_margin}% margin, about ${pf_month_profit_k}K a month "
@@ -360,9 +366,9 @@ notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in
 
 # ================================================================= slide 6: recommendation
 s6 = content_slide("We recommend three moves: back newer, higher-margin toys, test one Colorbuds fix, and review in 8 weeks", 6)
-steps = [("1", "Keep Playfoam in stock", ["Refill the 13 empty stores", "Check weekly; worth about $5K a month"]),
-         ("2", "Test one Colorbuds fix", ["10 test stores vs 10 similar ones", "Up to about $11K a month if it works"]),
-         ("3", "Review in 8 weeks", ["Scale what works, stop what doesn't", "Pick the next higher-margin toy"])]
+steps = [("1", "Keep Playfoam in stock", ["Refill the **13 empty stores**", "Check weekly; worth about **$5K a month**"]),
+         ("2", "Test one Colorbuds fix", ["**10 test stores** vs 10 similar ones", "Up to about **$11K a month** if it works"]),
+         ("3", "Review in 8 weeks", ["**Scale what works**, stop what doesn't", "Pick the next **higher-margin toy**"])]
 colw = (CW - 2 * 0.3) / 3
 for i, (num, head, pts) in enumerate(steps):
     cx = LM + i * (colw + 0.3)
