@@ -494,7 +494,7 @@ let slide=0;
 const deckImg=i=>`deck/preview/slide-${i+1}.jpg`;
 function renderDeck(){
   const n=DECK.titles.length;
-  document.getElementById("presentation").innerHTML=`<h1>🎤 Presentation</h1>
+  document.getElementById("presentation").innerHTML=`<h1>🎤 From Colorbuds to Playfoam: The Business Review</h1>
   <p class="sub">The deck Claude drafted from the data. Click through it here, or download it to edit.</p>
   <div class="deckbar"><span class="dlabel">⬇ Download</span>
     <a class="btn pri" href="${DECK.pptx}" download>PowerPoint (.pptx)</a>
@@ -540,7 +540,7 @@ function renderToys(){
   const tDirty=toys.preset!="all"||toys.cat!="All"||toys.sort!="gp"||toys.dir!=-1||!!toys.q;
   const list=DATA.P.filter(p=>(toys.cat=="All"||p.cat==toys.cat)&&p.name.toLowerCase().includes(toys.q.toLowerCase()))
     .map(p=>({p,...(R.byProd[p.id]||Z)})).sort((a,b)=>{const x=val(a),y=val(b);return (typeof x=="string"?x.localeCompare(y):x-y)*toys.dir});
-  document.getElementById("toys").innerHTML=`<h1>🧸 Toy Finder</h1><p class="sub">Browse the catalog and tap any toy to see how it performs. <span class="tag">Toy art is original illustration, not product photos.</span></p>
+  document.getElementById("toys").innerHTML=`<h1>🧸 Toy Catalog: How Every Toy Performs</h1><p class="sub">Browse the catalog and tap any toy to see how it performs. <span class="tag">Toy art is original illustration, not product photos.</span></p>
   ${fbar("toys",toys.fopen,tSum,`<div class="fgroup"><span class="lbl">📅 Time</span>
     ${PRESETS.map(([k,l])=>`<button class="chip ${toys.preset==k?"on":""}" onclick="toyPreset('${k}')">${l}</button>`).join("")}
     <span style="color:var(--ink3)">or</span>
@@ -658,7 +658,7 @@ function match(q){const t=toks(q);let all=[];
 const chat=[];let askBusy=false;
 function renderAsk(){
   const groups={};for(const q of QS)(groups[q.group]??=[]).push(q);
-  document.getElementById("ask").innerHTML=`<h1>💬 Ask</h1><p class="sub">Type a question in your own words. I answer from a list of approved questions and show my work. If I can't answer, I'll say so.</p>
+  document.getElementById("ask").innerHTML=`<h1>💬 Ask the Data: Questions in Plain English</h1><p class="sub">Type a question in your own words. I answer from a list of approved questions and show my work. If I can't answer, I'll say so.</p>
   <details class="card demo" open><summary><span class="tag" style="background:#ffe9a0">🧪 Demo</span> This Ask tab is a mock-up. Here's how the real thing works</summary>
     <div class="mini"><div class="node" style="background:#e3eefb">🙋 You ask<small>in plain English</small></div><div class="arrow">→</div><div class="node" style="background:#ece8fb">🤖 Claude<small>writes the SQL</small></div><div class="arrow">→</div><div class="node" style="background:#fcf0d2">🗄️ Your data<small>runs the query</small></div><div class="arrow">→</div><div class="node" style="background:#def5ec">📊 Answer<small>table, chart, SQL shown</small></div></div>
     <div class="cmp">
