@@ -684,6 +684,115 @@ def can4():
     return wrap("".join(s))
 M[25]=can4()
 
+# ---------- v5: Play-Doh playset + toolkit, and a more board-game-like Monopoly with an original tycoon mascot ----------
+def tub(cx,cy,c,w=24,h=40,lid="#ffffff"):
+    # closed tub: coloured body, white lid with ridges
+    s=[R(cx-w,cy-h/2+10,2*w,h,8,c,OUT(c,1.4)), R(cx-w+5,cy-h/2+18,7,h-14,3,"#fff","opacity=\".3\""),
+       R(cx-w-2,cy-h/2,2*w+4,16,6,lid,OUT("#c9ccd2",1.4)), E(cx,cy-h/2+1,w+2,5.5,"#ffffff",OUT("#c9ccd2",1)),
+       "".join(R(cx-w+3+i*((2*w-6)/5),cy-h/2+6,3,9,1.5,"#dfe2e8") for i in range(6))]
+    return "".join(s)
+
+def playset6():
+    s=[S(188,80)]
+    # work mat
+    s.append(R(14,128,172,46,12,"#4fd1c5",OUT("#4fd1c5",1.6))+R(24,134,150,8,4,"#fff","opacity=\".3\""))
+    # tubs (back row)
+    s.append(tub(44,86,"#e8554e",24,46)+tub(100,80,"#2a78d6",24,52)+tub(156,86,"#f6c915",24,46))
+    # cupcake in front: wrapper + swirl + cherry
+    cx=100
+    s.append(Pa(f"M{cx-24} 138 L{cx+24} 138 L{cx+18} 170 Q{cx+17} 174 {cx+12} 174 H{cx-12} Q{cx-17} 174 {cx-18} 170Z","#7b6bff",OUT("#7b6bff",1.2)))
+    s.append("".join(Pa(f"M{cx-18+i*7} 140 L{cx-14+i*5} 172","none",'stroke="#a79bff" stroke-width="2"') for i in range(6)))
+    s.append(E(cx,138,28,9,"#ff7ab8",OUT("#ff7ab8",1))+E(cx,127,21,8,"#ff9fcf",OUT("#ff7ab8",1))+E(cx,117,14,7,"#ffb8d9",OUT("#ff7ab8",1)))
+    s.append(C(cx,108,6,"#d6382f")+Pa(f"M{cx} 103 q5 -9 9 -8","none",'stroke="#2f8a3a" stroke-width="2" stroke-linecap="round"')+C(cx-2,106,1.8,"#ff8a80"))
+    for x,y,c in ((cx-16,132,"#ffd23a"),(cx+10,134,"#2fd0c0"),(cx-4,122,"#fff"),(cx+14,124,"#ffd23a")): s.append(R(x,y,5,2.2,1.1,c,f'transform="rotate(25 {x} {y})"'))
+    # cookie cutters beside the cupcake
+    s.append(star(40,152,15,"none").replace('fill="none"','fill="#ffd23a" stroke="#2a78d6" stroke-width="3.5" stroke-linejoin="round"'))
+    s.append(C(160,154,13,"#29b36f",'stroke="#e8554e" stroke-width="3.5"'))
+    return wrap("".join(s))
+M[26]=playset6()
+
+def toolkit6():
+    s=[S(188,76)]
+    # rolling pin (wooden handles, striped roller)
+    s.append(R(14,52,26,13,6,"#d9a35b",OUT("#d9a35b",1.2))+R(160,52,26,13,6,"#d9a35b",OUT("#d9a35b",1.2)))
+    s.append(R(34,36,132,44,18,"#ff7ab8",OUT("#ff7ab8",1.6)))
+    for i,c in enumerate(("#7b6bff","#2fd0c0","#ffd23a")): s.append(R(58+i*34,36,18,44,0,c,"opacity=\".9\""))
+    s.append(R(44,42,110,8,4,"#fff","opacity=\".35\""))
+    # star cutter (with dough star) and circle cutter
+    s.append(star(52,132,26,"#e8554e").replace('fill="#e8554e"','fill="#ffd23a" stroke="#2a78d6" stroke-width="5" stroke-linejoin="round"'))
+    s.append(star(52,132,12,"#fff").replace('fill="#fff"','fill="#fff" opacity=".4"'))
+    s.append(C(112,134,22,"#2fd0c0",'stroke="#e8554e" stroke-width="5"')+C(112,134,10,"#fff","opacity=\".3\""))
+    # dough balls
+    for x,y,c in ((166,142,"#e8554e"),(156,163,"#2a78d6"),(178,166,"#f6c915")):
+        s.append(C(x,y,11,shade(c,.75))+C(x,y-1,10,c)+E(x-3,y-5,3.6,2.4,"#fff","opacity=\".5\""))
+    # plastic knife
+    s.append('<g transform="rotate(-4 90 176)">'+R(36,172,62,8,4,"#c9ccd2",OUT("#a8adb8",1))+R(92,169,28,13,6,"#7b6bff")+'</g>')
+    return wrap("".join(s))
+M[27]=toolkit6()
+
+def tycoon(x0,y0,sc=1.0):
+    g=[f'<g transform="translate({x0} {y0}) scale({sc})">']
+    # coordinates relative to feet at (0,0), figure ~ 120 tall
+    g.append(E(0,2,24,5,"#000","opacity=\".18\""))
+    g.append(R(-14,-26,12,26,5,"#1c1f26")+R(2,-26,12,26,5,"#1c1f26")+E(-9,0,13,5,"#0e0f12")+E(9,0,13,5,"#0e0f12"))
+    g.append(Pa("M-22 -84 L22 -84 L28 -26 L-28 -26Z","#23272f",OUT("#23272f",1.4)))
+    g.append(Pa("M-9 -84 L9 -84 L5 -40 L-5 -40Z","#fff")+Pa("M-6 -84 L0 -60 L6 -84Z","#e8554e")+"".join(C(0,-52+i*8,1.6,"#f2c01b") for i in range(3)))
+    g.append(Pa("M-5 -86 L-14 -92 L-14 -80Z","#d6382f")+Pa("M5 -86 L14 -92 L14 -80Z","#d6382f")+C(0,-86,3.5,"#b52a22"))
+    # arms
+    g.append(Pa("M-22 -82 Q-34 -62 -30 -44","none",'stroke="#23272f" stroke-width="11" stroke-linecap="round"')+C(-30,-42,6,"#f0c29a"))
+    g.append(Pa("M22 -82 Q36 -64 34 -46","none",'stroke="#23272f" stroke-width="11" stroke-linecap="round"')+C(34,-44,6,"#f0c29a"))
+    # cane in left hand
+    g.append(Pa("M-30 -42 L-36 0","none",'stroke="#7a4a1a" stroke-width="4" stroke-linecap="round"')+Pa("M-30 -42 q-1 -9 -9 -8","none",'stroke="#ffd23a" stroke-width="4" stroke-linecap="round"'))
+    # money bag in right hand
+    g.append(Pa("M26 -40 Q14 -22 20 -10 Q34 -2 48 -10 Q54 -22 42 -40Z","#29b36f",OUT("#29b36f",1.2))+Pa("M28 -40 Q34 -48 40 -40","none",'stroke="#1f8a52" stroke-width="3"')+R(28,-44,12,5,2,"#e8554e")+f'<text x="34" y="-14" text-anchor="middle" style="font:900 16px sans-serif;fill:#fff">$</text>')
+    # head
+    g.append(C(0,-102,17,"#f6cfa8",OUT("#e0b088",1.2)))
+    g.append(E(0,-96,11,5,"#ffffff","opacity=\"0\""))
+    g.append(E(-9,-103,5,5,"#fff")+E(9,-103,5,5,"#fff")+C(-9,-103,1.8,"#1c1f26")+C(9,-103,1.8,"#1c1f26"))
+    g.append(C(-9,-103,6.6,"none",'stroke="#8d6a3a" stroke-width="1.4"')+C(9,-103,6.6,"none",'stroke="#8d6a3a" stroke-width="1.4"')+Pa("M-2.4 -103 H2.4","none",'stroke="#8d6a3a" stroke-width="1.4"'))
+    g.append(Pa("M-15 -110 q6 -5 11 -1 M4 -111 q5 -4 11 1","none",'stroke="#fff" stroke-width="3.2" stroke-linecap="round"'))
+    g.append(E(0,-97,3.6,3,"#f2a58a"))
+    g.append(Pa("M0 -94 Q-8 -98 -16 -93 Q-22 -90 -18 -84 Q-12 -90 -4 -89 Q0 -88 0 -90Z","#fff",OUT("#d9dce2",1))+Pa("M0 -94 Q8 -98 16 -93 Q22 -90 18 -84 Q12 -90 4 -89 Q0 -88 0 -90Z","#fff",OUT("#d9dce2",1)))
+    g.append(Pa("M-4 -82 q4 3 8 0","none",'stroke="#a55a3a" stroke-width="1.6" stroke-linecap="round"'))
+    # top hat
+    g.append(E(0,-114,25,6,"#16181d")+R(-15,-142,30,30,3,"#16181d")+R(-15,-124,30,7,0,"#d6382f")+E(0,-142,15,4,"#2a2e38"))
+    g.append("</g>")
+    return "".join(g)
+
+def monopoly2():
+    s=[S(190,78)]
+    # board (top-down), slightly smaller on the left
+    bx,by,bs=12,30,108
+    s.append(R(bx,by,bs,bs,6,"#f2efe3",OUT("#bdb9a8",2)))
+    s.append(R(bx+22,by+22,bs-44,bs-44,2,"#cfeadb"))
+    cols=["#8a5a2a","#9ad4f2","#e86aa8","#f08a24","#e03a32","#f2d21b","#2fa84f","#2a5fd6"]
+    u=(bs-44)/ 3  # strip cell length
+    # top edge (3 strips), right, bottom, left
+    for i in range(3): s.append(R(bx+22+i*u,by,u,22,0,cols[i%8],'stroke="#fff" stroke-width="1"'))
+    for i in range(3): s.append(R(bx+bs-22,by+22+i*u,22,u,0,cols[(i+3)%8],'stroke="#fff" stroke-width="1"'))
+    for i in range(3): s.append(R(bx+22+i*u,by+bs-22,u,22,0,cols[(i+5)%8],'stroke="#fff" stroke-width="1"'))
+    for i in range(3): s.append(R(bx,by+22+i*u,22,u,0,cols[(i+1)%8],'stroke="#fff" stroke-width="1"'))
+    # corners
+    s.append(R(bx,by,22,22,0,"#fff2d6")+R(bx+bs-22,by,22,22,0,"#ffe0dc")+R(bx,by+bs-22,22,22,0,"#e6e6e6")+R(bx+bs-22,by+bs-22,22,22,0,"#d9f0dd"))
+    s.append(Pa(f"M{bx+bs-18} {by+bs-6} L{bx+bs-6} {by+bs-6} L{bx+bs-6} {by+bs-18}","none",'stroke="#d6382f" stroke-width="3" stroke-linecap="round"')+Pa(f"M{bx+bs-18} {by+bs-6} L{bx+bs-6} {by+bs-18}","none",'stroke="#d6382f" stroke-width="3" stroke-linecap="round"'))
+    # centre: red banner, chance/chest cards
+    s.append(Pa(f"M{bx+30} {by+78} L{bx+bs-30} {by+44}","none",'stroke="#e03a32" stroke-width="15" stroke-linecap="round"'))
+    s.append(R(bx+30,by+30,26,18,3,"#ffd23a",'stroke="#d9b020" stroke-width="1.2" transform="rotate(-8 %d %d)"'%(bx+43,by+39))+R(bx+bs-60,by+78,26,18,3,"#ff9fcf",'stroke="#e86aa8" stroke-width="1.2" transform="rotate(8 %d %d)"'%(bx+bs-47,by+87)))
+    # houses + hotel
+    for i in range(3): s.append(R(bx+26+i*13,by+bs-18,9,7,1,"#2fa84f")+Pa(f"M{bx+25+i*13} {by+bs-18} l5.5 -5 l5.5 5Z","#1f7a38"))
+    s.append(R(bx+bs-52,by+4,14,10,1.5,"#e03a32")+Pa(f"M{bx+bs-53} {by+4} l8 -6 l8 6Z","#a82820"))
+    # dice
+    for x,y,rot,n in ((bx+66,by+70,-12,5),(bx+86,by+80,16,3)):
+        pts={5:[(-5,-5),(5,-5),(0,0),(-5,5),(5,5)],3:[(-5,-5),(0,0),(5,5)]}[n]
+        s.append(f'<g transform="rotate({rot} {x} {y})">'+R(x-11,y-11,22,22,5,"#fff",OUT("#c9ccd2",1.2))+"".join(C(x+dx,y+dy,2.2,"#d6382f" if n==5 and (dx,dy)==(0,0) else "#1c1f26") for dx,dy in pts)+'</g>')
+    # play money fan, bottom-left, in front of the board
+    for i,(c,rot) in enumerate((("#f6c58a",-14),("#f2a8c8",-4),("#a8e6c0",8))):
+        s.append(f'<g transform="rotate({rot} 40 176)">'+R(12,162,56,26,4,c,OUT(shade(c,.8),1))+C(40,175,8,"#fff","opacity=\".65\"")+R(15,165,8,5,1,"#fff","opacity=\".55\"")+'</g>')
+    # original tycoon mascot standing in front, right
+    s.append(tycoon(156,186,.96))
+    return wrap("".join(s),"-2 0 212 200")
+M[22]=monopoly2()
+
 ALL={**{k:v for k,v in BASE.items()},**M}
 if __name__=="__main__":
     json.dump(ALL,open(sys.argv[1],"w"),separators=(",",":"))
