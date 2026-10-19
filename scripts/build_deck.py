@@ -68,6 +68,11 @@ pf_zero = int(((inv.Product_ID == pf_pid) & (inv.Stock_On_Hand == 0)).sum())
 first_sale = x.groupby("Product_Name").Date.min()
 launched = [n for n in first_sale.index if first_sale[n] > pd.Timestamp("2022-01-31") and n != "Playfoam"]
 faded = [n for n in launched if units_m.loc[n].iloc[-1] <= 0.6 * units_m.loc[n].max()]
+_first6 = {}
+for _n in launched + ["Playfoam"]:
+    _d0 = first_sale[_n]
+    _first6[_n] = float(x[(x.Product_Name == _n) & (x.Date < _d0 + pd.Timedelta(days=42))].profit.sum())
+assert max(_first6, key=_first6.get) == "Playfoam" and len(launched) == 10, _first6   # best first-6-weeks profit of all launches
 
 q3_22_k, q3_23_k = round(qp.loc["Colorbuds", "2022Q3"] / 1000), round(qp.loc["Colorbuds", "2023Q3"] / 1000)
 pf_rank = int((qp["2023Q3"] > qp.loc["Playfoam", "2023Q3"]).sum()) + 1
@@ -238,7 +243,7 @@ for i, (big, lab, cap, bx, bcol) in enumerate([
     text(s2, big, bx + 0.4, 2.55, w - 0.8, 1.2, 56, bcol, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Big number {i+1}")
     text(s2, cap, bx + 0.4, 3.95, w - 0.8, 0.4, 16, MUTED, name=f"Caption {i+1}")
 bullets(s2, ["Colorbuds is still our **#1 profit toy**, but its share has **more than halved**",
-             f"Playfoam launched in mid-August and is already our **#{pf_prank} profit toy**",
+             f"Playfoam is our **strongest launch yet**: #{pf_prank} in profit after six weeks, ahead of all {len(launched)} other new toys",
              f"Playfoam earns about **${pf_month_profit_k}K a month**, nearly half of the ${gap_k}K Colorbuds has lost"],
         LM, 4.95, CW, 1.8, 20, name="Key points")
 notes(s2, f"Colorbuds earned about {share_22}% of Q3 2022 profit and {share_23}% of Q3 2023 profit; it is still our #1 profit toy, "
@@ -380,7 +385,7 @@ bullets(s5, [f"**#1 profit toy in {pf_weeks_first} of 6 weeks**, ahead of Colorb
              "New toys often cool off, so **the window to act is short**"],
         7.5, 5.1, 13.333 - LM - 7.5, 1.6, 18, space=10, name="Key points")
 notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in about six weeks ({pf_aug:,} in August from the 17th, "
-          f"{pf_sep:,} in September). Estimated profit, first six full weeks (Aug 20 - Sep 30): Playfoam ${pf_6w_k}K vs Colorbuds ${cb_6w_k}K, #2 of 35 toys, and #1 in {pf_weeks_first} of the 6 weeks. Weekly units were flat at about 680 ({pf_weeks}): steady, not rising or fading yet. It earns ${pf_unit_profit:.0f} per unit at a {pf_margin}% margin, about ${pf_month_profit_k}K a month "
+          f"{pf_sep:,} in September). Playfoam earned about $27K in its first 42 days, more than any of the 10 other toys launched in this data (next best: Etch A Sketch, about $20K, which later fell 56% from its peak, so a strong start is not proof of staying power). Estimated profit, first six full weeks (Aug 20 - Sep 30): Playfoam ${pf_6w_k}K vs Colorbuds ${cb_6w_k}K, #2 of 35 toys, and #1 in {pf_weeks_first} of the 6 weeks. Weekly units were flat at about 680 ({pf_weeks}): steady, not rising or fading yet. It earns ${pf_unit_profit:.0f} per unit at a {pf_margin}% margin, about ${pf_month_profit_k}K a month "
           f"at the September pace. It is at zero stock in {pf_zero} stores; each store sells about 57 units a month, so empty shelves cost "
           "roughly $5K a month. It was the #5 profit toy in Q3 2023 despite only ~6 weeks on sale. Be honest: hot now, likely to cool (see the previous slide). "
           "Only six weeks of data; the $20K is a run-rate, not a forecast.")
