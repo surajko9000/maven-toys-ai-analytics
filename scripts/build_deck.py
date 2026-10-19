@@ -222,19 +222,26 @@ for k, c in enumerate((PINK, YELLOW, MINT)):
     shape(s1, MSO_SHAPE.RECTANGLE, LM + k * 0.2, 0.62, 0.14, 0.14, c, f"Mark {k+1}")
 text(s1, "MAVEN TOYS", LM + 0.8, 0.52, 4, 0.34, 14, "FFFFFF", True, name="Wordmark", anchor=MSO_ANCHOR.MIDDLE)
 shape(s1, MSO_SHAPE.RECTANGLE, 8.6, 0, 13.333 - 8.6, 7.5, "FBDDE9", "Image panel")
-_pic = s1.shapes.add_picture(str(ROOT / "scripts" / "assets" / "colorbuds_illustration.png"), Inches(8.95), Inches(1.5), Inches(3.9), Inches(3.9 * 1081 / 1000))
-_pic.name = "Colorbuds illustration"
-_pic._element.nvPicPr.cNvPr.set("descr", "Illustration of Colorbuds: two colorful earbuds in an open charging case with a heart")
-_tb = text(s1, "Colorbuds, our #1 profit toy,", LM, 1.6, 7.9, 2.7, 40, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
+def _cover_pic(fname, cy, h, name, descr):
+    from PIL import Image as _I
+    w0, h0 = _I.open(ROOT / "scripts" / "assets" / fname).size
+    w = h * w0 / h0
+    pic = s1.shapes.add_picture(str(ROOT / "scripts" / "assets" / fname), Inches(8.6 + (13.333 - 8.6 - w) / 2), Inches(cy), Inches(w), Inches(h))
+    pic.name = name
+    pic._element.nvPicPr.cNvPr.set("descr", descr)
+_cover_pic("colorbuds_illustration.png", 0.7, 2.6, "Colorbuds illustration", "Illustration of Colorbuds: two colorful earbuds in an open charging case with a heart")
+_arrow = shape(s1, MSO_SHAPE.DOWN_ARROW, 8.6 + (13.333 - 8.6) / 2 - 0.25, 3.4, 0.5, 0.55, PINK, "Arrow from Colorbuds to Playfoam")
+_cover_pic("playfoam_illustration.png", 4.15, 2.65, "Playfoam illustration", "Illustration of Playfoam: a purple tub heaped with tiny colorful beads")
+_tb = text(s1, "Colorbuds is in decline.", LM, 1.6, 7.9, 2.7, 40, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
 _p = _tb.text_frame.paragraphs[0]
 _p.add_line_break()
 _r = _p.add_run()
-_r.text = "is in decline"
+_r.text = "Playfoam is the next bet."
 _r.font.size, _r.font.bold, _r.font.name = Pt(40), True, HEAD
 _r.font.color.rgb = rgb("FFFFFF")
 text(s1, "A plan to protect profit by backing newer, higher-margin toys", LM, 4.55, 7.6, 0.9, 22, "D6E0EE", name="Subtitle")
 text(s1, "Business review  |  Data through Sep 30, 2023", LM, 6.75, 8, 0.4, 14, "A9B8CC", name="Date line")
-notes(s1, "Open with the one-line answer: Colorbuds (our line of kids' wireless earbuds), our #1 profit toy, is in decline. The plan is simple: back newer, "
+notes(s1, "Open with the one-line answer: Colorbuds (our line of kids' wireless earbuds), our #1 profit toy, is in decline, and Playfoam, a new toy launched in August, is the next bet. The plan is simple: back newer, "
           "higher-margin toys, test one cheap fix for Colorbuds, and review in 8 weeks. Keep the intro under 20 seconds.")
 
 # ================================================================= slide 2: the answer
