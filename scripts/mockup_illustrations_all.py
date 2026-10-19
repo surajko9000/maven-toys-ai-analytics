@@ -460,6 +460,91 @@ def unocards():
     return wrap("".join(s))
 M[35]=unocards()
 
+# ---------- Redrawn blasters (v2) ----------
+def foam_dart(x,y,body="#fff",tip="#e8554e",ang=0,L=58):
+    return (f'<g transform="rotate({ang} {x} {y})">'+R(x,y-4.5,L,9,4.5,body,OUT("#d9dce2",1))+R(x-8,y-5.5,16,11,5.5,tip)+R(x+L-14,y-4.5,14,9,4.5,shade(tip,.9),"opacity=\".0\"")+'</g>')
+
+def pistol_parts(body,dark,tip,accent):
+    s=[]
+    # grip (behind body), leans back toward the shooter (right)
+    s.append(Pa("M104 96 L142 96 L158 168 Q158 176 150 176 L128 176 Q120 176 118 168Z",dark,OUT(dark,2)))
+    s.append("".join(Pa(f"M{118+i*3.2} {118+i*13} L{148+i*3.2} {118+i*13}","none",f'stroke="{shade(dark,.7)}" stroke-width="2.4" stroke-linecap="round"') for i in range(4)))
+    # trigger guard + trigger
+    s.append(Pa("M92 98 Q92 128 112 128 Q122 128 124 118","none",f'stroke="{dark}" stroke-width="6" stroke-linecap="round"'))
+    s.append(Pa("M104 102 L110 102 L112 120 Q104 122 102 114Z",shade(dark,.65)))
+    # body / slide
+    s.append(R(30,62,130,40,16,body,OUT(body,2)))
+    s.append(R(150,68,22,38,9,dark,OUT(dark,2)))
+    s.append(R(46,54,86,12,5,accent))
+    s.append(R(40,70,82,7,3.5,"#fff","opacity=\".28\""))
+    s.append(R(60,82,48,6,3,shade(body,.8)))
+    # muzzle tip
+    s.append(R(10,68,40,28,10,tip,OUT(tip,2))+C(16,82,8.5,"#2a1a10")+C(16,82,4.5,"#000"))
+    return "".join(s)
+
+def dartgun2():
+    s=[S(188,72), pistol_parts("#ff9f2e","#d9780f","#ffd23a","#e8554e")]
+    s.append(foam_dart(26,150,"#ffffff","#2a78d6",-4,56)+foam_dart(36,168,"#ffffff","#29b36f",2,56))
+    return wrap("".join(s))
+M[7]=dartgun2()
+
+def nerf2():
+    s=[S(190,78)]
+    # stock
+    s.append(Pa("M150 78 L184 70 Q192 70 192 80 L190 116 Q190 124 182 122 L152 112Z","#1f5fb0",OUT("#1f5fb0",2)))
+    # magazine with visible darts
+    s.append(R(86,100,34,56,6,"#16407a",OUT("#16407a",1.5)))
+    for i in range(4): s.append(R(92,106+i*12,22,9,4.5,"#ffd23a")+C(94,110.5+i*12,3.4,"#e8554e"))
+    # grip
+    s.append(Pa("M126 100 L152 100 L162 156 Q162 164 154 164 L138 164 Q130 164 128 156Z","#f08a24",OUT("#f08a24",2)))
+    s.append(Pa("M118 100 Q118 128 134 128","none",'stroke="#f08a24" stroke-width="6" stroke-linecap="round"'))
+    s.append(R(124,104,6,18,3,"#8a3a08"))
+    # foregrip
+    s.append(R(46,98,22,34,8,"#f08a24",OUT("#f08a24",1.8)))
+    # body + barrel
+    s.append(R(40,66,130,40,14,"#2a78d6",OUT("#2a78d6",2)))
+    s.append(R(10,72,56,26,10,"#3b8cf0",OUT("#3b8cf0",2)))
+    s.append(R(6,70,22,30,10,"#f08a24",OUT("#f08a24",2))+C(14,85,7.5,"#1a0e00"))
+    s.append(R(70,70,70,9,4.5,"#fff","opacity=\".3\""))
+    # scope/rail with red dot
+    s.append(R(80,52,56,16,6,"#20242c")+C(108,60,5.5,"#ff3b30")+R(76,60,64,4,2,"#444b58"))
+    s.append(R(150,72,16,10,4,"#ffd23a"))
+    return wrap("".join(s))
+M[24]=nerf2()
+
+def disclauncher2():
+    s=[S(190,70), pistol_parts("#3b8cf0","#1f5fb0","#f08a24","#ffd23a")]
+    # transparent disc magazine on top with stacked discs
+    s.append(R(76,14,50,46,8,"#cfe6ff",OUT("#7fb2ea",2))+R(80,18,42,38,6,"#e8f3ff","opacity=\".7\""))
+    for i,c in enumerate(("#f08a24","#e8554e","#ffd23a","#f08a24")): s.append(E(101,50-i*9,18,5.5,shade(c,.85))+E(101,47-i*9,18,5.5,c))
+    s.append(E(101,16,25,5,"#9fc8f5"))
+    # loose discs
+    for x,y,c in ((34,162,"#f08a24"),(70,174,"#e8554e")):
+        s.append(E(x,y+4,22,8,shade(c,.8))+E(x,y,22,8,c)+E(x,y,11,4,shade(c,1.2)))
+    return wrap("".join(s))
+M[12]=disclauncher2()
+
+def soaker2():
+    s=[S(190,76)]
+    # tank (translucent blue, with water + wave)
+    s.append(R(56,28,92,58,26,"#bfe6ff",OUT("#6aaee8",2.5)))
+    s.append(Pa("M62 62 Q80 54 98 62 T134 62 L142 74 Q142 82 130 82 H74 Q62 82 62 72Z","#4fb8ff"))
+    s.append(R(70,36,12,32,6,"#fff","opacity=\".45\""))
+    s.append(R(96,20,20,12,5,"#e8554e"))
+    # barrel
+    s.append(R(8,92,112,20,10,"#29b36f",OUT("#1f8a52",2))+R(2,88,28,28,9,"#ffd23a",OUT("#d9b020",2))+C(10,102,6,"#2a1a00"))
+    s.append(R(30,96,70,5,2.5,"#fff","opacity=\".35\""))
+    # body
+    s.append(R(96,82,60,44,14,"#29b36f",OUT("#1f8a52",2))+R(104,90,44,8,4,"#fff","opacity=\".3\""))
+    s.append(R(150,92,20,28,8,"#1f8a52"))
+    # pump
+    s.append(R(30,118,62,20,10,"#ffd23a",OUT("#d9b020",2))+"".join(R(38+i*9,121,4,14,2,"#c9a010") for i in range(6)))
+    # grip + trigger guard
+    s.append(Pa("M118 124 L146 124 L156 170 Q156 178 148 178 L132 178 Q124 178 122 170Z","#2a78d6",OUT("#2a78d6",2)))
+    s.append(Pa("M106 124 Q106 148 124 148","none",'stroke="#2a78d6" stroke-width="6" stroke-linecap="round"')+R(112,128,6,18,3,"#16407a"))
+    return wrap("".join(s))
+M[32]=soaker2()
+
 ALL={**{k:v for k,v in BASE.items()},**M}
 if __name__=="__main__":
     json.dump(ALL,open(sys.argv[1],"w"),separators=(",",":"))
