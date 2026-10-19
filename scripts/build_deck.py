@@ -77,9 +77,11 @@ print("numbers verified:", dict(cb=(cb_first, cb_last, cb_drop), share=(share_22
       playfoam=(pf_aug, pf_sep, pf_margin, pf_month_profit_k, pf_zero), faded=(len(faded), len(launched))))
 
 # ----------------------------------------------------------------- style (restrained, consulting-style)
-NAVY, BLUE, CYAN = "051C2C", "2251FF", "00A9F4"
+NAVY, BLUE = "051C2C", "2A78D6"                      # same palette as the website
+PINK, MINT, ORANGE, YELLOW = "E8457B", "1BAF7A", "EB6834", "F2B400"
+PINK_T, MINT_T, ORANGE_T = "D6336C", "0E8F63", "D9531E"   # slightly darker, for text on white/gray
 INK, MUTED, LIGHT, MID = "1B2733", "5B6470", "F2F4F7", "D0D5DD"
-BAR_SOFT = "A9BCFF"
+BAR_SOFT = "A5E3CC"
 HEAD, BODY = "Cambria", "Calibri"
 rgb = lambda h: RGBColor.from_string(h)
 
@@ -182,24 +184,34 @@ def style_axis_text(axis, size=14, color=MUTED):
 s1 = prs.slides.add_slide(BLANK)
 s1.background.fill.solid()
 s1.background.fill.fore_color.rgb = rgb(NAVY)
-for k, c in enumerate((BLUE, CYAN, "FFFFFF")):
+for k, c in enumerate((PINK, YELLOW, MINT)):
     shape(s1, MSO_SHAPE.RECTANGLE, LM + k * 0.2, 0.62, 0.14, 0.14, c, f"Mark {k+1}")
 text(s1, "MAVEN TOYS", LM + 0.8, 0.52, 4, 0.34, 14, "FFFFFF", True, name="Wordmark", anchor=MSO_ANCHOR.MIDDLE)
-text(s1, "Colorbuds is fading: what to do next", LM, 2.55, 10.5, 1.9, 44, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
+_rows = [[BLUE, ORANGE, PINK, YELLOW], [MINT, BLUE, ORANGE], [PINK, MINT], [YELLOW]]
+for r_i, row in enumerate(_rows):
+    for c_i, col in enumerate(row):
+        shape(s1, MSO_SHAPE.RECTANGLE, 8.55 + r_i * 0.5 + c_i * 1.0, 6.15 - r_i * 1.0, 0.9, 0.9, col, f"Block r{r_i}c{c_i}")
+_tb = text(s1, "Colorbuds is fading:", LM, 1.9, 7.6, 2.55, 44, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
+_p = _tb.text_frame.paragraphs[0]
+_p.add_line_break()
+_r = _p.add_run()
+_r.text = "what to do next"
+_r.font.size, _r.font.bold, _r.font.name = Pt(44), True, HEAD
+_r.font.color.rgb = rgb("FFFFFF")
 text(s1, "Business review  |  Data through Sep 30, 2023", LM, 4.75, 10, 0.5, 20, "A9B8CC", name="Subtitle")
 notes(s1, "Open with the one-line answer: Colorbuds, our top profit toy, is fading. The plan is simple: back newer, "
           "higher-margin toys, test one cheap fix for Colorbuds, and review in 8 weeks. Keep the intro under 20 seconds.")
 
 # ================================================================= slide 2: the answer
 s2 = content_slide("Our top profit toy is fading, and a newer toy is already making up part of the gap", 2)
-for i, (big, lab, cap, bx) in enumerate([
-    (f"{share_22}% → {share_23}%", "Colorbuds' share of quarterly profit", "Q3 2022 to Q3 2023", LM),
-    (f"${pf_month_profit_k}K", "Playfoam profit per month", "At its September pace", LM + CW / 2 + 0.2),
+for i, (big, lab, cap, bx, bcol) in enumerate([
+    (f"{share_22}% → {share_23}%", "Colorbuds' share of quarterly profit", "Q3 2022 to Q3 2023", LM, PINK_T),
+    (f"${pf_month_profit_k}K", "Playfoam profit per month", "At its September pace", LM + CW / 2 + 0.2, MINT_T),
 ]):
     w = CW / 2 - 0.2
     shape(s2, MSO_SHAPE.RECTANGLE, bx, 1.85, w, 2.75, LIGHT, f"Panel {i+1}")
     label(s2, lab, bx + 0.4, 2.1, w - 0.8, f"Panel label {i+1}")
-    text(s2, big, bx + 0.4, 2.55, w - 0.8, 1.2, 56, BLUE, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Big number {i+1}")
+    text(s2, big, bx + 0.4, 2.55, w - 0.8, 1.2, 56, bcol, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Big number {i+1}")
     text(s2, cap, bx + 0.4, 3.95, w - 0.8, 0.4, 16, MUTED, name=f"Caption {i+1}")
 bullets(s2, [f"Colorbuds is still our #1 profit toy, but its share has more than halved",
              f"Playfoam launched in mid-August and is already a top-{pf_rank} profit toy",
@@ -244,7 +256,7 @@ bp.set('rot', '0')
 bp.set('vert', 'horz')
 ser = ch.plots[0].series[0]
 ser.smooth = False
-ser.format.line.color.rgb = rgb(NAVY)
+ser.format.line.color.rgb = rgb(PINK)
 ser.format.line.width = Pt(3.5)
 from pptx.enum.chart import XL_MARKER_STYLE
 ser.marker.style = XL_MARKER_STYLE.NONE
@@ -254,7 +266,7 @@ for idx, lbl, when, pos in ((0, f"{cb_first:,}", "Jan 2022", XL_LABEL_POSITION.A
     pt.marker.style = XL_MARKER_STYLE.CIRCLE
     pt.marker.size = 11
     pt.marker.format.fill.solid()
-    pt.marker.format.fill.fore_color.rgb = rgb(BLUE)
+    pt.marker.format.fill.fore_color.rgb = rgb(PINK)
     pt.marker.format.line.color.rgb = rgb("FFFFFF")
     dl = pt.data_label
     dl.has_text_frame = True
@@ -262,7 +274,7 @@ for idx, lbl, when, pos in ((0, f"{cb_first:,}", "Jan 2022", XL_LABEL_POSITION.A
     dl.position = pos
     r = dl.text_frame.paragraphs[0].runs[0]
     r.font.size, r.font.bold, r.font.name = Pt(22), True, HEAD
-    r.font.color.rgb = rgb(BLUE)
+    r.font.color.rgb = rgb(PINK_T)
     p2 = dl.text_frame.add_paragraph()
     r2 = p2.add_run()
     r2.text = when
@@ -282,11 +294,11 @@ notes(s3, f"Monthly Colorbuds units fell from {cb_first:,} (Jan 2022) to {cb_las
 # ================================================================= slide 4: most toys fade
 s4 = content_slide(f"Fading is normal for our toys: {len(faded)} of {len(launched)} recent launches are 40%+ below their peak", 4)
 shape(s4, MSO_SHAPE.RECTANGLE, LM, 1.85, 6.4, 4.9, LIGHT, "Stat panel")
-text(s4, f"{len(faded)} of {len(launched)}", LM + 0.4, 2.15, 5.6, 1.7, 88, BLUE, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name="Big number")
+text(s4, f"{len(faded)} of {len(launched)}", LM + 0.4, 2.15, 5.6, 1.7, 88, ORANGE_T, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name="Big number")
 text(s4, "recent launches are 40%+ below their peak month", LM + 0.4, 3.95, 5.6, 0.9, 22, NAVY, name="Caption")
 for i in range(len(launched)):
     bx = LM + 0.4 + i * 0.54
-    c = NAVY if i < len(faded) else MID
+    c = ORANGE if i < len(faded) else MID
     shape(s4, MSO_SHAPE.RECTANGLE, bx, 5.45, 0.42, 0.42, c, f"Toy marker {i+1}")
 label(s4, "Examples", 7.4, 1.95, 5, "Examples label")
 bullets(s4, [f"Jenga peaked in Jul 2022 and is now down {jenga_drop}%",
@@ -328,14 +340,14 @@ dls.font.size, dls.font.bold, dls.font.name = Pt(26), True, HEAD
 dls.font.color.rgb = rgb(NAVY)
 ser = plot.series[0]
 ser.format.fill.solid()
-ser.format.fill.fore_color.rgb = rgb(BLUE)
+ser.format.fill.fore_color.rgb = rgb(MINT)
 pt0 = ser.points[0]
 pt0.format.fill.solid()
 pt0.format.fill.fore_color.rgb = rgb(BAR_SOFT)   # lighter = partial month
 for i, (big, small, by) in enumerate([(f"{pf_margin}% margin", f"${pf_unit_profit:.0f} profit on every unit", 1.85),
                                       (f"{pf_zero} stores out of stock", "about $5K a month left on the table", 3.45)]):
     shape(s5, MSO_SHAPE.RECTANGLE, 7.5, by, 13.333 - LM - 7.5, 1.4, LIGHT, f"Stat panel {i+1}")
-    text(s5, big, 7.8, by + 0.2, 4.7, 0.6, 26, BLUE, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Stat title {i+1}")
+    text(s5, big, 7.8, by + 0.2, 4.7, 0.6, 26, MINT_T if i == 0 else ORANGE_T, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Stat title {i+1}")
     text(s5, small, 7.8, by + 0.88, 4.7, 0.4, 16, INK, name=f"Stat note {i+1}")
 bullets(s5, [f"Launched Aug 17 and already a top-{pf_rank} profit toy",
              "New toys often cool off, so the window to act is short"],
@@ -355,7 +367,7 @@ colw = (CW - 2 * 0.3) / 3
 for i, (num, head, pts) in enumerate(steps):
     cx = LM + i * (colw + 0.3)
     shape(s6, MSO_SHAPE.RECTANGLE, cx, 1.95, colw, 4.35, LIGHT, f"Panel {num}")
-    badge = shape(s6, MSO_SHAPE.RECTANGLE, cx + 0.4, 2.3, 0.7, 0.7, NAVY, f"Number {num}")
+    badge = shape(s6, MSO_SHAPE.RECTANGLE, cx + 0.4, 2.3, 0.7, 0.7, (MINT_T, PINK_T, BLUE)[i], f"Number {num}")
     tf = badge.text_frame
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
