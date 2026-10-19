@@ -613,7 +613,7 @@ def pony3():
     s.append(E(64,66,6,3.6,"#ff9fcf","opacity=\".75\""))
     s.append('</g>')
     # cutie mark
-    s.append(Pa("M110 126 q-9 -10 -2 -14 q4 -2 6 3 q2 -5 6 -3 q7 4 -2 14 l-4 4Z","#ff5aa0"))
+    s.append('<g transform="translate(133 124) scale(.72)"><path d="M0,5 C-12,-4 -10,-14 -4,-14 C-1,-14 0,-11 0,-9 C0,-11 1,-14 4,-14 C10,-14 12,-4 0,5Z" fill="#ff5aa0"/></g>')
     return wrap("".join(s))
 M[29]=pony3()
 
@@ -661,6 +661,28 @@ def hoop3():
     s.append(C(150,158,25,"#f08a24",OUT("#f08a24",1.6))+Pa("M125 158 H175 M150 133 V183","none",'stroke="#7a3208" stroke-width="2.2"')+Pa("M133 141 Q150 158 133 175 M167 141 Q150 158 167 175","none",'stroke="#7a3208" stroke-width="2.2"')+E(140,146,7,4.5,"#fff",'opacity=".28" transform="rotate(-35 140 146)"'))
     return wrap("".join(s))
 M[20]=hoop3()
+
+# ---------- v4: closed Play-Doh can with a lump of dough beside it ----------
+def can4():
+    y="#f6c915"; lid="#2a78d6"
+    s=[S(188,66)]
+    # dough lump (right), with soft shading, dents and a little rolled snake
+    d="#e8554e"
+    s.append(Pa("M114 170 Q108 150 124 142 Q136 128 158 136 Q184 138 184 160 Q186 174 168 176 L124 176 Q114 176 114 170Z",d,OUT(d,1.6)))
+    s.append(Pa("M124 150 Q134 140 150 142","none",'stroke="#ff9a90" stroke-width="5" stroke-linecap="round" opacity=".75"'))
+    s.append(C(150,160,3,shade(d,.8),"opacity=\".7\"")+C(164,152,2.4,shade(d,.8),"opacity=\".7\"")+C(140,166,2.6,shade(d,.8),"opacity=\".7\""))
+    s.append(Pa("M118 176 Q140 188 176 178","none",f'stroke="{shade(d,.85)}" stroke-width="6" stroke-linecap="round" opacity="0"'))
+    # can body (closed)
+    s.append(R(30,98,84,76,12,y,OUT(y,1.6)))
+    s.append(R(40,112,12,52,5,"#fff","opacity=\".3\""))
+    s.append(R(30,128,84,22,0,"#fff","opacity=\".92\""))
+    s.append(star(72,139,9,"#e8554e")+C(50,139,3.2,"#2a78d6")+C(94,139,3.2,"#29b36f"))
+    # lid on top
+    s.append(R(26,82,92,22,8,lid,OUT(lid,1.6)))
+    s.append(E(72,83,46,8.5,shade(lid,1.2),OUT(lid,1.2)))
+    s.append("".join(R(34+i*11.5,90,4,12,2,shade(lid,.78),"opacity=\".8\"") for i in range(7)))
+    return wrap("".join(s))
+M[25]=can4()
 
 ALL={**{k:v for k,v in BASE.items()},**M}
 if __name__=="__main__":
