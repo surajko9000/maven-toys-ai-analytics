@@ -55,6 +55,14 @@ pf_weeks = [int(v) for v in _pw.values]                       # six full Sun-Sat
 pf_week_labels = [(d - pd.Timedelta(days=6)).strftime("%b ") + str((d - pd.Timedelta(days=6)).day) for d in _pw.index]
 pf_wk_avg = round(sum(pf_weeks) / len(pf_weeks), -1)
 assert pf_weeks == [718, 722, 646, 688, 679, 601], pf_weeks
+_w = x[x.Date >= "2023-08-20"]
+pf_profit_rank_s = _w.groupby("Product_Name").profit.sum().sort_values(ascending=False)
+top5 = [(n, float(v)) for n, v in pf_profit_rank_s.head(5).items()]
+pf_prank = list(pf_profit_rank_s.index).index("Playfoam") + 1
+_wk = _w.groupby([_w.Date.dt.to_period("W-SAT"), "Product_Name"]).profit.sum().unstack(fill_value=0)
+pf_weeks_first = int((_wk.idxmax(axis=1) == "Playfoam").sum())
+assert (pf_prank, pf_weeks_first, top5[0][0], top5[1][0]) == (2, 2, "Colorbuds", "Playfoam"), (pf_prank, pf_weeks_first, top5[:2])
+cb_6w_k, pf_6w_k = round(top5[0][1] / 1000), round(top5[1][1] / 1000)
 pf_zero = int(((inv.Product_ID == pf_pid) & (inv.Stock_On_Hand == 0)).sum())
 
 first_sale = x.groupby("Product_Name").Date.min()
@@ -222,7 +230,7 @@ notes(s1, "Open with the one-line answer: Colorbuds (our line of kids' wireless 
 s2 = content_slide("Our top profit toy is fading, and a newer toy is already making up part of the gap", 2)
 for i, (big, lab, cap, bx, bcol) in enumerate([
     (f"{share_22}% → {share_23}%", "Colorbuds' share of quarterly profit", "Q3 2022 to Q3 2023", LM, PINK_T),
-    (f"${pf_month_profit_k}K", "Playfoam profit per month", f"~{int(pf_wk_avg)} units a week, six weeks running", LM + CW / 2 + 0.2, MINT_T),
+    (f"#{pf_prank} of 35", "Playfoam's rank among all toys by profit", "Behind only Colorbuds, in its first six full weeks on sale", LM + CW / 2 + 0.2, MINT_T),
 ]):
     w = CW / 2 - 0.2
     shape(s2, MSO_SHAPE.RECTANGLE, bx, 1.85, w, 2.75, LIGHT, f"Panel {i+1}")
@@ -230,8 +238,8 @@ for i, (big, lab, cap, bx, bcol) in enumerate([
     text(s2, big, bx + 0.4, 2.55, w - 0.8, 1.2, 56, bcol, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Big number {i+1}")
     text(s2, cap, bx + 0.4, 3.95, w - 0.8, 0.4, 16, MUTED, name=f"Caption {i+1}")
 bullets(s2, ["Colorbuds is still our **#1 profit toy**, but its share has **more than halved**",
-             f"Playfoam launched in mid-August and is already a **top-{pf_rank} profit toy**",
-             f"Playfoam's September pace is **nearly half** of the ${gap_k}K a month Colorbuds has lost"],
+             f"Playfoam launched in mid-August and is already our **#{pf_prank} profit toy**",
+             f"Playfoam earns about **${pf_month_profit_k}K a month**, nearly half of the ${gap_k}K Colorbuds has lost"],
         LM, 4.95, CW, 1.8, 20, name="Key points")
 notes(s2, f"Colorbuds earned about {share_22}% of Q3 2022 profit and {share_23}% of Q3 2023 profit; it is still our #1 profit toy, "
           f"so it is fading, not dead. Playfoam launched in mid-August 2023; at its September pace ({pf_sep:,} units x "
@@ -330,11 +338,11 @@ notes(s4, "This is the likely explanation, not a proven cause. Of the 10 toys th
 # ================================================================= slide 5: Playfoam
 s5 = content_slide(f"Playfoam is the early bright spot, but {pf_zero} empty stores are costing us about $5K a month", 5)
 cd = CategoryChartData()
-cd.categories = pf_week_labels
-cd.add_series("Playfoam units", pf_weeks)
-label(s5, "Playfoam units sold per week (week starting)", LM, 1.85, 6, "Chart label")
-gf = s5.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(LM), Inches(2.2), Inches(6.4), Inches(4.55), cd)
-gf.name = "Playfoam weekly units"
+cd.categories = [n for n, _ in top5]
+cd.add_series("Profit", [v for _, v in top5])
+label(s5, "Estimated profit by toy, last six full weeks (Aug 20 - Sep 30)", LM, 1.85, 6.4, "Chart label")
+gf = s5.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, Inches(LM), Inches(2.2), Inches(6.4), Inches(4.55), cd)
+gf.name = "Top 5 toys by profit since Playfoam launched"
 ch = gf.chart
 ch.has_legend = False
 ch.has_title = False
@@ -342,31 +350,37 @@ ch.font.name = BODY
 va, ca = ch.value_axis, ch.category_axis
 va.visible = False
 va.has_major_gridlines = False
-va.minimum_scale, va.maximum_scale = 0, 880
+va.minimum_scale, va.maximum_scale = 0, 37000
 ca.has_major_gridlines = False
+ca.reverse_order = True
 ca.format.line.color.rgb = rgb(MID)
-style_axis_text(ca, 14)
+style_axis_text(ca, 16, INK)
 plot = ch.plots[0]
 plot.gap_width = 45
 plot.has_data_labels = True
 dls = plot.data_labels
-dls.number_format, dls.number_format_is_linked = "#,##0", False
+dls.number_format, dls.number_format_is_linked = '$#,##0,"K"', False
 dls.position = XL_LABEL_POSITION.OUTSIDE_END
 dls.font.size, dls.font.bold, dls.font.name = Pt(20), True, HEAD
 dls.font.color.rgb = rgb(NAVY)
 ser = plot.series[0]
 ser.format.fill.solid()
-ser.format.fill.fore_color.rgb = rgb(MINT)
+ser.format.fill.fore_color.rgb = rgb(MID)
+for i, (n, _) in enumerate(top5):
+    if n == "Playfoam":
+        pt = ser.points[i]
+        pt.format.fill.solid()
+        pt.format.fill.fore_color.rgb = rgb(MINT)
 for i, (big, small, by) in enumerate([(f"{pf_margin}% margin", f"${pf_unit_profit:.0f} profit on every unit", 1.85),
                                       (f"{pf_zero} stores out of stock", "about $5K a month left on the table", 3.45)]):
     shape(s5, MSO_SHAPE.RECTANGLE, 7.5, by, 13.333 - LM - 7.5, 1.4, LIGHT, f"Stat panel {i+1}")
     text(s5, big, 7.8, by + 0.2, 4.7, 0.6, 26, MINT_T if i == 0 else ORANGE_T, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Stat title {i+1}")
     text(s5, small, 7.8, by + 0.88, 4.7, 0.4, 16, INK, name=f"Stat note {i+1}")
-bullets(s5, [f"**~{int(pf_wk_avg)} units a week**, every week since launch, with no cooling yet",
+bullets(s5, [f"**#1 profit toy in {pf_weeks_first} of 6 weeks**, ahead of Colorbuds",
              "New toys often cool off, so **the window to act is short**"],
         7.5, 5.1, 13.333 - LM - 7.5, 1.6, 18, space=10, name="Key points")
 notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in about six weeks ({pf_aug:,} in August from the 17th, "
-          f"{pf_sep:,} in September). Full weeks since launch: {pf_weeks}, so demand is steady, not rising or fading yet. It earns ${pf_unit_profit:.0f} per unit at a {pf_margin}% margin, about ${pf_month_profit_k}K a month "
+          f"{pf_sep:,} in September). Estimated profit, first six full weeks (Aug 20 - Sep 30): Playfoam ${pf_6w_k}K vs Colorbuds ${cb_6w_k}K, #2 of 35 toys, and #1 in {pf_weeks_first} of the 6 weeks. Weekly units were flat at about 680 ({pf_weeks}): steady, not rising or fading yet. It earns ${pf_unit_profit:.0f} per unit at a {pf_margin}% margin, about ${pf_month_profit_k}K a month "
           f"at the September pace. It is at zero stock in {pf_zero} stores; each store sells about 57 units a month, so empty shelves cost "
           "roughly $5K a month. It was the #5 profit toy in Q3 2023 despite only ~6 weeks on sale. Be honest: hot now, likely to cool (see the previous slide). "
           "Only six weeks of data; the $20K is a run-rate, not a forecast.")
