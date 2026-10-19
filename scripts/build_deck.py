@@ -221,32 +221,27 @@ s1.background.fill.fore_color.rgb = rgb(NAVY)
 for k, c in enumerate((PINK, YELLOW, MINT)):
     shape(s1, MSO_SHAPE.RECTANGLE, LM + k * 0.2, 0.62, 0.14, 0.14, c, f"Mark {k+1}")
 text(s1, "MAVEN TOYS", LM + 0.8, 0.52, 4, 0.34, 14, "FFFFFF", True, name="Wordmark", anchor=MSO_ANCHOR.MIDDLE)
-shape(s1, MSO_SHAPE.RECTANGLE, 8.4, 0, 13.333 - 8.4, 7.5, "0B2B45", "Right panel")
-def _cover_card(cy, fill, fname, art_h, name, big, small, descr):
+shape(s1, MSO_SHAPE.RECTANGLE, 8.4, 0, 13.333 - 8.4, 7.5, LIGHT, "Right panel")
+def _cover_toy(cy, fname, art_h, name, descr):
     from PIL import Image as _I
-    cw, ch, cx = 3.9, 2.75, 8.4 + (13.333 - 8.4 - 3.9) / 2
-    card = shape(s1, MSO_SHAPE.ROUNDED_RECTANGLE, cx, cy, cw, ch, fill, f"{name} card")
-    card.adjustments[0] = 0.07
+    pw, px = 13.333 - 8.4, 8.4
     w0, h0 = _I.open(ROOT / "scripts" / "assets" / fname).size
     w = art_h * w0 / h0
-    pic = s1.shapes.add_picture(str(ROOT / "scripts" / "assets" / fname), Inches(cx + (cw - w) / 2), Inches(cy + 0.18), Inches(w), Inches(art_h))
+    pic = s1.shapes.add_picture(str(ROOT / "scripts" / "assets" / fname), Inches(px + (pw - w) / 2), Inches(cy), Inches(w), Inches(art_h))
     pic.name = f"{name} illustration"
     pic._element.nvPicPr.cNvPr.set("descr", descr)
-    text(s1, big, cx + 0.3, cy + 1.95, cw - 0.6, 0.38, 17, NAVY, True, HEAD, PP_ALIGN.CENTER, name=f"{name} card title")
-    text(s1, small, cx + 0.3, cy + 2.3, cw - 0.6, 0.32, 13, MUTED, False, BODY, PP_ALIGN.CENTER, name=f"{name} card caption")
-_cover_card(0.85, "FBE6EE", "colorbuds_illustration.png", 1.6, "Colorbuds", "Colorbuds", "Our #1 profit toy, in decline",
-            "Illustration of Colorbuds: two colorful earbuds in an open charging case with a heart")
-shape(s1, MSO_SHAPE.DOWN_ARROW, 8.4 + (13.333 - 8.4) / 2 - 0.2, 3.7, 0.4, 0.4, MINT, "Arrow from Colorbuds to Playfoam")
-_cover_card(4.35, "EAE6FF", "playfoam_illustration.png", 1.6, "Playfoam", "Playfoam", "Launched Aug 2023, already our #2 profit toy",
-            "Illustration of Playfoam: a purple tub heaped with tiny colorful beads")
-_tb = text(s1, "From Colorbuds", LM, 1.6, 7.7, 2.7, 46, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
+    text(s1, name, px + 0.5, cy + art_h + 0.1, pw - 1.0, 0.4, 16, NAVY, True, HEAD, PP_ALIGN.CENTER, name=f"{name} label")
+_cover_toy(0.8, "colorbuds_illustration.png", 2.3, "Colorbuds", "Illustration of Colorbuds: two colorful earbuds in an open charging case with a heart")
+_cover_toy(4.05, "playfoam_illustration.png", 2.3, "Playfoam", "Illustration of Playfoam: a purple tub heaped with tiny colorful beads")
+_tb = text(s1, "Colorbuds, our #1 profit toy,", LM, 1.5, 7.7, 2.9, 38, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
 _p = _tb.text_frame.paragraphs[0]
-_p.add_line_break()
-_r = _p.add_run()
-_r.text = "to Playfoam"
-_r.font.size, _r.font.bold, _r.font.name = Pt(46), True, HEAD
-_r.font.color.rgb = rgb("FFFFFF")
-text(s1, "Our #1 profit toy is in decline. Here is how we protect profit.", LM, 4.55, 7.6, 0.9, 22, "D6E0EE", name="Subtitle")
+for _txt, _col in (("is in decline.", "FFFFFF"), ("Playfoam is the next bet.", "8FE3C3")):
+    _p.add_line_break()
+    _r = _p.add_run()
+    _r.text = _txt
+    _r.font.size, _r.font.bold, _r.font.name = Pt(38), True, HEAD
+    _r.font.color.rgb = rgb(_col)
+text(s1, "A plan to protect profit by backing newer, higher-margin toys", LM, 4.55, 7.6, 0.9, 22, "D6E0EE", name="Subtitle")
 text(s1, "Business review  |  Data through Sep 30, 2023", LM, 6.75, 8, 0.4, 14, "A9B8CC", name="Date line")
 notes(s1, "Open with the one-line answer: Colorbuds (our line of kids' wireless earbuds), our #1 profit toy, is in decline, and Playfoam, a new toy launched in August, is the next bet. The plan is simple: back newer, "
           "higher-margin toys, test one cheap fix for Colorbuds, and review in 8 weeks. Keep the intro under 20 seconds.")
