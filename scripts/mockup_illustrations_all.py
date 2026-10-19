@@ -1083,8 +1083,8 @@ M[9]=egg4()
 
 # ---------- v8: cartoon AirPods-style Colorbuds (buds poking out of an open charging case), thick outlines ----------
 def earbuds8():
-    line="#231B3A"; lw=3.8
-    case="#D9D0FF"; case_dk="#B9AEF0"; inside="#9d92d8"
+    line="#1B2B3F"; lw=3.8
+    case="#EEF1F5"; case_dk="#C9D1DC"; inside="#7F8EA3"
     s=[S(192,62)]
     # back rim (inside of the open case): wide, shallow opening
     s.append(E(100,122,50,14,inside,f'stroke="{line}" stroke-width="{lw}"'))
@@ -1100,12 +1100,12 @@ def earbuds8():
         g.append(f'<path d="M{hx-13} {hy-5} Q{hx-11} {hy-15} {hx-2} {hy-17}" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".9"/>')
         g.append('</g>')
         return "".join(g)
-    s.append(bud(68,78,-14,"#FF8FBF",(73,132),-6))
-    s.append(bud(132,66,12,"#7BE0B3",(127,132),6))
+    s.append(bud(68,78,-14,"#5F80A6",(73,132),-6))
+    s.append(bud(132,66,12,"#7F9FB5",(127,132),6))
     # squat rounded case; its top edge is the front lip, hiding the bottom of the stems
     s.append(f'<path d="M50 124 Q50 138 100 138 Q150 138 150 124 L150 160 Q150 188 124 188 L76 188 Q50 188 50 160 Z" fill="{case}" stroke="{line}" stroke-width="{lw}" stroke-linejoin="round"/>')
     s.append('<path d="M62 160 Q62 176 78 176" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".75"/>')
-    s.append(f'<g transform="translate(122 164) scale(.95)"><path d="M0,9 C-14,-2 -13,-15 -5,-15 C-1,-15 0,-12 0,-10 C0,-12 1,-15 5,-15 C13,-15 14,-2 0,9Z" fill="#FF5AA0" stroke="{line}" stroke-width="2.6" stroke-linejoin="round"/></g>')
+    s.append(f'<g transform="translate(122 164) scale(.95)"><path d="M0,9 C-14,-2 -13,-15 -5,-15 C-1,-15 0,-12 0,-10 C0,-12 1,-15 5,-15 C13,-15 14,-2 0,9Z" fill="#D2A94A" stroke="{line}" stroke-width="2.6" stroke-linejoin="round"/></g>')
     return wrap("".join(s),"28 34 144 164")
 M[6]=earbuds8()
 
