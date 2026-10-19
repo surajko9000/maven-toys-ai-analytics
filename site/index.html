@@ -244,7 +244,8 @@ function imgBlock(pid,cls){const i=IMG[pid];
   if(i) return `<img src="${i.src}" alt="${esc(P[pid].name)}" loading="lazy" onerror="this.parentNode.innerHTML=EMOJI[${pid}]">`;
   if(ILLUS[pid]) return `<span class="art">${ILLUS[pid]}</span>`;
   return EMOJI[pid]}
-const tileBg=pid=>(IMG[pid]||ILLUS[pid])?"#ffffff":CTINT[P[pid].cat];
+const TILE_OVERRIDE={6:"#ece7ff"}; /* white products get a soft tint so they stand out */
+const tileBg=pid=>TILE_OVERRIDE[pid]||((IMG[pid]||ILLUS[pid])?"#ffffff":CTINT[P[pid].cat]);
 
 /* ================= TAB 0: START HERE ================= */
 function renderStart(){
