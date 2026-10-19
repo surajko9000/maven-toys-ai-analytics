@@ -48,3 +48,12 @@ docs/               architecture and capstone workflow notes
 ```
 python3 scripts/verify_totals.py
 ```
+
+## Rebuild the deck
+
+```
+python3 scripts/build_deck.py            # writes site/deck/Colorbuds_to_Playfoam.pptx (asserts every number against the CSVs)
+# then export the PDF and slide previews the site shows (needs LibreOffice + poppler):
+soffice --headless --convert-to pdf --outdir site/deck site/deck/Colorbuds_to_Playfoam.pptx
+pdftoppm -jpeg -r 110 site/deck/Colorbuds_to_Playfoam.pdf site/deck/preview/slide
+```

@@ -160,6 +160,24 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .mini{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px 0 2px;justify-content:center}
 .mini .node{min-width:0;padding:8px 12px;font-size:13px}.mini .arrow{font-size:20px}
 @media(max-width:980px){.cmp{grid-template-columns:1fr}}
+.deckbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.deckbar .dlabel{font-weight:800;font-size:12px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em}
+.deckbar .btn{text-decoration:none;display:inline-block}
+.deckbar .hint{margin-left:auto;color:var(--ink2);font-size:14px}.deckbar .hint b{color:var(--ink)}
+.viewer{display:flex;align-items:center;gap:12px}
+.stage{flex:1;min-width:0;position:relative;border:2px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;box-shadow:0 8px 24px #0002;line-height:0}
+.stage img{width:100%;height:auto;display:block;user-select:none}
+.stage .count{position:absolute;right:12px;bottom:10px;background:#051c2cb3;color:#fff;border-radius:999px;padding:3px 12px;font:700 13px/1.4 var(--font)}
+.stage:fullscreen{display:grid;place-items:center;background:#000;border:0;border-radius:0}
+.stage:fullscreen img{max-width:100vw;max-height:100vh;width:auto;height:auto}
+.navb{width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:#fff;font-size:28px;line-height:1;cursor:pointer;color:var(--ink);flex:none;box-shadow:0 3px 0 var(--line)}
+.navb:hover:not(:disabled){transform:translateY(-1px)}.navb:disabled{opacity:.35;cursor:default}
+.thumbs{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:16px 58px 0}
+.thumb{position:relative;border:3px solid transparent;border-radius:8px;padding:0;background:#fff;cursor:pointer;overflow:hidden;line-height:0;box-shadow:0 2px 0 var(--line)}
+.thumb img{width:100%;height:auto;display:block;opacity:.75}
+.thumb.on{border-color:var(--s1)}.thumb.on img{opacity:1}
+.thumb b{position:absolute;left:6px;top:4px;font:800 11px/1.4 var(--font);background:#fff;color:var(--ink);border-radius:999px;padding:0 7px}
+@media(max-width:700px){.navb{width:36px;height:36px;font-size:22px}.thumbs{margin:14px 0 0;grid-template-columns:repeat(3,1fr)}.deckbar .hint{margin-left:0;width:100%}}
 @media(max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.two,.askwrap{grid-template-columns:1fr}.tour{grid-template-columns:1fr 1fr}.deck{padding:28px}.deck h2{font-size:26px}.hero{padding:28px 22px}.hero h1{font-size:30px}.badge{display:none}.bar{gap:10px}}
 @media(max-width:560px){.tour{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -263,7 +281,7 @@ function renderStart(){
   const conf=[["62%","12%","#ffd34d",14,-20],["88%","16%","#ff8fb1",12,25],["72%","74%","#7be0b3",16,40],["50%","82%","#ffd34d",10,15],["94%","58%","#ffffff",10,-30],["78%","40%","#7be0b3",10,30]]
     .map(([l,t,c,s,r])=>`<span class="conf" style="left:${l};top:${t};width:${s}px;height:${s}px;background:${c};transform:rotate(${r}deg)"></span>`).join("");
   const tour=[["dashboard","📊","Dashboard","Filter by time, category and toy. KPIs, trends, rankings, a sortable table and CSV export.","Analyst job: build a dashboard","#e3eefb"],
-              ["presentation","🎤","Presentation","A short slide-style readout. Every headline number is computed from the data.","Analyst job: make a presentation","#fcf0d2"],
+              ["presentation","🎤","Presentation","Click through the Colorbuds deck, or download it as PowerPoint or PDF.","Analyst job: make a presentation","#fcf0d2"],
               ["toys","🧸","Toy Finder","Browse the 35 toys like a catalog. Tap one to see sales, profit and stock.","Bonus: a small data app","#fbe6ee"],
               ["ask","💬","Ask","Type a question in plain English and get an answer with the chart and how it was calculated.","Analyst job: answer ad-hoc questions","#def5ec"]]
     .map(([k,e,n,d,j,c])=>`<div class="card t" style="background:${c}" onclick="show('${k}')"><div class="e">${e}</div><h3>${n}</h3><p>${d}</p><span class="job">${j}</span><span class="go">Open ${n} →</span></div>`).join("");
@@ -344,7 +362,7 @@ function renderStart(){
 
   <h2 class="sec">🚀 Try these</h2>
   <div class="quick">
-    <button class="btn" onclick="show('presentation');go(0-slide+2)">🎤 See why Toys earns the most but profits the least</button>
+    <button class="btn" onclick="show('presentation')">🎤 Flip through the Colorbuds deck</button>
     <button class="btn" onclick="show('ask');ask('Which products generated the most profit last quarter?',true)">💬 Ask: top profit last quarter</button>
     <button class="btn" onclick="show('toys');openToy(18)">🧸 Open Lego Bricks</button>
     <button class="btn" onclick="dash.cats=new Set(['Electronics']);show('dashboard')">📊 Filter the dashboard to Electronics</button>
@@ -430,24 +448,40 @@ const peak=ALL.byMonth.map((b,i)=>[i,b.rev]).sort((a,b)=>b[1]-a[1])[0];
 const share=c=>catStats.find(x=>x.c==c).rev/ALL.tot.rev;
 const Y22=agg({m0:0,m1:8}).tot, Y23=agg({m0:12,m1:20}).tot;
 const chg=(a,b)=>(a/b-1)*100;
-const SLIDES=[
- ()=>`<div><span class="tag" style="background:#ffffff26;color:#fff">🧸 Maven Toys · Jan 2022 – Sep 2023</span><h2 style="margin-top:18px">What 21 months of toy sales across 50 stores tell us</h2><p>A quick readout. Every number on every slide is computed from the data when you open this page, not typed in.</p></div>`,
- ()=>`<div><p>The big picture</p><div class="big">${fmt$(ALL.tot.rev)}</div><h2>in estimated revenue at a ${pct(ALL.tot.gp/ALL.tot.rev)} gross margin</h2><p>${fmtN(ALL.tot.units)} units sold. Estimated gross profit: ${fmt$(ALL.tot.gp)}.</p></div>`,
- ()=>`<div><h2>${byMg[0].c} earns the best margin (${pct(byMg[0].mg)}); ${catStats[0].c} earns the most revenue but only ${pct(catStats[0].mg)}</h2>${hbars(byMg.map(x=>({label:x.c,v:x.mg*100,color:"#ffd34d",tip:`${x.c}<br>Margin ${pct(x.mg)}<br>Revenue ${fmt$(x.rev)}`})),{fmt:v=>v.toFixed(1)+"%",w:640})}<p>${catStats[0].c} is ${pct(share(catStats[0].c))} of revenue. Revenue and profit rank the categories differently.</p></div>`,
- ()=>`<div><h2>Five toys produce ${pct(topProf.reduce((s,[,b])=>s+b.gp,0)/ALL.tot.gp)} of estimated profit</h2>${hbars(topProf.map(([pid,b])=>({label:P[pid].name,v:b.gp,color:"#7be0b3"})),{fmt:fmt$,w:640})}</div>`,
- ()=>`<div><h2>Sales peak in ${mlabel(peak[0])} at ${fmt$(peak[1])}</h2>${line(ALL.byMonth.map(b=>b.rev),{w:700,h:210,color:"#ffd34d"})}</div>`,
- ()=>`<div><h2>Sales are growing faster than profit</h2><p>Comparing the same nine months (Jan–Sep) in 2023 and 2022:</p><div class="pair"><div><b>${chg(Y23.rev,Y22.rev)>=0?"+":""}${chg(Y23.rev,Y22.rev).toFixed(1)}%</b>revenue</div><div><b>${chg(Y23.units,Y22.units)>=0?"+":""}${chg(Y23.units,Y22.units).toFixed(1)}%</b>units</div><div><b>${chg(Y23.gp,Y22.gp)>=0?"+":""}${chg(Y23.gp,Y22.gp).toFixed(1)}%</b>est. profit</div></div><p>Units are growing faster than revenue, and revenue faster than profit, which suggests the mix is shifting toward cheaper, lower-margin toys.</p></div>`,
- ()=>`<div><h2>What this does and doesn't tell us</h2><p>• Revenue and profit are reconstructed from one current price and cost per toy; the data has no price history.<br>• Stock is a single undated snapshot, so it can't be compared over time.<br>• There is no customer data, so questions about customers can't be answered from this dataset.</p></div>`
-];
+const DECK={pptx:"deck/Colorbuds_to_Playfoam.pptx",pdf:"deck/Colorbuds_to_Playfoam.pdf",
+ titles:["Title slide: Colorbuds is fading, what to do next","Our top profit toy is fading, and a newer toy is already making up part of the gap","Colorbuds sales have fallen 68% since January 2022, across almost every store","Fading is normal for our toys: 9 of 10 recent launches are 40%+ below their peak","Playfoam is the early bright spot, but 13 empty stores are costing us about $5K a month","We recommend three moves: back newer, higher-margin toys, test one Colorbuds fix, and review in 8 weeks"]};
 let slide=0;
+const deckImg=i=>`deck/preview/slide-${i+1}.jpg`;
 function renderDeck(){
-  const conf=[["92%","10%","#ffd34d",16,20],["4%","70%","#ff8fb1",12,-25],["80%","80%","#7be0b3",14,35]].map(([l,t,c,s,r])=>`<span class="conf" style="left:${l};top:${t};width:${s}px;height:${s}px;background:${c};transform:rotate(${r}deg);opacity:.5"></span>`).join("");
-  document.getElementById("presentation").innerHTML=`<h1>🎤 Presentation</h1><p class="sub">Use the ← → keys or the buttons.</p>
-  <div class="deck">${conf}<div style="position:relative;z-index:1">${SLIDES[slide]()}</div><div class="ctl"><button onclick="go(-1)">← Back</button><span class="dots">${SLIDES.map((_,i)=>`<i class="${i==slide?"on":""}"></i>`).join("")}</span><button onclick="go(1)">Next →</button></div></div>
-  <div class="src">Source: sales.csv, products.csv · Revenue = units × price · Every number on every slide is computed from the data.</div>`;
+  const n=DECK.titles.length;
+  document.getElementById("presentation").innerHTML=`<h1>🎤 Presentation</h1>
+  <p class="sub">The deck Claude drafted from the data. Click through it here, or download it to edit.</p>
+  <div class="deckbar"><span class="dlabel">⬇ Download</span>
+    <a class="btn pri" href="${DECK.pptx}" download>PowerPoint (.pptx)</a>
+    <a class="btn" href="${DECK.pdf}" download>PDF</a>
+    <button class="btn" onclick="deckFull()" title="Full screen">⛶ Full screen</button>
+    <span class="hint"><b id="dcount"></b> &nbsp;·&nbsp; click the slide or use ← → keys</span></div>
+  <div class="viewer">
+    <button class="navb" id="dprev" onclick="go(-1)" aria-label="Previous slide">‹</button>
+    <div class="stage" id="stage" onclick="go(1)"><img id="deckimg" alt="" draggable="false"></div>
+    <button class="navb" id="dnext" onclick="go(1)" aria-label="Next slide">›</button>
+  </div>
+  <div class="thumbs">${Array.from({length:n},(_,i)=>`<button class="thumb" id="th${i}" onclick="goTo(${i})" aria-label="Go to slide ${i+1}"><img src="${deckImg(i)}" alt="" loading="lazy"><b>${i+1}</b></button>`).join("")}</div>
+  <p class="src">Snapshot of the data through Sep 30, 2023. Numbers are computed from the CSVs and checked against an independent calculation. Profit is estimated from current price and cost.</p>`;
+  showSlide();
 }
-function go(d){slide=Math.min(SLIDES.length-1,Math.max(0,slide+d));renderDeck()}
-document.addEventListener("keydown",e=>{if(current=="presentation"&&!(e.target instanceof HTMLInputElement)){if(e.key=="ArrowRight")go(1);if(e.key=="ArrowLeft")go(-1)}});
+function showSlide(){
+  const n=DECK.titles.length,img=document.getElementById("deckimg");if(!img)return;
+  img.src=deckImg(slide);img.alt=`Slide ${slide+1} of ${n}: ${DECK.titles[slide]}`;
+  document.getElementById("dcount").textContent=`Slide ${slide+1} of ${n}`;
+  document.getElementById("dprev").disabled=slide==0;document.getElementById("dnext").disabled=slide==n-1;
+  document.querySelectorAll(".thumb").forEach((b,i)=>b.classList.toggle("on",i==slide));
+  for(const j of [slide-1,slide+1]) if(j>=0&&j<n){const p=new Image();p.src=deckImg(j)}
+}
+function goTo(i){slide=Math.min(DECK.titles.length-1,Math.max(0,i));showSlide()}
+function go(d){goTo(slide+d)}
+function deckFull(){const el=document.getElementById("stage");(el.requestFullscreen||el.webkitRequestFullscreen||(()=>{})).call(el)}
+document.addEventListener("keydown",e=>{if(current=="presentation"&&!(e.target instanceof HTMLInputElement)){if(e.key=="ArrowRight")go(1);if(e.key=="ArrowLeft")go(-1);if(e.key=="Home")goTo(0);if(e.key=="End")goTo(DECK.titles.length-1)}});
 
 /* ================= TAB 3: TOY FINDER ================= */
 const toys={q:"",cat:"All",sort:"gp",dir:-1};
