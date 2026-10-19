@@ -386,15 +386,20 @@ notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in
           "Only six weeks of data; the $20K is a run-rate, not a forecast.")
 
 # ================================================================= slide 6: recommendation
-s6 = content_slide("We recommend three moves: back newer, higher-margin toys, test a Colorbuds refresh, and review in 8 weeks", 6)
-steps = [("1", "Keep Playfoam in stock", ["Refill the **13 empty stores**", "Check weekly; worth about **$5K a month**"]),
-         ("2", "Test a Colorbuds refresh", ["Try **new colors, a bundle with Gamer Headphones**, or a better shelf spot", "**10 test stores** vs 10 similar; up to about **$11K a month**"]),
-         ("3", "Review in 8 weeks", ["**Scale what works**, stop what doesn't", "Pick the next **higher-margin toy**"])]
+s6 = content_slide("Next 8 weeks: keep Playfoam on shelves, test a Colorbuds fix, then back what works", 6)
+steps = [("1", "Restock Playfoam", "Goal: stop losing Playfoam sales to empty shelves",
+          ["Refill the **13 stores** that have none", "Gain: about **$5K more profit a month**", "Check stock **every week**"]),
+         ("2", "Test a Colorbuds fix", "Goal: win back some of the lost Colorbuds sales",
+          ["Try **new colors**, a **bundle with Gamer Headphones**, or a **better shelf spot**", "Pilot in **10 stores** vs 10 similar stores that change nothing",
+           "Prize: a quarter of lost sales back is **$11K more profit a month**"]),
+         ("3", "Review in 8 weeks", "Goal: put effort behind what works",
+          ["**Scale** the Colorbuds fix if pilot stores sold **15% more**, otherwise stop", "Check whether **Playfoam is holding up** or cooling off",
+           "Pick the next **higher-margin toy** to back"])]
 colw = (CW - 2 * 0.3) / 3
-for i, (num, head, pts) in enumerate(steps):
+for i, (num, head, goal, pts) in enumerate(steps):
     cx = LM + i * (colw + 0.3)
-    shape(s6, MSO_SHAPE.RECTANGLE, cx, 1.95, colw, 4.35, LIGHT, f"Panel {num}")
-    badge = shape(s6, MSO_SHAPE.RECTANGLE, cx + 0.4, 2.3, 0.7, 0.7, (MINT_T, PINK_T, BLUE)[i], f"Number {num}")
+    shape(s6, MSO_SHAPE.RECTANGLE, cx, 1.85, colw, 4.85, LIGHT, f"Panel {num}")
+    badge = shape(s6, MSO_SHAPE.RECTANGLE, cx + 0.4, 2.1, 0.6, 0.6, (MINT_T, PINK_T, BLUE)[i], f"Number {num}")
     tf = badge.text_frame
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -402,17 +407,19 @@ for i, (num, head, pts) in enumerate(steps):
     p.alignment = PP_ALIGN.CENTER
     r = p.add_run()
     r.text = num
-    r.font.size, r.font.bold, r.font.name = Pt(28), True, HEAD
+    r.font.size, r.font.bold, r.font.name = Pt(24), True, HEAD
     r.font.color.rgb = rgb("FFFFFF")
-    text(s6, head, cx + 0.4, 3.3, colw - 0.8, 1.1, 24, NAVY, True, HEAD, name=f"Step {num}")
-    bullets(s6, pts, cx + 0.4, 4.5, colw - 0.8, 1.9, 16, space=8, name=f"Step {num} details")
-notes(s6, "1) Keep Playfoam in stock: refill the 13 stores at zero and keep every store above about two weeks of sales (roughly 26 units a store); "
-          "check weekly. Worth about $5K a month now. "
-          "2) Test a Colorbuds refresh: the options to try are new colors, a bundle with Gamer Headphones, or a better shelf spot, in about 10 stores against 10 similar "
-          "control stores for six weeks. Winning back a quarter of the lost sales is worth up to about $11K a month. "
-          "3) Review at week 8: if the test stores sold about 15% more Colorbuds, scale the fix; if not, stop. Pick the next newer, higher-margin toy "
-          "to back at the same review. The 15% threshold is a suggestion to agree on in advance, not something from the data. "
-          "Sizes are estimates; the data cannot show why Colorbuds fell.")
+    text(s6, head, cx + 0.4, 2.85, colw - 0.8, 0.5, 22, NAVY, True, HEAD, name=f"Step {num}")
+    text(s6, goal, cx + 0.4, 3.4, colw - 0.8, 0.7, 15, (MINT_T, PINK_T, BLUE)[i], True, name=f"Goal {num}")
+    bullets(s6, pts, cx + 0.4, 4.2, colw - 0.8, 2.4, 15, space=8, name=f"Step {num} details")
+notes(s6, "1) Keep Playfoam in stock: refill the 13 stores that have zero, and keep every store above about two weeks of sales (roughly 26 units a store); "
+          "check weekly. Each store sells about 57 Playfoam units a month at $7 profit, so 13 stores is about $5K a month. "
+          "2) Test a Colorbuds fix: the options to try are new colors, a bundle with Gamer Headphones, or a better shelf spot. Run it in 10 stores and compare "
+          "against 10 similar stores that change nothing, for about six weeks, so we learn what works before spending chain-wide. "
+          "Winning back a quarter of the lost sales (about $44K a month lost, so about $11K) is the prize if it works. "
+          "3) Review at week 8: if the pilot stores sold about 15% more Colorbuds than the comparison stores, scale the fix; if not, stop. Also check whether Playfoam is "
+          "holding its weekly sales, and pick the next newer, higher-margin toy to back. The 15% threshold is a suggestion to agree on in advance, not something from "
+          "the data. Sizes are estimates; the data cannot show why Colorbuds fell.")
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
 prs.save(OUT)
