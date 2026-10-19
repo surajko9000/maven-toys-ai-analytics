@@ -1,4 +1,4 @@
-"""Builds the 6-slide "Colorbuds is fading" deck as a real .pptx (native charts, speaker notes).
+"""Builds the 6-slide "Colorbuds is fading" deck as a real .pptx (native charts, speaker notes), consulting-style.
 
 Run:  python3 scripts/build_deck.py [out.pptx]
 Every number on the slides is computed from public/data/*.csv and asserted against
@@ -76,11 +76,11 @@ assert (jenga_drop, etch_drop, hw_drop, etch_peak) == (92, 56, 9, "2022-12"), (j
 print("numbers verified:", dict(cb=(cb_first, cb_last, cb_drop), share=(share_22, share_23),
       playfoam=(pf_aug, pf_sep, pf_margin, pf_month_profit_k, pf_zero), faded=(len(faded), len(launched))))
 
-# ----------------------------------------------------------------- brand
-BLUE, ORANGE, MINT, YELLOW = "2A78D6", "EB6834", "1BAF7A", "F2B400"
-PINK, VIOLET, INK, MUTED = "E8457B", "6250D6", "1F1A17", "6B6560"
-T_PINK, T_MINT, T_ORANGE, T_BLUE, T_YELLOW = "FCE4EC", "DDF5EC", "FFE9DC", "E3EEFB", "FFF3CC"
-HEAD, BODY = "Trebuchet MS", "Calibri"
+# ----------------------------------------------------------------- style (restrained, consulting-style)
+NAVY, BLUE, CYAN = "051C2C", "2251FF", "00A9F4"
+INK, MUTED, LIGHT, MID = "1B2733", "5B6470", "F2F4F7", "D0D5DD"
+BAR_SOFT = "A9BCFF"
+HEAD, BODY = "Cambria", "Calibri"
 rgb = lambda h: RGBColor.from_string(h)
 
 prs = Presentation()
@@ -89,6 +89,8 @@ BLANK = prs.slide_layouts[6]
 prs.core_properties.title = "Colorbuds is fading: what to do next"
 prs.core_properties.author = "Maven Toys Analytics"
 prs.core_properties.subject = "Business review"
+LM = 0.6          # left/right margin
+CW = 13.333 - 2 * LM
 
 
 def text(slide, s, x, y, w, h, size, color=INK, bold=False, font=BODY, align=PP_ALIGN.LEFT,
@@ -100,29 +102,26 @@ def text(slide, s, x, y, w, h, size, color=INK, bold=False, font=BODY, align=PP_
     tf.word_wrap = True
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = anchor
-    runs = s if isinstance(s, list) else [(s, {})]
     p = tf.paragraphs[0]
     p.alignment = align
-    for t, opt in runs:
-        r = p.add_run()
-        r.text = t
-        r.font.size = Pt(opt.get("size", size))
-        r.font.bold = opt.get("bold", bold)
-        r.font.name = opt.get("font", font)
-        r.font.color.rgb = rgb(opt.get("color", color))
+    r = p.add_run()
+    r.text = s
+    r.font.size, r.font.bold, r.font.name = Pt(size), bold, font
+    r.font.color.rgb = rgb(color)
     return tb
 
 
-def shape(slide, kind, x, y, w, h, fill, name=None, radius=None):
+def shape(slide, kind, x, y, w, h, fill, name=None):
     sp = slide.shapes.add_shape(kind, Inches(x), Inches(y), Inches(w), Inches(h))
     sp.fill.solid()
     sp.fill.fore_color.rgb = rgb(fill)
     sp.line.fill.background()
     sp.shadow.inherit = False
+    st = sp._element.find(qn("p:style"))
+    if st is not None:                       # no theme shadow/effect
+        st.find(qn("a:effectRef")).set("idx", "0")
     if name:
         sp.name = name
-    if radius is not None and kind == MSO_SHAPE.ROUNDED_RECTANGLE:
-        sp.adjustments[0] = radius
     return sp
 
 
@@ -130,47 +129,7 @@ def notes(slide, s):
     slide.notes_slide.notes_text_frame.text = s
 
 
-def lockup(slide, light=False, x=10.35, y=0.42):
-    """Small 'Maven Toys' wordmark with three toy blocks."""
-    cols = [PINK, YELLOW, MINT] if not light else ["FFFFFF", YELLOW, "FFD6E5"]
-    for i, c in enumerate(cols):
-        shape(slide, MSO_SHAPE.ROUNDED_RECTANGLE, x + i * 0.2, y + 0.08, 0.16, 0.16, c, f"Logo block {i+1}", 0.25)
-    text(slide, "Maven Toys", x + 0.7, y, 1.6, 0.32, 14, "FFFFFF" if light else BLUE, True, HEAD,
-         anchor=MSO_ANCHOR.MIDDLE, name="Logo wordmark")
-
-
-def footer(slide, n):
-    text(slide, "Source: Maven Toys sales data, Jan 2022 – Sep 2023. Profit is estimated from current price and cost.",
-         0.7, 6.95, 10.5, 0.3, 10, MUTED, name="Source")
-    text(slide, str(n), 12.0, 6.95, 0.63, 0.3, 10, MUTED, align=PP_ALIGN.RIGHT, name="Slide number")
-
-
-def title(slide, s):
-    text(slide, s, 0.7, 0.5, 9.4, 1.1, 40, INK, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name="Title")
-
-
-def content_slide(s_title, n):
-    sl = prs.slides.add_slide(BLANK)
-    sl.background.fill.solid()
-    sl.background.fill.fore_color.rgb = rgb("FFFFFF")
-    title(sl, s_title)
-    lockup(sl)
-    footer(sl, n)
-    return sl
-
-
-def blocks(slide, x0, y0, rows, w=1.3, h=0.8, gap=0.06):
-    """Stack of toy blocks with studs. rows: list of (x_offset_in_blocks, [colors]) bottom-up."""
-    for r, (off, cols) in enumerate(rows):
-        y = y0 - r * (h + gap)
-        for i, c in enumerate(cols):
-            bx = x0 + (off + i) * (w + gap)
-            shape(slide, MSO_SHAPE.ROUNDED_RECTANGLE, bx, y, w, h, c, f"Block r{r}c{i}", 0.12)
-            for sx in (0.2, 0.72):
-                shape(slide, MSO_SHAPE.OVAL, bx + sx, y - 0.1, 0.38, 0.2, c, f"Stud r{r}c{i}")
-
-
-def bullets(slide, items, x, y, w, h, size=18, color=INK, space=8, name="Bullets"):
+def bullets(slide, items, x, y, w, h, size=18, color=INK, space=10, name="Bullets"):
     tb = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tb.name = name
     tf = tb.text_frame
@@ -193,6 +152,26 @@ def bullets(slide, items, x, y, w, h, size=18, color=INK, space=8, name="Bullets
     return tb
 
 
+def label(slide, s, x, y, w, name="Section label"):
+    """Small uppercase section label above a block."""
+    text(slide, s.upper(), x, y, w, 0.3, 12, MUTED, True, name=name)
+
+
+def footer(slide, n):
+    text(slide, "Source: Maven Toys sales data, Jan 2022 – Sep 2023. Profit is estimated from current price and cost.",
+         LM, 6.98, 9.5, 0.3, 10, MUTED, name="Source")
+    text(slide, f"Maven Toys   |   {n}", 10.2, 6.98, 13.333 - LM - 10.2, 0.3, 10, MUTED, align=PP_ALIGN.RIGHT, name="Page")
+
+
+def content_slide(action_title, n):
+    sl = prs.slides.add_slide(BLANK)
+    sl.background.fill.solid()
+    sl.background.fill.fore_color.rgb = rgb("FFFFFF")
+    text(sl, action_title, LM, 0.5, CW, 1.1, 28, NAVY, True, HEAD, anchor=MSO_ANCHOR.TOP, name="Title")
+    footer(sl, n)
+    return sl
+
+
 def style_axis_text(axis, size=14, color=MUTED):
     axis.tick_labels.font.size = Pt(size)
     axis.tick_labels.font.name = BODY
@@ -202,43 +181,52 @@ def style_axis_text(axis, size=14, color=MUTED):
 # ================================================================= slide 1: title
 s1 = prs.slides.add_slide(BLANK)
 s1.background.fill.solid()
-s1.background.fill.fore_color.rgb = rgb(BLUE)
-lockup(s1, light=True, x=0.7, y=0.55)
-text(s1, "Colorbuds is fading", 0.7, 2.3, 8.6, 1.5, 60, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
-text(s1, "What to do next", 0.7, 3.95, 8, 0.8, 30, "FFE08A", False, HEAD, name="Subtitle")
-text(s1, "Business review · Data through Sep 30, 2023", 0.7, 6.7, 8, 0.4, 14, "DCE9FB", name="Date line")
-blocks(s1, 8.75, 6.25, [(0, [YELLOW, PINK, MINT]), (0.5, ["FFFFFF", ORANGE]), (1, [VIOLET])])
+s1.background.fill.fore_color.rgb = rgb(NAVY)
+for k, c in enumerate((BLUE, CYAN, "FFFFFF")):
+    shape(s1, MSO_SHAPE.RECTANGLE, LM + k * 0.2, 0.62, 0.14, 0.14, c, f"Mark {k+1}")
+text(s1, "MAVEN TOYS", LM + 0.8, 0.52, 4, 0.34, 14, "FFFFFF", True, name="Wordmark", anchor=MSO_ANCHOR.MIDDLE)
+text(s1, "Colorbuds is fading: what to do next", LM, 2.55, 10.5, 1.9, 44, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
+text(s1, "Business review  |  Data through Sep 30, 2023", LM, 4.75, 10, 0.5, 20, "A9B8CC", name="Subtitle")
 notes(s1, "Open with the one-line answer: Colorbuds, our top profit toy, is fading. The plan is simple: back newer, "
           "higher-margin toys, test one cheap fix for Colorbuds, and review in 8 weeks. Keep the intro under 20 seconds.")
 
 # ================================================================= slide 2: the answer
-s2 = content_slide("One toy fell. Another is rising", 2)
-for i, (fill, big, bigcolor, label, cap, bx) in enumerate([
-    (T_PINK, f"{share_22}% → {share_23}%", PINK, "Colorbuds' share of quarterly profit", "Q3 2022 to Q3 2023", 0.7),
-    (T_MINT, f"${pf_month_profit_k}K", MINT, "Playfoam profit per month", "at its September pace", 6.95),
+s2 = content_slide("Our top profit toy is fading, and a newer toy is already making up part of the gap", 2)
+for i, (big, lab, cap, bx) in enumerate([
+    (f"{share_22}% → {share_23}%", "Colorbuds' share of quarterly profit", "Q3 2022 to Q3 2023", LM),
+    (f"${pf_month_profit_k}K", "Playfoam profit per month", "At its September pace", LM + CW / 2 + 0.2),
 ]):
-    shape(s2, MSO_SHAPE.ROUNDED_RECTANGLE, bx, 1.8, 5.68, 2.85, fill, f"Card {i+1}", 0.07)
-    text(s2, big, bx + 0.4, 2.0, 4.9, 1.15, 54, bigcolor, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Big number {i+1}")
-    text(s2, label, bx + 0.4, 3.35, 4.9, 0.45, 22, INK, True, name=f"Label {i+1}")
-    text(s2, cap, bx + 0.4, 3.9, 4.9, 0.35, 14, MUTED, name=f"Caption {i+1}")
+    w = CW / 2 - 0.2
+    shape(s2, MSO_SHAPE.RECTANGLE, bx, 1.85, w, 2.75, LIGHT, f"Panel {i+1}")
+    label(s2, lab, bx + 0.4, 2.1, w - 0.8, f"Panel label {i+1}")
+    text(s2, big, bx + 0.4, 2.55, w - 0.8, 1.2, 56, BLUE, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Big number {i+1}")
+    text(s2, cap, bx + 0.4, 3.95, w - 0.8, 0.4, 16, MUTED, name=f"Caption {i+1}")
 bullets(s2, [f"Colorbuds is still our #1 profit toy, but its share has more than halved",
              f"Playfoam launched in mid-August and is already a top-{pf_rank} profit toy",
              f"Playfoam's September pace is nearly half of the ${gap_k}K a month Colorbuds has lost"],
-        0.7, 4.95, 11.9, 1.8, 20, name="Key points")
+        LM, 4.95, CW, 1.8, 20, name="Key points")
 notes(s2, f"Colorbuds earned about {share_22}% of Q3 2022 profit and {share_23}% of Q3 2023 profit; it is still our #1 profit toy, "
           f"so it is fading, not dead. Playfoam launched in mid-August 2023; at its September pace ({pf_sep:,} units x "
           f"${pf_unit_profit:.0f} profit per unit) it earns about ${pf_month_profit_k}K a month. Colorbuds' monthly profit is about ${gap_k}K lower than in "
           "Jan 2022 ((8,110 - 2,594) units x $8). Profit is estimated from current price and cost, not accounting figures.")
 
-# ================================================================= slide 3: the fall (native line chart + bullets)
-s3 = content_slide(f"Colorbuds sales are down {cb_drop}%", 3)
+# ================================================================= slide 3: the fall
+s3 = content_slide(f"Colorbuds sales have fallen {cb_drop}% since January 2022, across almost every store", 3)
 months = [str(p) for p in cb.index]
 show_at = {0, 6, 12, 18}
-mlabels = [pd.Period(m).strftime("%b %y") if i in show_at else " " * (i + 1) for i, m in enumerate(months)]
+def _lbl(i, m):
+    per = pd.Period(m)
+    if i not in show_at:
+        return " " * (i + 1)
+    return per.strftime("%b") + ("\n\u2019" + per.strftime("%y") if per.month == 1 else "")
+
+
+mlabels = [_lbl(i, m) for i, m in enumerate(months)]
 cd = CategoryChartData()
 cd.categories = mlabels
 cd.add_series("Colorbuds units per month", [int(v) for v in cb.values])
-gf = s3.shapes.add_chart(XL_CHART_TYPE.LINE, Inches(0.7), Inches(2.05), Inches(7.9), Inches(4.7), cd)
+label(s3, "Colorbuds units sold per month", LM, 1.85, 6, "Chart label")
+gf = s3.shapes.add_chart(XL_CHART_TYPE.LINE, Inches(LM), Inches(2.2), Inches(7.9), Inches(4.55), cd)
 gf.name = "Colorbuds monthly units"
 ch = gf.chart
 ch.has_legend = False
@@ -249,72 +237,75 @@ va.visible = False
 va.has_major_gridlines = False
 va.minimum_scale, va.maximum_scale = 0, 9500
 ca.has_major_gridlines = False
-ca.format.line.color.rgb = rgb("D9D4CC")
-style_axis_text(ca)
+ca.format.line.color.rgb = rgb(MID)
+style_axis_text(ca, 13)
 bp = ca._element.find(qn('c:txPr')).find(qn('a:bodyPr'))
 bp.set('rot', '0')
 bp.set('vert', 'horz')
 ser = ch.plots[0].series[0]
 ser.smooth = False
-ser.format.line.color.rgb = rgb(PINK)
-ser.format.line.width = Pt(5)
+ser.format.line.color.rgb = rgb(NAVY)
+ser.format.line.width = Pt(3.5)
 from pptx.enum.chart import XL_MARKER_STYLE
 ser.marker.style = XL_MARKER_STYLE.NONE
 for idx, lbl, when, pos in ((0, f"{cb_first:,}", "Jan 2022", XL_LABEL_POSITION.ABOVE),
                             (len(cb) - 1, f"{cb_last:,}", "Sep 2023", XL_LABEL_POSITION.BELOW)):
     pt = ser.points[idx]
     pt.marker.style = XL_MARKER_STYLE.CIRCLE
-    pt.marker.size = 14
+    pt.marker.size = 11
     pt.marker.format.fill.solid()
-    pt.marker.format.fill.fore_color.rgb = rgb(PINK)
+    pt.marker.format.fill.fore_color.rgb = rgb(BLUE)
     pt.marker.format.line.color.rgb = rgb("FFFFFF")
     dl = pt.data_label
     dl.has_text_frame = True
     dl.text_frame.text = lbl
     dl.position = pos
     r = dl.text_frame.paragraphs[0].runs[0]
-    r.font.size, r.font.bold, r.font.name = Pt(24), True, HEAD
-    r.font.color.rgb = rgb(PINK)
+    r.font.size, r.font.bold, r.font.name = Pt(22), True, HEAD
+    r.font.color.rgb = rgb(BLUE)
     p2 = dl.text_frame.add_paragraph()
     r2 = p2.add_run()
     r2.text = when
-    r2.font.size, r2.font.name = Pt(14), BODY
+    r2.font.size, r2.font.name = Pt(13), BODY
     r2.font.color.rgb = rgb(MUTED)
-text(s3, "units per month", 0.7, 1.7, 4, 0.3, 14, MUTED, name="Chart caption")
+shape(s3, MSO_SHAPE.RECTANGLE, 8.95, 1.85, 13.333 - LM - 8.95, 4.9, LIGHT, "Takeaways panel")
+label(s3, "What we see", 9.3, 2.1, 3.2, "Takeaways label")
 bullets(s3, [f"Down in {stores_down} of 50 stores, in every store type",
              "Every store still carries it, so this is weaker demand, not empty shelves",
              f"Quarterly profit has roughly halved: ${q3_22_k}K to ${q3_23_k}K"],
-        9.0, 2.3, 3.7, 4.2, 20, space=14, name="Key points")
+        9.3, 2.6, 3.15, 4.0, 18, space=14, name="Key points")
 notes(s3, f"Monthly Colorbuds units fell from {cb_first:,} (Jan 2022) to {cb_last:,} (Sep 2023), down {cb_drop}%. "
           f"The drop is steady and broad: {stores_down} of 50 stores are down (Jan-Sep 2023 vs Jan-Sep 2022), in every store type. All 50 stores carry it and none is at zero stock, "
           "so this looks like a demand problem, not a stock problem. Some of the drop is seasonal (company-wide revenue in Sep is about 26% "
           "below its peak month) but not most of it. The data cannot say WHY demand fell; no price history, promotions or competitor data.")
 
 # ================================================================= slide 4: most toys fade
-s4 = content_slide("Most toys fade", 4)
-text(s4, f"{len(faded)} of {len(launched)}", 0.7, 1.75, 6.4, 1.7, 100, ORANGE, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name="Big number")
-text(s4, "recent launches are 40%+ below their peak", 0.7, 3.5, 6.4, 0.9, 24, INK, False, HEAD, name="Caption")
+s4 = content_slide(f"Fading is normal for our toys: {len(faded)} of {len(launched)} recent launches are 40%+ below their peak", 4)
+shape(s4, MSO_SHAPE.RECTANGLE, LM, 1.85, 6.4, 4.9, LIGHT, "Stat panel")
+text(s4, f"{len(faded)} of {len(launched)}", LM + 0.4, 2.15, 5.6, 1.7, 88, BLUE, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name="Big number")
+text(s4, "recent launches are 40%+ below their peak month", LM + 0.4, 3.95, 5.6, 0.9, 22, NAVY, name="Caption")
 for i in range(len(launched)):
-    bx = 0.75 + i * 0.64
-    c = ORANGE if i < len(faded) else "D9D4CC"
-    shape(s4, MSO_SHAPE.ROUNDED_RECTANGLE, bx, 5.2, 0.54, 0.54, c, f"Toy block {i+1}", 0.18)
-    shape(s4, MSO_SHAPE.OVAL, bx + 0.14, 5.12, 0.26, 0.14, c, f"Toy stud {i+1}")
+    bx = LM + 0.4 + i * 0.54
+    c = NAVY if i < len(faded) else MID
+    shape(s4, MSO_SHAPE.RECTANGLE, bx, 5.45, 0.42, 0.42, c, f"Toy marker {i+1}")
+label(s4, "Examples", 7.4, 1.95, 5, "Examples label")
 bullets(s4, [f"Jenga peaked in Jul 2022 and is now down {jenga_drop}%",
              f"Etch A Sketch peaked its second month and is down {etch_drop}%",
              f"Hot Wheels is the lone exception, down just {hw_drop}%",
              "Colorbuds follows the same pattern"],
-        7.6, 2.0, 5.0, 4.5, 20, space=14, name="Key points")
+        7.4, 2.45, CW - (7.4 - LM), 4.2, 20, space=16, name="Key points")
 notes(s4, "This is the likely explanation, not a proven cause. Of the 10 toys that started selling during this data (excluding Playfoam, "
           "which is too new), 9 now sell at least 40% less per month than in their peak month. Jenga -92%, Supersoaker -66%, "
           "Mr. Potatohead -65%, PlayDoh Playset -64%, Etch A Sketch -56%, Plush Pony -56%, Foam Disk Launcher -54%, Magic Sand -41%, "
           "Gamer Headphones -41%; Hot Wheels is the exception at -9%. Caveats: part of each drop is seasonal, and 'launch' means first sale in this data.")
 
-# ================================================================= slide 5: Playfoam (native bar chart + bullets)
-s5 = content_slide("Playfoam is taking off", 5)
+# ================================================================= slide 5: Playfoam
+s5 = content_slide(f"Playfoam is the early bright spot, but {pf_zero} empty stores are costing us about $5K a month", 5)
 cd = CategoryChartData()
 cd.categories = ["Aug (from the 17th)", "Sep"]
 cd.add_series("Playfoam units", [pf_aug, pf_sep])
-gf = s5.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.7), Inches(2.05), Inches(6.4), Inches(4.65), cd)
+label(s5, "Playfoam units sold per month", LM, 1.85, 6, "Chart label")
+gf = s5.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(LM), Inches(2.2), Inches(6.4), Inches(4.55), cd)
 gf.name = "Playfoam monthly units"
 ch = gf.chart
 ch.has_legend = False
@@ -325,45 +316,46 @@ va.visible = False
 va.has_major_gridlines = False
 va.minimum_scale, va.maximum_scale = 0, 3400
 ca.has_major_gridlines = False
-ca.format.line.color.rgb = rgb("D9D4CC")
-style_axis_text(ca, 16)
+ca.format.line.color.rgb = rgb(MID)
+style_axis_text(ca, 15)
 plot = ch.plots[0]
-plot.gap_width = 70
+plot.gap_width = 80
 plot.has_data_labels = True
 dls = plot.data_labels
 dls.number_format, dls.number_format_is_linked = "#,##0", False
 dls.position = XL_LABEL_POSITION.OUTSIDE_END
-dls.font.size, dls.font.bold, dls.font.name = Pt(28), True, HEAD
-dls.font.color.rgb = rgb(MINT)
+dls.font.size, dls.font.bold, dls.font.name = Pt(26), True, HEAD
+dls.font.color.rgb = rgb(NAVY)
 ser = plot.series[0]
 ser.format.fill.solid()
-ser.format.fill.fore_color.rgb = rgb(MINT)
-text(s5, "units sold per month", 0.7, 1.7, 5, 0.3, 14, MUTED, name="Chart caption")
-for i, (fill, big, col, small, by, dy) in enumerate([
-    (T_MINT, f"{pf_margin}% margin", MINT, f"${pf_unit_profit:.0f} profit on every unit", 1.9, 0.9),
-    (T_ORANGE, f"{pf_zero} stores out of stock", ORANGE, "about $5K a month left on the table", 3.55, 0.9),
-]):
-    shape(s5, MSO_SHAPE.ROUNDED_RECTANGLE, 7.6, by, 5.0, 1.4, fill, f"Badge {i+1}", 0.1)
-    text(s5, big, 7.9, by + 0.2, 4.5, 0.6, 26, col, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Badge title {i+1}")
-    text(s5, small, 7.9, by + dy, 4.5, 0.4, 16, INK, name=f"Badge note {i+1}")
+ser.format.fill.fore_color.rgb = rgb(BLUE)
+pt0 = ser.points[0]
+pt0.format.fill.solid()
+pt0.format.fill.fore_color.rgb = rgb(BAR_SOFT)   # lighter = partial month
+for i, (big, small, by) in enumerate([(f"{pf_margin}% margin", f"${pf_unit_profit:.0f} profit on every unit", 1.85),
+                                      (f"{pf_zero} stores out of stock", "about $5K a month left on the table", 3.45)]):
+    shape(s5, MSO_SHAPE.RECTANGLE, 7.5, by, 13.333 - LM - 7.5, 1.4, LIGHT, f"Stat panel {i+1}")
+    text(s5, big, 7.8, by + 0.2, 4.7, 0.6, 26, BLUE, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Stat title {i+1}")
+    text(s5, small, 7.8, by + 0.88, 4.7, 0.4, 16, INK, name=f"Stat note {i+1}")
 bullets(s5, [f"Launched Aug 17 and already a top-{pf_rank} profit toy",
              "New toys often cool off, so the window to act is short"],
-        7.6, 5.2, 5.0, 1.5, 18, space=10, name="Key points")
+        7.5, 5.1, 13.333 - LM - 7.5, 1.6, 18, space=10, name="Key points")
 notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in about six weeks ({pf_aug:,} in August from the 17th, "
           f"{pf_sep:,} in September). It earns ${pf_unit_profit:.0f} per unit at a {pf_margin}% margin, about ${pf_month_profit_k}K a month "
           f"at the September pace. It is at zero stock in {pf_zero} stores; each store sells about 57 units a month, so empty shelves cost "
           "roughly $5K a month. It was the #5 profit toy in Q3 2023 despite only ~6 weeks on sale. Be honest: hot now, likely to cool (see the previous slide). "
           "Only six weeks of data; the $20K is a run-rate, not a forecast.")
 
-# ================================================================= slide 6: what we do
-s6 = content_slide("Back newer, higher-margin toys", 6)
-steps = [("1", BLUE, T_BLUE, "Keep Playfoam in stock", ["Refill the 13 empty stores", "Check weekly; worth about $5K a month"]),
-         ("2", ORANGE, T_ORANGE, "Test one Colorbuds fix", ["10 test stores vs 10 similar ones", "Up to about $11K a month if it works"]),
-         ("3", MINT, T_MINT, "Review in 8 weeks", ["Scale what works, stop what doesn't", "Pick the next higher-margin toy"])]
-for i, (num, col, tint, label, pts) in enumerate(steps):
-    cx = 0.7 + i * 4.1
-    shape(s6, MSO_SHAPE.ROUNDED_RECTANGLE, cx, 1.95, 3.7, 4.55, tint, f"Card {num}", 0.06)
-    badge = shape(s6, MSO_SHAPE.OVAL, cx + 0.4, 2.3, 0.9, 0.9, col, f"Number badge {num}")
+# ================================================================= slide 6: recommendation
+s6 = content_slide("We recommend three moves: back newer, higher-margin toys, test one Colorbuds fix, and review in 8 weeks", 6)
+steps = [("1", "Keep Playfoam in stock", ["Refill the 13 empty stores", "Check weekly; worth about $5K a month"]),
+         ("2", "Test one Colorbuds fix", ["10 test stores vs 10 similar ones", "Up to about $11K a month if it works"]),
+         ("3", "Review in 8 weeks", ["Scale what works, stop what doesn't", "Pick the next higher-margin toy"])]
+colw = (CW - 2 * 0.3) / 3
+for i, (num, head, pts) in enumerate(steps):
+    cx = LM + i * (colw + 0.3)
+    shape(s6, MSO_SHAPE.RECTANGLE, cx, 1.95, colw, 4.35, LIGHT, f"Panel {num}")
+    badge = shape(s6, MSO_SHAPE.RECTANGLE, cx + 0.4, 2.3, 0.7, 0.7, NAVY, f"Number {num}")
     tf = badge.text_frame
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -371,10 +363,10 @@ for i, (num, col, tint, label, pts) in enumerate(steps):
     p.alignment = PP_ALIGN.CENTER
     r = p.add_run()
     r.text = num
-    r.font.size, r.font.bold, r.font.name = Pt(32), True, HEAD
+    r.font.size, r.font.bold, r.font.name = Pt(28), True, HEAD
     r.font.color.rgb = rgb("FFFFFF")
-    text(s6, label, cx + 0.4, 3.45, 2.95, 1.2, 26, INK, True, HEAD, name=f"Step {num}")
-    bullets(s6, pts, cx + 0.4, 4.8, 2.95, 1.6, 16, space=8, name=f"Step {num} details")
+    text(s6, head, cx + 0.4, 3.3, colw - 0.8, 1.1, 24, NAVY, True, HEAD, name=f"Step {num}")
+    bullets(s6, pts, cx + 0.4, 4.6, colw - 0.8, 1.9, 17, space=10, name=f"Step {num} details")
 notes(s6, "1) Keep Playfoam in stock: refill the 13 stores at zero and keep every store above about two weeks of sales (roughly 26 units a store); "
           "check weekly. Worth about $5K a month now. "
           "2) Test one cheap Colorbuds fix: refresh, bundle with Gamer Headphones, or better shelf placement in about 10 stores against 10 similar "
