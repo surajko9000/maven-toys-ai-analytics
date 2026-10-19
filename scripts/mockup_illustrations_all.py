@@ -484,7 +484,7 @@ def pistol_parts(body,dark,tip,accent):
 
 def dartgun2():
     s=[S(188,72), pistol_parts("#ff9f2e","#d9780f","#ffd23a","#e8554e")]
-    s.append(foam_dart(26,150,"#ffffff","#2a78d6",-4,56)+foam_dart(36,168,"#ffffff","#29b36f",2,56))
+    s.append(foam_dart(26,150,"#ffd23a","#f08a24",-4,58)+foam_dart(36,168,"#f08a24","#ffd23a",2,58)+R(70,145.5,6,9,1,"#e8554e",'transform="rotate(-4 26 150)"')+R(74,163.5,6,9,1,"#e8554e",'transform="rotate(2 36 168)"'))
     return wrap("".join(s))
 M[7]=dartgun2()
 
@@ -494,7 +494,7 @@ def nerf2():
     s.append(Pa("M150 78 L184 70 Q192 70 192 80 L190 116 Q190 124 182 122 L152 112Z","#1f5fb0",OUT("#1f5fb0",2)))
     # magazine with visible darts
     s.append(R(86,100,34,56,6,"#16407a",OUT("#16407a",1.5)))
-    for i in range(4): s.append(R(92,106+i*12,22,9,4.5,"#ffd23a")+C(94,110.5+i*12,3.4,"#e8554e"))
+    for i in range(4): s.append(R(92,106+i*12,22,9,4.5,"#ffd23a")+C(94,110.5+i*12,3.4,"#f08a24"))
     # grip
     s.append(Pa("M126 100 L152 100 L162 156 Q162 164 154 164 L138 164 Q130 164 128 156Z","#f08a24",OUT("#f08a24",2)))
     s.append(Pa("M118 100 Q118 128 134 128","none",'stroke="#f08a24" stroke-width="6" stroke-linecap="round"'))
@@ -792,6 +792,194 @@ def monopoly2():
     s.append(tycoon(156,186,.96))
     return wrap("".join(s),"-2 0 212 200")
 M[22]=monopoly2()
+
+# ---------- v6: earbuds, dinosaurs, Play-Doh sets with real dough, playfoam, soaker ----------
+def earbuds6():
+    s=[S(188,60)]
+    cab="#b9a7ff"
+    # cables first (behind buds)
+    s.append(Pa("M85 127 Q86 148 101 153","none",f'stroke="{cab}" stroke-width="4.5" stroke-linecap="round"'))
+    s.append(Pa("M117 128 Q116 148 101 153","none",f'stroke="{cab}" stroke-width="4.5" stroke-linecap="round"'))
+    s.append(Pa("M101 153 V170","none",f'stroke="{cab}" stroke-width="4.5" stroke-linecap="round"'))
+    s.append(R(94,146,14,12,5,"#f4f4f8",OUT("#cfd2da",1.2)))
+    s.append(R(110,128,12,24,4,"#f4f4f8",OUT("#cfd2da",1.2))+"".join(C(116,134+i*7,1.9,"#8d97a8") for i in range(3)))
+    s.append(R(96,168,10,14,3,"#d9dce4",OUT("#aab0bd",1.2))+R(98,181,6,5,2,"#aab0bd"))
+    for x,rot,c in ((66,-15,"#ff7ab8"),(134,15,"#2fd0c0")):
+        light=shade(c,1.22); dark=shade(c,.78)
+        s.append(f'<g transform="rotate({rot} {x} 60)">')
+        s.append(R(x-5,64,10,60,5,light,OUT(c,1.4))+E(x,125,5,2.5,dark))
+        s.append(E(x,56,22,19,c,OUT(dark,1.6)))
+        s.append(E(x+1,59,13.5,11.5,light,OUT(dark,1)))
+        s.append("".join(C(x-6+ (i%4)*4.2 + (1.8 if (i//4)%2 else 0), 54+ (i//4)*4.6, 1.0, dark,"opacity=\".75\"") for i in range(12)))
+        s.append(E(x-9,46,6,3,"#fff","opacity=\".55\" transform=\"rotate(-25 %s 46)\""%(x-9)))
+        s.append('</g>')
+    return wrap("".join(s))
+M[6]=earbuds6()
+
+# --- dinosaurs: T-rex (left) + triceratops (right), single-silhouette bodies with shading ---
+def dinos6():
+    s=[S(190,90)]
+    s.append('<g transform="translate(200 186) scale(.62) translate(-200 -186)">')
+    # ===== Triceratops (right, facing left) =====
+    o="#e0803f"; od="#b95f27"; ol="#f6c08a"
+    s.append(R(126,150,17,34,7,od)+R(166,150,17,34,7,od))
+    s.append(Pa("M184 134 Q200 140 200 164 Q190 156 178 156Z",o,OUT(o,1.4)))
+    s.append(E(154,144,40,28,o,OUT(od,1.6)))
+    s.append(E(150,158,28,12,ol,"opacity=\".85\""))
+    for cx,cy,r in ((150,126,4.5),(168,130,4),(138,134,3.5),(176,142,3.5)): s.append(C(cx,cy,r,od,"opacity=\".45\""))
+    s.append(R(136,152,17,32,7,o,OUT(od,1.2))+R(172,152,17,32,7,o,OUT(od,1.2)))
+    for x in (139,175): s.append("".join(E(x+i*5.5+2,184,2.4,3,"#fff0d0") for i in range(3)))
+    # frill
+    s.append(C(118,112,31,od,OUT(od,1.4)))
+    for k in range(11):
+        a=math.pi*(0.98+0.12*k*0.9)
+        s.append(C(118+31*math.cos(a+0.2),112+31*math.sin(a+0.2),5.3,ol,OUT(od,1)))
+    s.append(C(118,112,23,"#f09a52")+C(108,106,5,od,"opacity=\".5\"")+C(126,98,4,od,"opacity=\".5\"")+C(128,118,4.5,od,"opacity=\".5\""))
+    # head
+    s.append(E(100,132,24,18,o,OUT(od,1.4)))
+    s.append(Pa("M80 134 Q74 140 80 148 Q92 150 98 144Z",ol,OUT(od,1.2)))
+    s.append(Pa("M82 126 L78 112 L90 122Z",ol,OUT(od,1.2)))
+    for x0,y0,x1,y1 in ((106,118,84,82),(118,116,100,76)):
+        s.append(Pa(f"M{x0-6} {y0} L{x1} {y1} L{x0+6} {y0-2}Z","#fff3d8",OUT(od,1.4)))
+    s.append(C(98,126,5.5,"#fff")+C(97,127,3,"#1c1f26")+C(96,126,1,"#fff"))
+    s.append(Pa("M80 141 Q92 148 108 142","none",f'stroke="{od}" stroke-width="2" stroke-linecap="round"'))
+    s.append('</g>')
+    # ===== T-rex (left, facing right), drawn smaller so the two don't touch =====
+    g="#2fb7a8"; gd="#1d8a7e"; gl="#c9f2ea"
+    s.append('<g transform="translate(2 186) scale(.80) translate(-2 -186)">')
+    s.append(Pa("M4 160 C24 150 36 128 58 118 L84 130 C80 150 70 160 62 164 C42 168 24 166 4 160Z",g,OUT(gd,1.8)))  # tail+hip
+    s.append(Pa("M58 120 C62 98 74 84 92 82 C116 80 134 90 136 102 L128 108 C110 104 100 108 96 120 C92 136 80 142 68 140Z",g,OUT(gd,1.8)))  # chest+neck+head back
+    s.append(E(70,142,25,23,g,OUT(gd,1.6)))
+    s.append(E(74,150,15,15,gl,"opacity=\".9\""))
+    s.append("".join(Pa(f"M{24+i*9} {150-i*5} q4 -9 12 -7","none",f'stroke="{gd}" stroke-width="3" stroke-linecap="round" opacity=".55"') for i in range(4)))
+    # head
+    s.append(Pa("M90 86 C106 70 134 74 150 90 L150 104 C140 100 122 102 108 104 C100 106 92 100 90 92Z",g,OUT(gd,1.8)))
+    s.append(Pa("M108 106 C124 104 142 104 150 106 C148 118 128 122 112 118Z",shade(g,.88),OUT(gd,1.6)))
+    s.append(Pa("M112 108 Q130 112 148 108 L146 112 Q130 116 114 114Z","#e8707a"))
+    s.append("".join(Pa(f"M{114+i*7} 106 l3.2 7 l3.2 -7Z","#fff") for i in range(5))+"".join(Pa(f"M{117+i*7} 114 l3 -6 l3 6Z","#fff") for i in range(4)))
+    s.append(Pa("M104 84 q8 -6 18 -2","none",f'stroke="{gd}" stroke-width="3" stroke-linecap="round"'))
+    s.append(C(114,92,5.2,"#fff")+C(115.5,92.5,2.8,"#1c1f26")+C(147,95,1.6,gd))
+    # legs and feet
+    s.append(Pa("M62 150 C50 152 46 168 52 178 L74 178 C76 166 76 156 72 150Z",shade(g,.92),OUT(gd,1.4)))
+    s.append(Pa("M46 178 H84 Q88 186 80 187 H48 Q42 187 46 178Z",gd))
+    s.append("".join(Pa(f"M{50+i*10} 186 l2.4 5 l2.4 -5Z","#fff6dc") for i in range(3)))
+    s.append(Pa("M96 138 C104 144 108 152 104 160","none",f'stroke="{shade(g,.85)}" stroke-width="6.5" stroke-linecap="round"'))
+    s.append(Pa("M104 160 l7 3 M104 160 l5 6","none",'stroke="#fff6dc" stroke-width="2.4" stroke-linecap="round"'))
+    s.append('</g>')
+    return wrap("".join(s),"-2 36 212 164")
+M[10]=dinos6()
+
+# --- Play-Doh playset: tubs (one open) + dough on the mat ---
+def playset7():
+    s=[S(188,80)]
+    mat="#4fd1c5"
+    s.append(R(10,126,180,52,14,mat,OUT(mat,1.6))+R(22,132,156,8,4,"#fff","opacity=\".3\""))
+    # tubs back row: red closed, blue OPEN with dough dome, yellow closed
+    s.append(tub(40,86,"#e8554e",23,46))
+    s.append(R(77,70,48,56,8,"#2a78d6",OUT("#2a78d6",1.4))+R(82,84,7,38,3,"#fff","opacity=\".3\""))
+    s.append(Pa("M80 74 Q82 40 101 38 Q120 40 122 74 Q101 82 80 74Z","#5aa6ff",OUT("#2a78d6",1.2))+Pa("M88 56 Q94 46 104 46","none",'stroke="#cfe6ff" stroke-width="4" stroke-linecap="round" opacity=".8"'))
+    s.append(E(101,74,23,6,"#1f5fb0","opacity=\"0\""))
+    s.append(tub(162,86,"#f6c915",23,46))
+    # front: rolled yellow dough slab with a star cut out, wavy snake, ball, cupcake
+    s.append(Pa("M16 158 Q14 142 34 140 Q52 136 66 142 Q76 150 70 164 Q54 174 30 172 Q14 170 16 158Z","#ff9a3c",OUT("#ff9a3c",1.4)))
+    s.append(star(42,156,11,mat))
+    cx=108
+    s.append(Pa(f"M{cx-22} 142 L{cx+22} 142 L{cx+16} 172 Q{cx+15} 176 {cx+11} 176 H{cx-11} Q{cx-15} 176 {cx-16} 172Z","#7b6bff",OUT("#7b6bff",1.2)))
+    s.append("".join(Pa(f"M{cx-16+i*6.4} 144 L{cx-13+i*4.6} 174","none",'stroke="#a79bff" stroke-width="2"') for i in range(6)))
+    s.append(E(cx,142,26,8.5,"#ff7ab8",OUT("#ff7ab8",1))+E(cx,132,19,7.5,"#ff9fcf",OUT("#ff7ab8",1))+E(cx,123,12,6.5,"#ffb8d9",OUT("#ff7ab8",1)))
+    s.append(C(cx,115,5.5,"#d6382f")+Pa(f"M{cx} 110 q5 -8 9 -7","none",'stroke="#2f8a3a" stroke-width="2" stroke-linecap="round"'))
+    s.append(Pa("M144 160 q8 -14 16 0 t16 0","none",'stroke="#e8554e" stroke-width="10" stroke-linecap="round"')+Pa("M146 156 q8 -14 14 -2","none",'stroke="#ff9a90" stroke-width="3" stroke-linecap="round" opacity=".7"'))
+    s.append(C(166,168,8,"#29b36f")+E(164,165,2.6,1.8,"#fff","opacity=\".55\""))
+    return wrap("".join(s))
+M[26]=playset7()
+
+# --- Play-Doh toolkit: dough sheet with star cut-outs, cutters, rolled dough ---
+def toolkit7():
+    s=[S(188,80)]
+    s.append(R(14,40,26,13,6,"#d9a35b",OUT("#d9a35b",1.2))+R(160,40,26,13,6,"#d9a35b",OUT("#d9a35b",1.2)))
+    s.append(R(34,24,132,40,18,"#ff7ab8",OUT("#ff7ab8",1.6)))
+    for i,c in enumerate(("#7b6bff","#2fd0c0","#ffd23a")): s.append(R(58+i*34,24,18,40,0,c,"opacity=\".9\""))
+    s.append(R(44,30,110,7,3.5,"#fff","opacity=\".35\""))
+    # rolled-out dough sheet with two star holes
+    s.append(Pa("M16 120 Q12 92 36 86 Q62 80 92 86 Q116 90 112 120 Q110 150 80 156 Q46 160 26 152 Q14 144 16 120Z","#ffb23c",OUT("#d98a1a",1.6)))
+    s.append(Pa("M26 100 Q40 92 60 94","none",'stroke="#ffe0a0" stroke-width="5" stroke-linecap="round" opacity=".7"'))
+    s.append(star(46,122,14,"#fff7e8")+star(80,128,12,"#fff7e8")+star(46,122,14,"none").replace('fill="none"','fill="none" stroke="#d98a1a" stroke-width="1.5"')+star(80,128,12,"none").replace('fill="none"','fill="none" stroke="#d98a1a" stroke-width="1.5"'))
+    # star cutter
+    s.append(star(152,106,22,"none").replace('fill="none"','fill="#ffd23a" stroke="#2a78d6" stroke-width="5" stroke-linejoin="round"'))
+    s.append(star(152,106,10,"none").replace('fill="none"','fill="#fff" opacity=".4"'))
+    # dough balls and a snake on the table
+    s.append(Pa("M122 162 q8 -14 16 0 t16 0 t16 0","none",'stroke="#2a78d6" stroke-width="10" stroke-linecap="round"')+Pa("M124 158 q8 -14 14 -2","none",'stroke="#8fc2ff" stroke-width="3" stroke-linecap="round" opacity=".7"'))
+    for x,y,c in ((132,142,"#e8554e"),(176,148,"#29b36f")):
+        s.append(C(x,y,10,shade(c,.75))+C(x,y-1,9.2,c)+E(x-3,y-5,3.2,2.2,"#fff","opacity=\".5\""))
+    s.append('<g transform="rotate(-4 70 178)">'+R(24,174,62,7,3.5,"#c9ccd2",OUT("#a8adb8",1))+R(80,171,26,12,6,"#7b6bff")+'</g>')
+    return wrap("".join(s))
+M[27]=toolkit7()
+
+# --- Playfoam: coloured beads only (no white) ---
+def playfoam7():
+    s=[S(188,62)]
+    random.seed(11)
+    cols=["#ff7ab8","#7be0b3","#6aa8ff","#ffd23a","#b78cff","#ff9a5a","#2fd0c0"]
+    for _ in range(150):
+        x=random.randint(46,154); y=random.randint(38,114)
+        if (x-100)**2/60**2+((y-112)**2)/74**2<1:
+            c=random.choice(cols); r=random.choice([5,6,7])
+            s.append(C(x,y,r,c,f'stroke="{shade(c,.72)}" stroke-width=".9"')+C(x-r*.3,y-r*.3,r*.28,shade(c,1.25),"opacity=\".7\""))
+    s.append(Pa("M36 112 H164 L154 170 Q152 182 140 182 H60 Q48 182 46 170Z","#7b6bff",OUT("#7b6bff",1.6)))
+    s.append(R(30,100,140,16,7,"#9a8cff")+R(52,128,96,34,8,"#9a8cff","opacity=\".0\""))
+    s.append(star(100,148,13,"#ffd23a"))
+    return wrap("".join(s))
+M[28]=playfoam7()
+
+# --- Supersoaker: tank sits on the gun body ---
+def soaker7():
+    s=[S(190,76)]
+    # barrel + nozzle (behind body)
+    s.append(R(8,100,112,20,10,"#29b36f",OUT("#1f8a52",2))+R(2,96,28,28,9,"#ffd23a",OUT("#d9b020",2))+C(10,110,6,"#2a1a00"))
+    s.append(R(30,104,70,5,2.5,"#fff","opacity=\".35\""))
+    # tank first, so the gun body overlaps its base
+    s.append(R(70,30,92,74,26,"#bfe6ff",OUT("#6aaee8",2.5)))
+    s.append(Pa("M76 66 Q96 56 116 66 T156 66 L158 90 Q158 100 146 100 H86 Q74 100 74 90Z","#4fb8ff"))
+    s.append(R(84,40,12,36,6,"#fff","opacity=\".45\"")+R(110,20,22,12,5,"#e8554e"))
+    # body overlapping the tank base + collar
+    s.append(R(94,88,66,42,14,"#29b36f",OUT("#1f8a52",2))+R(100,84,54,12,6,"#1f8a52")+R(104,100,44,8,4,"#fff","opacity=\".3\""))
+    s.append(R(152,98,20,28,8,"#1f8a52"))
+    # pump + grip + guard
+    s.append(R(30,124,62,20,10,"#ffd23a",OUT("#d9b020",2))+"".join(R(38+i*9,127,4,14,2,"#c9a010") for i in range(6)))
+    s.append(Pa("M116 128 L146 128 L156 172 Q156 180 148 180 L132 180 Q124 180 122 172Z","#2a78d6",OUT("#2a78d6",2)))
+    s.append(Pa("M104 128 Q104 150 122 150","none",'stroke="#2a78d6" stroke-width="6" stroke-linecap="round"')+R(110,132,6,18,3,"#16407a"))
+    return wrap("".join(s))
+M[32]=soaker7()
+
+# ---------- v6b: EarPods-style earbuds (short stems, joined cable with remote) ----------
+def earbuds6b():
+    def rot(px,py,cx,cy,deg):
+        a=math.radians(deg); dx,dy=px-cx,py-cy
+        return (cx+dx*math.cos(a)-dy*math.sin(a), cy+dx*math.sin(a)+dy*math.cos(a))
+    s=[S(188,58)]
+    cab="#b9a7ff"
+    buds=[(78,60,-10,"#ff7ab8"),(122,60,10,"#2fd0c0")]
+    ends=[rot(b[0],112,b[0],b[1],b[2]) for b in buds]
+    J=(100,150)
+    for (ex,ey) in ends:
+        s.append(Pa(f"M{ex:.1f} {ey:.1f} Q{ex:.1f} {J[1]-6} {J[0]} {J[1]}","none",f'stroke="{cab}" stroke-width="4.5" stroke-linecap="round"'))
+    s.append(Pa(f"M{J[0]} {J[1]} V172","none",f'stroke="{cab}" stroke-width="4.5" stroke-linecap="round"'))
+    s.append(R(93,143,14,13,5,"#f4f4f8",OUT("#cfd2da",1.2)))
+    # inline remote on the right cable
+    rx,ry=ends[1][0]-1,ends[1][1]+18
+    s.append(R(rx-6,ry,12,26,4,"#f4f4f8",OUT("#cfd2da",1.2))+"".join(C(rx,ry+6+i*7,2,"#8d97a8") for i in range(3)))
+    s.append(R(95,170,10,14,3,"#d9dce4",OUT("#aab0bd",1.2))+R(97,183,6,5,2,"#aab0bd"))
+    for x,y,deg,c in buds:
+        light=shade(c,1.22); dark=shade(c,.78)
+        s.append(f'<g transform="rotate({deg} {x} {y})">')
+        s.append(R(x-5.5,y+6,11,50,5.5,light,OUT(c,1.4))+E(x,y+56,5.5,2.6,dark))
+        s.append(E(x,y-2,23,19,c,OUT(dark,1.6)))
+        s.append(E(x+1,y+1,14,12,light,OUT(dark,1)))
+        s.append("".join(C(x-6.5+(i%4)*4.3+(2 if (i//4)%2 else 0), y-3+(i//4)*4.6, 1.05, dark,"opacity=\".75\"") for i in range(12)))
+        s.append(E(x-10,y-12,6.5,3,"#fff",f'opacity=".55" transform="rotate(-25 {x-10} {y-12})"'))
+        s.append('</g>')
+    return wrap("".join(s),"30 30 140 164")
+M[6]=earbuds6b()
 
 ALL={**{k:v for k,v in BASE.items()},**M}
 if __name__=="__main__":

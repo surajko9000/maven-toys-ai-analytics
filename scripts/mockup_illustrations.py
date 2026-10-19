@@ -102,9 +102,10 @@ def robot():
     st='stroke="#7c8aa0" stroke-width="2"'
     s.append(f'<rect x="72" y="156" width="18" height="26" rx="5" fill="url(#rbb)" {st}/><rect x="110" y="156" width="18" height="26" rx="5" fill="url(#rbb)" {st}/>')
     s.append(f'<rect x="66" y="176" width="30" height="10" rx="5" fill="#2b3544"/><rect x="104" y="176" width="30" height="10" rx="5" fill="#2b3544"/>')
-    s.append(f'<rect x="28" y="96" width="18" height="48" rx="8" fill="url(#rbb)" {st}/><rect x="154" y="96" width="18" height="48" rx="8" fill="url(#rbb)" {st}/>')
-    s.append('<circle cx="37" cy="148" r="9" fill="#d6dde8" stroke="#7c8aa0" stroke-width="2"/><circle cx="163" cy="148" r="9" fill="#d6dde8" stroke="#7c8aa0" stroke-width="2"/>')
+    s.append(f'<rect x="38" y="98" width="20" height="46" rx="9" fill="url(#rbb)" {st}/><rect x="142" y="98" width="20" height="46" rx="9" fill="url(#rbb)" {st}/>')
+    s.append('<circle cx="48" cy="148" r="9" fill="#d6dde8" stroke="#7c8aa0" stroke-width="2"/><circle cx="152" cy="148" r="9" fill="#d6dde8" stroke="#7c8aa0" stroke-width="2"/>')
     s.append(f'<rect x="50" y="92" width="100" height="70" rx="12" fill="url(#rbg)" {st}/>')
+    s.append('<circle cx="52" cy="108" r="9" fill="#d6dde8" stroke="#7c8aa0" stroke-width="2"/><circle cx="148" cy="108" r="9" fill="#d6dde8" stroke="#7c8aa0" stroke-width="2"/><circle cx="52" cy="108" r="3.5" fill="#7c8aa0"/><circle cx="148" cy="108" r="3.5" fill="#7c8aa0"/>')
     s.append('<rect x="64" y="104" width="72" height="40" rx="8" fill="#243044"/><rect x="70" y="110" width="26" height="8" rx="3" fill="#3cd3ff"/><rect x="70" y="124" width="14" height="14" rx="3" fill="#ff5a4f"/><rect x="88" y="124" width="14" height="14" rx="3" fill="#ffd34d"/><circle cx="116" cy="131" r="7" fill="#3ddc97"/><rect x="104" y="110" width="26" height="8" rx="3" fill="#59657a"/>')
     s.append('<rect x="92" y="82" width="16" height="12" fill="#8793a5"/>')
     s.append(f'<rect x="64" y="34" width="72" height="52" rx="14" fill="url(#rbg)" {st}/>')
