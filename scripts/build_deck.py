@@ -55,11 +55,24 @@ first_sale = x.groupby("Product_Name").Date.min()
 launched = [n for n in first_sale.index if first_sale[n] > pd.Timestamp("2022-01-31") and n != "Playfoam"]
 faded = [n for n in launched if units_m.loc[n].iloc[-1] <= 0.6 * units_m.loc[n].max()]
 
+q3_22_k, q3_23_k = round(qp.loc["Colorbuds", "2022Q3"] / 1000), round(qp.loc["Colorbuds", "2023Q3"] / 1000)
+pf_rank = int((qp["2023Q3"] > qp.loc["Playfoam", "2023Q3"]).sum()) + 1
+cbs = x[(x.Product_Name == "Colorbuds") & (x.Date.dt.month <= 9)]
+g = cbs.groupby([cbs.Store_ID, cbs.Date.dt.year]).Units.sum().unstack(fill_value=0)
+stores_down = int((g[2023] < g[2022]).sum())
+cb_unit_profit = float(prod.loc[prod.Product_Name == "Colorbuds", "unit_profit"].iloc[0])
+gap_k = round((cb_first - cb_last) * cb_unit_profit / 1000)
+peak_drop = lambda n: round((1 - units_m.loc[n].iloc[-1] / units_m.loc[n].max()) * 100)
+jenga_drop, etch_drop, hw_drop = peak_drop("Jenga"), peak_drop("Etch A Sketch"), peak_drop("Hot Wheels 5-Pack")
+etch_peak = str(units_m.loc["Etch A Sketch"].idxmax())
+
 # independent check against the numbers verified earlier with pandas
 assert (cb_first, cb_last, cb_drop) == (8110, 2594, 68), (cb_first, cb_last, cb_drop)
 assert (share_22, share_23) == (28, 13), (share_22, share_23)
 assert (pf_aug, pf_sep, pf_margin, pf_month_profit_k, pf_zero) == (1311, 2847, 64, 20, 13)
 assert (len(faded), len(launched)) == (9, 10), (len(faded), len(launched))
+assert (q3_22_k, q3_23_k, pf_rank, stores_down, gap_k) == (142, 74, 5, 48, 44), (q3_22_k, q3_23_k, pf_rank, stores_down, gap_k)
+assert (jenga_drop, etch_drop, hw_drop, etch_peak) == (92, 56, 9, "2022-12"), (jenga_drop, etch_drop, hw_drop, etch_peak)
 print("numbers verified:", dict(cb=(cb_first, cb_last, cb_drop), share=(share_22, share_23),
       playfoam=(pf_aug, pf_sep, pf_margin, pf_month_profit_k, pf_zero), faded=(len(faded), len(launched))))
 
@@ -157,6 +170,29 @@ def blocks(slide, x0, y0, rows, w=1.3, h=0.8, gap=0.06):
                 shape(slide, MSO_SHAPE.OVAL, bx + sx, y - 0.1, 0.38, 0.2, c, f"Stud r{r}c{i}")
 
 
+def bullets(slide, items, x, y, w, h, size=18, color=INK, space=8, name="Bullets"):
+    tb = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+    tb.name = name
+    tf = tb.text_frame
+    tf.word_wrap = True
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    for i, s in enumerate(items):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.space_after = Pt(space)
+        pPr = p._p.get_or_add_pPr()
+        pPr.set("marL", "285750")
+        pPr.set("indent", "-285750")
+        buClr = etree.SubElement(pPr, qn("a:buClr"))
+        etree.SubElement(buClr, qn("a:srgbClr")).set("val", BLUE)
+        etree.SubElement(pPr, qn("a:buFont")).set("typeface", "Arial")
+        etree.SubElement(pPr, qn("a:buChar")).set("char", "•")
+        r = p.add_run()
+        r.text = s
+        r.font.size, r.font.name = Pt(size), BODY
+        r.font.color.rgb = rgb(color)
+    return tb
+
+
 def style_axis_text(axis, size=14, color=MUTED):
     axis.tick_labels.font.size = Pt(size)
     axis.tick_labels.font.name = BODY
@@ -181,24 +217,28 @@ for i, (fill, big, bigcolor, label, cap, bx) in enumerate([
     (T_PINK, f"{share_22}% → {share_23}%", PINK, "Colorbuds' share of quarterly profit", "Q3 2022 to Q3 2023", 0.7),
     (T_MINT, f"${pf_month_profit_k}K", MINT, "Playfoam profit per month", "at its September pace", 6.95),
 ]):
-    shape(s2, MSO_SHAPE.ROUNDED_RECTANGLE, bx, 1.95, 5.68, 4.5, fill, f"Card {i+1}", 0.06)
-    text(s2, big, bx + 0.4, 2.55, 4.9, 1.7, 60, bigcolor, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Big number {i+1}")
-    text(s2, label, bx + 0.4, 4.5, 4.9, 0.5, 24, INK, True, name=f"Label {i+1}")
-    text(s2, cap, bx + 0.4, 5.1, 4.9, 0.4, 16, MUTED, name=f"Caption {i+1}")
+    shape(s2, MSO_SHAPE.ROUNDED_RECTANGLE, bx, 1.8, 5.68, 2.85, fill, f"Card {i+1}", 0.07)
+    text(s2, big, bx + 0.4, 2.0, 4.9, 1.15, 54, bigcolor, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Big number {i+1}")
+    text(s2, label, bx + 0.4, 3.35, 4.9, 0.45, 22, INK, True, name=f"Label {i+1}")
+    text(s2, cap, bx + 0.4, 3.9, 4.9, 0.35, 14, MUTED, name=f"Caption {i+1}")
+bullets(s2, [f"Colorbuds is still our #1 profit toy, but its share has more than halved",
+             f"Playfoam launched in mid-August and is already a top-{pf_rank} profit toy",
+             f"Playfoam's September pace is nearly half of the ${gap_k}K a month Colorbuds has lost"],
+        0.7, 4.95, 11.9, 1.8, 20, name="Key points")
 notes(s2, f"Colorbuds earned about {share_22}% of Q3 2022 profit and {share_23}% of Q3 2023 profit; it is still our #1 profit toy, "
           f"so it is fading, not dead. Playfoam launched in mid-August 2023; at its September pace ({pf_sep:,} units x "
-          f"${pf_unit_profit:.0f} profit per unit) it earns about ${pf_month_profit_k}K a month. Profit is estimated from current "
-          "price and cost, not accounting figures.")
+          f"${pf_unit_profit:.0f} profit per unit) it earns about ${pf_month_profit_k}K a month. Colorbuds' monthly profit is about ${gap_k}K lower than in "
+          "Jan 2022 ((8,110 - 2,594) units x $8). Profit is estimated from current price and cost, not accounting figures.")
 
-# ================================================================= slide 3: the fall (native line chart)
+# ================================================================= slide 3: the fall (native line chart + bullets)
 s3 = content_slide(f"Colorbuds sales are down {cb_drop}%", 3)
 months = [str(p) for p in cb.index]
 show_at = {0, 6, 12, 18}
-mlabels = [pd.Period(m).strftime("%b\u00a0%y") if i in show_at else " " * (i + 1) for i, m in enumerate(months)]
+mlabels = [pd.Period(m).strftime("%b %y") if i in show_at else " " * (i + 1) for i, m in enumerate(months)]
 cd = CategoryChartData()
 cd.categories = mlabels
 cd.add_series("Colorbuds units per month", [int(v) for v in cb.values])
-gf = s3.shapes.add_chart(XL_CHART_TYPE.LINE, Inches(0.7), Inches(2.05), Inches(11.9), Inches(4.7), cd)
+gf = s3.shapes.add_chart(XL_CHART_TYPE.LINE, Inches(0.7), Inches(2.05), Inches(7.9), Inches(4.7), cd)
 gf.name = "Colorbuds monthly units"
 ch = gf.chart
 ch.has_legend = False
@@ -218,7 +258,6 @@ ser = ch.plots[0].series[0]
 ser.smooth = False
 ser.format.line.color.rgb = rgb(PINK)
 ser.format.line.width = Pt(5)
-ser.marker.style = None
 from pptx.enum.chart import XL_MARKER_STYLE
 ser.marker.style = XL_MARKER_STYLE.NONE
 for idx, lbl, when, pos in ((0, f"{cb_first:,}", "Jan 2022", XL_LABEL_POSITION.ABOVE),
@@ -241,34 +280,41 @@ for idx, lbl, when, pos in ((0, f"{cb_first:,}", "Jan 2022", XL_LABEL_POSITION.A
     r2.text = when
     r2.font.size, r2.font.name = Pt(14), BODY
     r2.font.color.rgb = rgb(MUTED)
-text(s3, "units per month", 0.7, 1.55, 4, 0.3, 14, MUTED, name="Chart caption")
+text(s3, "units per month", 0.7, 1.7, 4, 0.3, 14, MUTED, name="Chart caption")
+bullets(s3, [f"Down in {stores_down} of 50 stores, in every store type",
+             "Every store still carries it, so this is weaker demand, not empty shelves",
+             f"Quarterly profit has roughly halved: ${q3_22_k}K to ${q3_23_k}K"],
+        9.0, 2.3, 3.7, 4.2, 20, space=14, name="Key points")
 notes(s3, f"Monthly Colorbuds units fell from {cb_first:,} (Jan 2022) to {cb_last:,} (Sep 2023), down {cb_drop}%. "
-          "The drop is steady and broad: 48 of 50 stores are down, in every store type. All 50 stores carry it and none is at zero stock, "
+          f"The drop is steady and broad: {stores_down} of 50 stores are down (Jan-Sep 2023 vs Jan-Sep 2022), in every store type. All 50 stores carry it and none is at zero stock, "
           "so this looks like a demand problem, not a stock problem. Some of the drop is seasonal (company-wide revenue in Sep is about 26% "
           "below its peak month) but not most of it. The data cannot say WHY demand fell; no price history, promotions or competitor data.")
 
 # ================================================================= slide 4: most toys fade
 s4 = content_slide("Most toys fade", 4)
-text(s4, f"{len(faded)} of {len(launched)}", 0.7, 1.7, 11.9, 2.4, 140, ORANGE, True, HEAD, align=PP_ALIGN.CENTER,
-     anchor=MSO_ANCHOR.MIDDLE, name="Big number")
-text(s4, "recent launches are 40%+ below their peak", 0.7, 4.15, 11.9, 0.7, 28, INK, False, HEAD, align=PP_ALIGN.CENTER,
-     name="Caption")
+text(s4, f"{len(faded)} of {len(launched)}", 0.7, 1.75, 6.4, 1.7, 100, ORANGE, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name="Big number")
+text(s4, "recent launches are 40%+ below their peak", 0.7, 3.5, 6.4, 0.9, 24, INK, False, HEAD, name="Caption")
 for i in range(len(launched)):
-    bx = 2.1 + i * 0.93
+    bx = 0.75 + i * 0.64
     c = ORANGE if i < len(faded) else "D9D4CC"
-    shape(s4, MSO_SHAPE.ROUNDED_RECTANGLE, bx, 5.3, 0.8, 0.8, c, f"Toy block {i+1}", 0.18)
-    shape(s4, MSO_SHAPE.OVAL, bx + 0.22, 5.2, 0.36, 0.18, c, f"Toy stud {i+1}")
+    shape(s4, MSO_SHAPE.ROUNDED_RECTANGLE, bx, 5.2, 0.54, 0.54, c, f"Toy block {i+1}", 0.18)
+    shape(s4, MSO_SHAPE.OVAL, bx + 0.14, 5.12, 0.26, 0.14, c, f"Toy stud {i+1}")
+bullets(s4, [f"Jenga peaked in Jul 2022 and is now down {jenga_drop}%",
+             f"Etch A Sketch peaked its second month and is down {etch_drop}%",
+             f"Hot Wheels is the lone exception, down just {hw_drop}%",
+             "Colorbuds follows the same pattern"],
+        7.6, 2.0, 5.0, 4.5, 20, space=14, name="Key points")
 notes(s4, "This is the likely explanation, not a proven cause. Of the 10 toys that started selling during this data (excluding Playfoam, "
           "which is too new), 9 now sell at least 40% less per month than in their peak month. Jenga -92%, Supersoaker -66%, "
           "Mr. Potatohead -65%, PlayDoh Playset -64%, Etch A Sketch -56%, Plush Pony -56%, Foam Disk Launcher -54%, Magic Sand -41%, "
           "Gamer Headphones -41%; Hot Wheels is the exception at -9%. Caveats: part of each drop is seasonal, and 'launch' means first sale in this data.")
 
-# ================================================================= slide 5: Playfoam (native bar chart)
+# ================================================================= slide 5: Playfoam (native bar chart + bullets)
 s5 = content_slide("Playfoam is taking off", 5)
 cd = CategoryChartData()
 cd.categories = ["Aug (from the 17th)", "Sep"]
 cd.add_series("Playfoam units", [pf_aug, pf_sep])
-gf = s5.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.7), Inches(2.05), Inches(7.3), Inches(4.65), cd)
+gf = s5.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.7), Inches(2.05), Inches(6.4), Inches(4.65), cd)
 gf.name = "Playfoam monthly units"
 ch = gf.chart
 ch.has_legend = False
@@ -294,27 +340,30 @@ ser.format.fill.solid()
 ser.format.fill.fore_color.rgb = rgb(MINT)
 text(s5, "units sold per month", 0.7, 1.7, 5, 0.3, 14, MUTED, name="Chart caption")
 for i, (fill, big, col, small, by, dy) in enumerate([
-    (T_MINT, f"{pf_margin}% margin", MINT, f"${pf_unit_profit:.0f} profit on every unit", 2.2, 0.85),
-    (T_ORANGE, f"{pf_zero} stores are out of stock", ORANGE, "about $5K a month left on the table", 4.45, 1.3),
+    (T_MINT, f"{pf_margin}% margin", MINT, f"${pf_unit_profit:.0f} profit on every unit", 1.9, 0.9),
+    (T_ORANGE, f"{pf_zero} stores out of stock", ORANGE, "about $5K a month left on the table", 3.55, 0.9),
 ]):
-    shape(s5, MSO_SHAPE.ROUNDED_RECTANGLE, 8.5, by, 4.1, 1.95, fill, f"Badge {i+1}", 0.08)
-    text(s5, big, 8.8, by + 0.2, 3.5, 1.0, 26, col, True, HEAD, name=f"Badge title {i+1}")
-    text(s5, small, 8.8, by + dy, 3.5, 0.4, 16, INK, name=f"Badge note {i+1}")
+    shape(s5, MSO_SHAPE.ROUNDED_RECTANGLE, 7.6, by, 5.0, 1.4, fill, f"Badge {i+1}", 0.1)
+    text(s5, big, 7.9, by + 0.2, 4.5, 0.6, 26, col, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Badge title {i+1}")
+    text(s5, small, 7.9, by + dy, 4.5, 0.4, 16, INK, name=f"Badge note {i+1}")
+bullets(s5, [f"Launched Aug 17 and already a top-{pf_rank} profit toy",
+             "New toys often cool off, so the window to act is short"],
+        7.6, 5.2, 5.0, 1.5, 18, space=10, name="Key points")
 notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in about six weeks ({pf_aug:,} in August from the 17th, "
           f"{pf_sep:,} in September). It earns ${pf_unit_profit:.0f} per unit at a {pf_margin}% margin, about ${pf_month_profit_k}K a month "
           f"at the September pace. It is at zero stock in {pf_zero} stores; each store sells about 57 units a month, so empty shelves cost "
-          "roughly $5K a month. Be honest: hot now, likely to cool (see the previous slide). Only six weeks of data; the $20K is a "
-          "run-rate, not a forecast.")
+          "roughly $5K a month. It was the #5 profit toy in Q3 2023 despite only ~6 weeks on sale. Be honest: hot now, likely to cool (see the previous slide). "
+          "Only six weeks of data; the $20K is a run-rate, not a forecast.")
 
 # ================================================================= slide 6: what we do
 s6 = content_slide("Back newer, higher-margin toys", 6)
-steps = [("1", BLUE, T_BLUE, "Keep Playfoam in stock"),
-         ("2", ORANGE, T_ORANGE, "Test one Colorbuds fix"),
-         ("3", MINT, T_MINT, "Review in 8 weeks")]
-for i, (num, col, tint, label) in enumerate(steps):
+steps = [("1", BLUE, T_BLUE, "Keep Playfoam in stock", ["Refill the 13 empty stores", "Check weekly; worth about $5K a month"]),
+         ("2", ORANGE, T_ORANGE, "Test one Colorbuds fix", ["10 test stores vs 10 similar ones", "Up to about $11K a month if it works"]),
+         ("3", MINT, T_MINT, "Review in 8 weeks", ["Scale what works, stop what doesn't", "Pick the next higher-margin toy"])]
+for i, (num, col, tint, label, pts) in enumerate(steps):
     cx = 0.7 + i * 4.1
-    shape(s6, MSO_SHAPE.ROUNDED_RECTANGLE, cx, 2.3, 3.7, 3.7, tint, f"Card {num}", 0.07)
-    badge = shape(s6, MSO_SHAPE.OVAL, cx + 0.4, 2.65, 1.0, 1.0, col, f"Number badge {num}")
+    shape(s6, MSO_SHAPE.ROUNDED_RECTANGLE, cx, 1.95, 3.7, 4.55, tint, f"Card {num}", 0.06)
+    badge = shape(s6, MSO_SHAPE.OVAL, cx + 0.4, 2.3, 0.9, 0.9, col, f"Number badge {num}")
     tf = badge.text_frame
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -322,9 +371,10 @@ for i, (num, col, tint, label) in enumerate(steps):
     p.alignment = PP_ALIGN.CENTER
     r = p.add_run()
     r.text = num
-    r.font.size, r.font.bold, r.font.name = Pt(36), True, HEAD
+    r.font.size, r.font.bold, r.font.name = Pt(32), True, HEAD
     r.font.color.rgb = rgb("FFFFFF")
-    text(s6, label, cx + 0.4, 3.95, 2.9, 1.8, 30, INK, True, HEAD, name=f"Step {num}")
+    text(s6, label, cx + 0.4, 3.45, 2.95, 1.2, 26, INK, True, HEAD, name=f"Step {num}")
+    bullets(s6, pts, cx + 0.4, 4.8, 2.95, 1.6, 16, space=8, name=f"Step {num} details")
 notes(s6, "1) Keep Playfoam in stock: refill the 13 stores at zero and keep every store above about two weeks of sales (roughly 26 units a store); "
           "check weekly. Worth about $5K a month now. "
           "2) Test one cheap Colorbuds fix: refresh, bundle with Gamer Headphones, or better shelf placement in about 10 stores against 10 similar "
