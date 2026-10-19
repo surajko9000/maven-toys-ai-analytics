@@ -149,6 +149,17 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .side button{display:block;width:100%;text-align:left;border:0;background:#fff7e8;border-radius:12px;padding:7px 10px;margin:4px 0;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
 .side button:hover{background:#ffe9bf}
 .bignum{display:flex;gap:18px;flex-wrap:wrap}.bignum div{background:#fff7e8;border-radius:16px;padding:10px 16px;min-width:140px}.bignum b{display:block;font-size:26px;letter-spacing:-.02em}
+.demo{margin-bottom:16px;background:#fff9dc;border-color:#f0dc8a;box-shadow:0 5px 0 #f0dc8a}
+.demo summary{cursor:pointer;font-weight:800;font-size:15px;list-style:none;display:flex;align-items:center;gap:10px}
+.demo summary::-webkit-details-marker{display:none}
+.demo summary:after{content:"▾";margin-left:auto;color:var(--ink3)}
+.demo[open] summary:after{content:"▴"}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.cmp>div{background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px}
+.cmp h4{margin:0 0 4px;font-size:14px}.cmp ul{margin:4px 0 0;padding-left:18px}.cmp li{margin:4px 0;font-size:13.5px}
+.mini{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px 0 2px;justify-content:center}
+.mini .node{min-width:0;padding:8px 12px;font-size:13px}.mini .arrow{font-size:20px}
+@media(max-width:980px){.cmp{grid-template-columns:1fr}}
 @media(max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.two,.askwrap{grid-template-columns:1fr}.tour{grid-template-columns:1fr 1fr}.deck{padding:28px}.deck h2{font-size:26px}.hero{padding:28px 22px}.hero h1{font-size:30px}.badge{display:none}.bar{gap:10px}}
 @media(max-width:560px){.tour{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -327,7 +338,7 @@ function renderStart(){
     <li><b>Revenue and profit are estimates.</b> The data only has one current price and cost per toy (no price history), so revenue = units × price and profit = units × (price − cost).</li>
     <li><b>Stock is a single snapshot</b>, not a history, so we can't see how it changed over time.</li>
     <li><b>“Latest” means the end of the data</b> (Sep 30, 2023), not today.</li>
-    <li><b>Ask only answers approved questions.</b> If it can't answer, it says so instead of guessing.</li>
+    <li><b>Ask is a mock-up.</b> It answers from a list of approved questions. In a real company you'd connect Claude to a SQL database so it can answer any question, but that's hard to offer to everyone for free.</li>
     <li><b>Toy pictures are placeholders for now.</b> Real photos need proper credit and are on the to-do list.</li>
   </ul></div>
 
@@ -562,6 +573,21 @@ const chat=[];let askBusy=false;
 function renderAsk(){
   const groups={};for(const q of QS)(groups[q.group]??=[]).push(q);
   document.getElementById("ask").innerHTML=`<h1>💬 Ask</h1><p class="sub">Type a question in your own words. I answer from a list of approved questions and show my work. If I can't answer, I'll say so.</p>
+  <details class="card demo" open><summary><span class="tag" style="background:#ffe9a0">🧪 Demo</span> This Ask tab is a mock-up. Here's how the real thing works</summary>
+    <div class="mini"><div class="node" style="background:#e3eefb">🙋 You ask<small>in plain English</small></div><div class="arrow">→</div><div class="node" style="background:#ece8fb">🤖 Claude<small>writes the SQL</small></div><div class="arrow">→</div><div class="node" style="background:#fcf0d2">🗄️ Your data<small>runs the query</small></div><div class="arrow">→</div><div class="node" style="background:#def5ec">📊 Answer<small>table, chart, SQL shown</small></div></div>
+    <div class="cmp">
+      <div><h4>🧪 This demo (free, public)</h4><ul>
+        <li>Matches your words to a fixed list of <b>approved questions</b></li>
+        <li>Every answer is computed from the CSVs in your browser</li>
+        <li>Can't answer anything that isn't on the list</li>
+        <li>Costs nothing to run, so anyone can open it</li></ul></div>
+      <div><h4>🚀 In a real company</h4><ul>
+        <li><b>Claude connected to SQL.</b> For example, Claude plus an MCP server (a standard way to plug tools into Claude) for BigQuery, Snowflake or Postgres. It writes SQL for any question, runs it and charts the result</li>
+        <li>Similar built-in tools exist too, such as Databricks Genie, Snowflake Cortex Analyst and Looker's Conversational Analytics</li>
+        <li>Handles <b>any question</b>, follow-ups and new charts</li></ul></div>
+    </div>
+    <p class="note" style="margin:12px 0 0;color:var(--ink2);font-size:13px"><b>Why the demo doesn't do that:</b> AI is much better at this than a fixed list, but it's hard to share broadly for free. Every question costs real money (AI usage plus a live database), and it needs guardrails so the AI can't write wrong or unsafe queries. A free public page can't safely pay for that, so the real version lives behind a company login.</p>
+  </details>
   <div class="askwrap"><div>
     <div class="chat" id="chatlog">${chat.length?chat.map(m=>m.html).join(""):`<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>Hi! I can answer questions about toys, stores, categories, time and stock. You can add a toy, a category or a time period, like <i>“best-selling toys in Games last quarter”</i> or <i>“which stores sell the most Lego Bricks?”</i><div class="sugg">${["Which toys generated the most profit last quarter?","How does 2023 compare with 2022?","Which category has the best gross margin?","Where do popular toys have zero stock?"].map(q=>`<button class="chip" onclick="ask(this.textContent)">${q}</button>`).join("")}</div></div>`}</div>
     <div class="askrow"><input type="text" id="askin" placeholder="Ask about toys, stores, categories, time or stock…" onkeydown="if(event.key=='Enter')ask()"><button class="btn pri" onclick="ask()">Ask</button></div>
