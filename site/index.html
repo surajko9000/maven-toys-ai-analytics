@@ -432,7 +432,7 @@ function renderDash(){
   const dashSum=sc("📅 "+tl,dash.preset!="all")+sc("🏷️ "+(cats?cats.join(", "):"All categories"),!!cats)+sc("🧸 "+(dash.pid?P[dash.pid].name:"All toys"),!!dash.pid)+sc("📐 "+MET[m].n+(m!="mg"&&dash.show=="pct"?" · % share":""),m!="rev"||dash.show!="val");
   const dashDirty=dash.preset!="all"||!!cats||!!dash.pid||m!="rev"||dash.show!="val";
   document.getElementById("dashboard").innerHTML=`
-  <h1>📊 Dashboard</h1><p class="sub">Everything below follows the filter bar. Click it to change the time window, category, toy or measure.</p>
+  <h1>📊 Sales Performance Dashboard</h1><p class="sub">Revenue, profit and units across 50 stores and 35 toys, Jan 2022 – Sep 2023. Click the filter bar to change the time window, category, toy or measure.</p>
   ${fbar("dash",dash.fopen,dashSum,`<div class="fgroup"><span class="lbl">📅 Time</span>
     ${PRESETS.map(([k,l])=>`<button class="chip ${dash.preset==k?"on":""}" onclick="setPreset('${k}')">${l}</button>`).join("")}
     <span style="color:var(--ink3)">or</span>
