@@ -221,8 +221,8 @@ s1.background.fill.fore_color.rgb = rgb(NAVY)
 for k, c in enumerate((PINK, YELLOW, MINT)):
     shape(s1, MSO_SHAPE.RECTANGLE, LM + k * 0.2, 0.62, 0.14, 0.14, c, f"Mark {k+1}")
 text(s1, "MAVEN TOYS", LM + 0.8, 0.52, 4, 0.34, 14, "FFFFFF", True, name="Wordmark", anchor=MSO_ANCHOR.MIDDLE)
-shape(s1, MSO_SHAPE.RECTANGLE, 8.5, 1.5, 4.23, 4.23, "FFFFFF", "Image panel")
-_pic = s1.shapes.add_picture(str(ROOT / "scripts" / "assets" / "colorbuds_illustration.png"), Inches(8.7), Inches(1.7), Inches(3.83), Inches(3.83))
+shape(s1, MSO_SHAPE.RECTANGLE, 8.6, 0, 13.333 - 8.6, 7.5, "FBDDE9", "Image panel")
+_pic = s1.shapes.add_picture(str(ROOT / "scripts" / "assets" / "colorbuds_illustration.png"), Inches(8.95), Inches(1.5), Inches(3.9), Inches(3.9 * 1081 / 1000))
 _pic.name = "Colorbuds illustration"
 _pic._element.nvPicPr.cNvPr.set("descr", "Illustration of Colorbuds: two colorful earbuds in an open charging case with a heart")
 _tb = text(s1, "Colorbuds, our #1 profit toy,", LM, 1.6, 7.9, 2.7, 40, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
