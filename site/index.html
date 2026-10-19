@@ -527,7 +527,7 @@ function renderToys(){
   <div class="fgroup"><span class="lbl">🔎 Find</span><input type="search" id="toyq" placeholder="Search toys…" value="${esc(toys.q)}" oninput="toys.q=this.value;renderToys();const i=document.getElementById('toyq');i.focus();i.setSelectionRange(99,99)">
    <span class="lbl" style="margin-left:8px">🏷️ Category</span>${["All",...CATS].map(c=>`<button class="chip ${toys.cat==c?"on":""}" onclick="toys.cat='${c}';renderToys()">${c}</button>`).join("")}</div>
   <div class="fgroup"><span class="lbl">↕️ Sort by</span><span class="seg">${Object.entries(SORTS).map(([k,l])=>`<button class="${toys.sort==k?"on":""}" onclick="toys.sort='${k}';toys.dir=${k=="name"?1:-1};renderToys()">${l}</button>`).join("")}</span>
-   <button class="dir" onclick="toys.dir*=-1;renderToys()" title="Flip the order">⇅ ${dirWord(toys.sort,toys.dir)} (tap to flip)</button></div>
+   <button class="dir" onclick="toys.dir*=-1;renderToys()" title="Flip the order">⇅ ${dirWord(toys.sort,toys.dir)}</button></div>
   <p class="cap">${mlong(toys.m0)} – ${mlong(toys.m1)}: <b>${list.length}</b> toy${list.length==1?"":"s"}, sorted by <b>${SORTS[toys.sort].toLowerCase()}</b>, <b>${dirWord(toys.sort,toys.dir).toLowerCase()}</b>.</p>
   ${list.length?`<div class="cards">${list.map(({p,rev,gp,units},i)=>`<div class="toy ${units?"":"off"}" style="--cc:${CCOL[p.cat]}" onclick="openToy(${p.id})"><div class="img" style="background:${tileBg(p.id)}"><span class="rank ${i<3?"r"+(i+1):""}">#${i+1}</span>${INV[p.id].zero>=8?`<span class="oos">Out in ${INV[p.id].zero} stores</span>`:""}${imgBlock(p.id)}</div>
    <div class="b"><div class="n">${p.name}</div><div class="c"><i></i>${p.cat} · $${p.price.toFixed(2)}</div>
