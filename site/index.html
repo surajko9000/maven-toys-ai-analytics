@@ -115,7 +115,15 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .toy .m{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--ink2)}
 .toy .m b{color:var(--ink)}
 .art{display:block;width:116px;height:116px}.hero-img .art{width:164px;height:164px}
-.rank{position:absolute;top:8px;left:8px;background:#fff;border-radius:999px;font-weight:800;font-size:12px;padding:2px 9px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.rank{position:absolute;top:8px;left:8px;background:var(--ink);color:#fff;border-radius:999px;font-weight:800;font-size:13px;padding:3px 10px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.rank.r1{background:#f2b400;color:#3a2a00}.rank.r2{background:#c9ced6;color:#222}.rank.r3{background:#d98a4e;color:#2d1600}
+.toy{border-color:var(--cc,var(--line));box-shadow:0 5px 0 var(--cc,var(--line))}
+.toy .img{border-bottom:3px solid var(--cc,var(--line))}
+.toy .n{font-size:15px}
+.toy .m{gap:8px}.toy .m span{flex:1;background:#fff7e8;border-radius:10px;padding:5px 8px;color:var(--ink2);line-height:1.25}
+.toy .m b{display:block;font-size:15px}
+.toy.off{opacity:.55}
+.toy .na{margin-top:8px;font-size:12px;color:var(--ink3);background:#f4efe6;border-radius:10px;padding:6px 8px;text-align:center}
 .oos{position:absolute;top:8px;right:8px;background:#fff0ee;color:var(--bad);border-radius:999px;font-weight:800;font-size:11px;padding:2px 8px}
 .drawer{position:fixed;inset:0;background:#1f1a1766;display:none;z-index:40;justify-content:flex-end}
 .drawer.on{display:flex}
@@ -275,7 +283,8 @@ function imgBlock(pid,cls){const i=IMG[pid];
   if(ILLUS[pid]) return `<span class="art">${ILLUS[pid]}</span>`;
   return EMOJI[pid]}
 const TILE_OVERRIDE={}; /* white products get a soft tint so they stand out */
-const tileBg=pid=>TILE_OVERRIDE[pid]||((IMG[pid]||ILLUS[pid])?"#ffffff":CTINT[P[pid].cat]);
+const STRONG={"Toys":"#cfe2fa","Art & Crafts":"#fbd9c8","Games":"#c4ecdb","Sports & Outdoors":"#f9e2a6","Electronics":"#f8cfe0"};
+const tileBg=pid=>TILE_OVERRIDE[pid]||STRONG[P[pid].cat];
 
 /* ================= TAB 0: START HERE ================= */
 function renderStart(){
@@ -498,38 +507,46 @@ function deckFull(){const el=document.getElementById("stage");(el.requestFullscr
 document.addEventListener("keydown",e=>{if(current=="presentation"&&!(e.target instanceof HTMLInputElement)){if(e.key=="ArrowRight")go(1);if(e.key=="ArrowLeft")go(-1);if(e.key=="Home")goTo(0);if(e.key=="End")goTo(DECK.titles.length-1)}});
 
 /* ================= TAB 3: TOY FINDER ================= */
-const toys={q:"",cat:"All",sort:"gp",dir:-1};
+const toys={q:"",cat:"All",sort:"gp",dir:-1,m0:0,m1:20,preset:"all"};
+function toyPreset(k){const p=PRESETS.find(x=>x[0]==k);toys.preset=k;toys.m0=p[2];toys.m1=p[3];renderToys()}
+function toyRange(w,v){v=+v;if(w=="m0"){toys.m0=v;if(toys.m1<v)toys.m1=v}else{toys.m1=v;if(toys.m0>v)toys.m0=v}toys.preset=(PRESETS.find(x=>x[2]==toys.m0&&x[3]==toys.m1)||[null])[0];renderToys()}
 const SORTS={gp:"Profit",rev:"Revenue",units:"Units sold",price:"Price",name:"Name"};
 const dirWord=(k,d)=>k=="name"?(d>0?"A → Z":"Z → A"):(d<0?"Highest first":"Lowest first");
 function setSort(k){if(toys.sort==k)toys.dir*=-1;else{toys.sort=k;toys.dir=k=="name"?1:-1}renderToys()}
 function renderToys(){
   const val=p=>toys.sort=="name"?p.p.name:toys.sort=="price"?p.p.price:p[toys.sort];
+  const R=agg({m0:toys.m0,m1:toys.m1}),Z={rev:0,gp:0,units:0};
+  const mopts=sel=>Array.from({length:21},(_,i)=>`<option value="${i}" ${i==sel?"selected":""}>${mlong(i)}</option>`).join("");
   const list=DATA.P.filter(p=>(toys.cat=="All"||p.cat==toys.cat)&&p.name.toLowerCase().includes(toys.q.toLowerCase()))
-    .map(p=>({p,...ALL.byProd[p.id]})).sort((a,b)=>{const x=val(a),y=val(b);return (typeof x=="string"?x.localeCompare(y):x-y)*toys.dir});
+    .map(p=>({p,...(R.byProd[p.id]||Z)})).sort((a,b)=>{const x=val(a),y=val(b);return (typeof x=="string"?x.localeCompare(y):x-y)*toys.dir});
   document.getElementById("toys").innerHTML=`<h1>🧸 Toy Finder</h1><p class="sub">Browse the catalog and tap any toy to see how it performs. <span class="tag">Toy art is original illustration, not product photos.</span></p>
+  <div class="fgroup"><span class="lbl">📅 Time</span>
+    ${PRESETS.map(([k,l])=>`<button class="chip ${toys.preset==k?"on":""}" onclick="toyPreset('${k}')">${l}</button>`).join("")}
+    <span style="color:var(--ink3)">or</span>
+    <select onchange="toyRange('m0',this.value)">${mopts(toys.m0)}</select> to <select onchange="toyRange('m1',this.value)">${mopts(toys.m1)}</select></div>
   <div class="fgroup"><span class="lbl">🔎 Find</span><input type="search" id="toyq" placeholder="Search toys…" value="${esc(toys.q)}" oninput="toys.q=this.value;renderToys();const i=document.getElementById('toyq');i.focus();i.setSelectionRange(99,99)">
    <span class="lbl" style="margin-left:8px">🏷️ Category</span>${["All",...CATS].map(c=>`<button class="chip ${toys.cat==c?"on":""}" onclick="toys.cat='${c}';renderToys()">${c}</button>`).join("")}</div>
   <div class="fgroup"><span class="lbl">↕️ Sort by</span><span class="seg">${Object.entries(SORTS).map(([k,l])=>`<button class="${toys.sort==k?"on":""}" onclick="toys.sort='${k}';toys.dir=${k=="name"?1:-1};renderToys()">${l}</button>`).join("")}</span>
    <button class="dir" onclick="toys.dir*=-1;renderToys()" title="Flip the order">⇅ ${dirWord(toys.sort,toys.dir)} (tap to flip)</button></div>
-  <p class="cap">Showing <b>${list.length}</b> toy${list.length==1?"":"s"}, sorted by <b>${SORTS[toys.sort].toLowerCase()}</b>, <b>${dirWord(toys.sort,toys.dir).toLowerCase()}</b>.</p>
-  ${list.length?`<div class="cards">${list.map(({p,rev,gp,units},i)=>`<div class="toy" onclick="openToy(${p.id})"><div class="img" style="background:${tileBg(p.id)}"><span class="rank">#${i+1}</span>${INV[p.id].zero>=8?`<span class="oos">Out in ${INV[p.id].zero} stores</span>`:""}${imgBlock(p.id)}</div>
+  <p class="cap">${mlong(toys.m0)} – ${mlong(toys.m1)}: <b>${list.length}</b> toy${list.length==1?"":"s"}, sorted by <b>${SORTS[toys.sort].toLowerCase()}</b>, <b>${dirWord(toys.sort,toys.dir).toLowerCase()}</b>.</p>
+  ${list.length?`<div class="cards">${list.map(({p,rev,gp,units},i)=>`<div class="toy ${units?"":"off"}" style="--cc:${CCOL[p.cat]}" onclick="openToy(${p.id})"><div class="img" style="background:${tileBg(p.id)}"><span class="rank ${i<3?"r"+(i+1):""}">#${i+1}</span>${INV[p.id].zero>=8?`<span class="oos">Out in ${INV[p.id].zero} stores</span>`:""}${imgBlock(p.id)}</div>
    <div class="b"><div class="n">${p.name}</div><div class="c">${p.cat} · $${p.price.toFixed(2)}</div>
-   <div class="m"><span>Units <b>${fmtN(units)}</b></span><span>Profit <b>${fmt$(gp)}</b></span></div></div></div>`).join("")}</div>`:`<div class="card">No toys match “${esc(toys.q)}”. Try a different search or category.</div>`}`;
+   ${units?`<div class="m"><span>Units<b>${fmtN(units)}</b></span><span>Profit<b>${fmt$(gp)}</b></span></div>`:`<div class="na">No sales in this window</div>`}</div></div>`).join("")}</div>`:`<div class="card">No toys match “${esc(toys.q)}”. Try a different search or category.</div>`}`;
 }
 function openToy(id){
-  const p=P[id],b=ALL.byProd[id],iv=INV[id],ms=ALL_BY_PROD_MONTH(id);
-  const A=agg({pid:id});
+  const p=P[id],R=agg({m0:toys.m0,m1:toys.m1}),b=R.byProd[id]||{rev:0,gp:0,units:0},iv=INV[id],ms=ALL_BY_PROD_MONTH(id);
+  const A=agg({pid:id,m0:toys.m0,m1:toys.m1});
   const stores=Object.entries(A.byStore).map(([sid,s])=>({label:ST[sid].city+" #"+ST[sid].name.split(" ").pop(),v:s.rev})).sort((a,b)=>b.v-a.v).slice(0,6);
-  const rankP=Object.entries(ALL.byProd).sort((a,b)=>b[1].gp-a[1].gp).findIndex(([k])=>k==id)+1;
+  const rankP=DATA.P.map(q=>[q.id,(R.byProd[q.id]||{gp:0}).gp]).sort((a,b)=>b[1]-a[1]).findIndex(([k])=>k==id)+1;
   const im=IMG[id];
   document.getElementById("panel").innerHTML=`<div style="display:flex;justify-content:space-between"><span class="tag">${p.cat}</span><button class="btn" onclick="closeToy()">✕ Close</button></div>
   <div class="hero-img" style="background:${tileBg(id)};margin-top:10px;border:2px solid var(--line)">${imgBlock(id)}</div>${im?`<div class="credit">Photo: ${esc(im.credit)} · ${esc(im.license)}</div>`:(ILLUS[id]?`<div class="credit">Original illustration, not a product photo.</div>`:`<div class="credit">Placeholder icon, not a product photo.</div>`)}
   <h2 style="margin:0;font-size:26px">${p.name}</h2>
   <div class="sub" style="margin:2px 0 0">Price $${p.price.toFixed(2)} · Cost $${p.cost.toFixed(2)} · Unit margin ${pct((p.price-p.cost)/p.price)}</div>
   <div class="stats"><div class="stat"><div class="l">Units sold</div><div class="v">${fmtN(b.units)}</div></div><div class="stat"><div class="l">Revenue</div><div class="v">${fmt$(b.rev)}</div></div><div class="stat"><div class="l">Est. profit</div><div class="v">${fmt$(b.gp)}</div></div></div>
-  <div class="cap">🏆 Ranks <b>#${rankP}</b> of 35 by estimated profit.</div>
+  <div class="cap">🏆 Ranks <b>#${rankP}</b> of 35 by estimated profit, ${mlong(toys.m0)} – ${mlong(toys.m1)}.</div>
   <div class="card" style="margin:12px 0"><h3>Monthly revenue</h3>${line(ms,{w:500,h:170})}</div>
-  <div class="card" style="margin:12px 0"><h3>Top stores</h3><div class="note">By revenue, full period</div>${hbars(stores,{w:500})}</div>
+  <div class="card" style="margin:12px 0"><h3>Top stores</h3><div class="note">By revenue, ${mlong(toys.m0)} – ${mlong(toys.m1)}</div>${hbars(stores,{w:500})}</div>
   <div class="card" style="margin:12px 0"><h3>📦 Stock on hand (current snapshot)</h3><div class="note">One undated snapshot, not a history</div>
   ${iv.stocked?`<b style="font-size:22px">${fmtN(iv.stock)}</b> units across ${iv.stocked} of 50 stores<br><b>${iv.zero}</b> store${iv.zero==1?"":"s"} at zero stock${iv.zero?`: ${iv.zeroStores.slice(0,6).map(s=>ST[s].city).join(", ")}${iv.zero>6?`, +${iv.zero-6} more`:""}`:""}`:"No inventory rows for this toy."}</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn pri" onclick="closeToy();show('ask');ask('Which stores sell the most ${p.name}?',true)">💬 Ask about this toy</button>
@@ -686,6 +703,7 @@ function show(t){current=t;history.replaceState(null,"","#"+t);
   ({start:renderStart,dashboard:renderDash,presentation:renderDeck,toys:renderToys,ask:renderAsk})[t]();
   closeToy();scrollTo(0,0)}
 (function(){const h=location.hash.slice(1);
+  if(h=="toys-l3"){toyPreset("l3");show("toys");return}
   if(h.startsWith("toy:")){show("toys");openToy(+h.slice(4))}
   else if(h.startsWith("dash:")){dash.cats=new Set([h.slice(5)]);show("dashboard")}
   else if(h.startsWith("pid:")){dash.pid=+h.slice(4);show("dashboard")}
