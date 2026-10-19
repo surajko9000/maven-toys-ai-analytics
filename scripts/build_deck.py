@@ -67,6 +67,7 @@ pf_store_avg = round(pf_sep / sales.Store_ID.nunique())     # average Sep units 
 assert pf_store_avg == 57
 pf_empty_k = round(13 * pf_store_avg * pf_unit_profit / 1000)
 assert pf_empty_k == 5
+pf_full_k = pf_month_profit_k + pf_empty_k
 pf_zero = int(((inv.Product_ID == pf_pid) & (inv.Stock_On_Hand == 0)).sum())
 
 first_sale = x.groupby("Product_Name").Date.min()
@@ -85,6 +86,7 @@ g = cbs.groupby([cbs.Store_ID, cbs.Date.dt.year]).Units.sum().unstack(fill_value
 stores_down = int((g[2023] < g[2022]).sum())
 cb_unit_profit = float(prod.loc[prod.Product_Name == "Colorbuds", "unit_profit"].iloc[0])
 gap_k = round((cb_first - cb_last) * cb_unit_profit / 1000)
+assert pf_full_k * 2 > gap_k, (pf_full_k, gap_k)   # restocked Playfoam covers more than half the Colorbuds gap
 peak_drop = lambda n: round((1 - units_m.loc[n].iloc[-1] / units_m.loc[n].max()) * 100)
 jenga_drop, etch_drop, hw_drop = peak_drop("Jenga"), peak_drop("Etch A Sketch"), peak_drop("Hot Wheels 5-Pack")
 etch_peak = str(units_m.loc["Etch A Sketch"].idxmax())
@@ -345,7 +347,7 @@ notes(s4, "This is the likely explanation, not a proven cause. Of the 10 toys th
           "Gamer Headphones -41%; Hot Wheels is the exception at -9%. Caveats: part of each drop is seasonal, and 'launch' means first sale in this data.")
 
 # ================================================================= slide 5: Playfoam
-s5 = content_slide(f"Playfoam is the early bright spot, but {pf_zero} empty stores are costing us about $5K a month", 5)
+s5 = content_slide(f"Playfoam is the early bright spot, and full shelves could cover over half of Colorbuds' lost profit", 5)
 cd = CategoryChartData()
 cd.categories = [n for n, _ in top5]
 cd.add_series("Profit", [v for _, v in top5])
@@ -381,7 +383,7 @@ for i, (n, _) in enumerate(top5):
         pt.format.fill.solid()
         pt.format.fill.fore_color.rgb = rgb(MINT)
 for i, (big, small, by) in enumerate([(f"{pf_margin}% margin", f"${pf_unit_profit:.0f} profit on every unit", 1.85),
-                                      (f"{pf_zero} stores out of stock", "13 x 57 units x $7 profit = about $5K a month", 3.45)]):
+                                      (f"{pf_zero} stores out of stock", f"13 x 57 units x $7 = +$5K a month (${pf_month_profit_k}K to ${pf_full_k}K)", 3.45)]):
     shape(s5, MSO_SHAPE.RECTANGLE, 7.5, by, 13.333 - LM - 7.5, 1.4, LIGHT, f"Stat panel {i+1}")
     text(s5, big, 7.8, by + 0.2, 4.7, 0.6, 26, MINT_T if i == 0 else ORANGE_T, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name=f"Stat title {i+1}")
     text(s5, small, 7.8, by + 0.88, 4.7, 0.4, 16, INK, name=f"Stat note {i+1}")
@@ -397,7 +399,7 @@ notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in
 # ================================================================= slide 6: recommendation
 s6 = content_slide("Next 8 weeks: keep Playfoam on shelves, test a Colorbuds fix, then back what works", 6)
 steps = [("1", "Restock Playfoam", "Goal: stop losing Playfoam sales to empty shelves",
-          ["Refill the 13 stores that have none", "13 stores x 57 units a month x $7 profit per unit = about $5K more profit a month", "Check stock every week"]),
+          ["Refill the 13 stores that have none", f"Playfoam goes from ${pf_month_profit_k}K to about ${pf_full_k}K profit a month, over half of what Colorbuds lost", "Check stock every week"]),
          ("2", "Test a Colorbuds fix", "Goal: win back some of the lost Colorbuds sales",
           ["Try new colors, a bundle with Gamer Headphones, or a better shelf spot", "Test it in 10 stores, against 10 similar stores that change nothing",
            "Winning back a quarter of the lost sales adds $11K profit a month"]),
@@ -422,7 +424,7 @@ for i, (num, head, goal, pts) in enumerate(steps):
     text(s6, goal, cx + 0.4, 3.4, colw - 0.8, 0.7, 15, (MINT_T, PINK_T, BLUE)[i], True, name=f"Goal {num}")
     bullets(s6, pts, cx + 0.4, 4.05, colw - 0.8, 2.7, 15, space=8, name=f"Step {num} details")
 notes(s6, "1) Keep Playfoam in stock: refill the 13 stores that have zero, and keep every store above about two weeks of sales (roughly 26 units a store); "
-          "check weekly. Where $5K comes from: the average store sold about 57 Playfoam units in September (2,847 units / 50 stores), each unit earns $7 profit, so 13 empty stores x 57 x $7 = about $5K a month. It is conservative: those 13 stores actually averaged about 71 units each in September before running out. "
+          "check weekly. Where $5K comes from: the average store sold about 57 Playfoam units in September (2,847 units / 50 stores), each unit earns $7 profit, so 13 empty stores x 57 x $7 = about $5K a month, which lifts Playfoam from about $20K to about $25K a month, more than half of the $44K a month Colorbuds has lost. It is conservative: those 13 stores actually averaged about 71 units each in September before running out. "
           "2) Test a Colorbuds fix: the options to try are new colors, a bundle with Gamer Headphones, or a better shelf spot. Run it in 10 stores and compare "
           "against 10 similar stores that change nothing, for about six weeks, so we learn what works before spending chain-wide. "
           "Winning back a quarter of the lost sales (about $44K a month lost, so about $11K) is the prize if it works. "
