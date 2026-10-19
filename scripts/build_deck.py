@@ -393,17 +393,17 @@ notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in
 # ================================================================= slide 6: recommendation
 s6 = content_slide("Next 8 weeks: keep Playfoam on shelves, test a Colorbuds fix, then back what works", 6)
 steps = [("1", "Restock Playfoam", "Goal: stop losing Playfoam sales to empty shelves",
-          ["Refill the **13 stores** that have none", "Gain: about **$5K more profit a month**", "Check stock **every week**"]),
+          ["Refill the 13 stores that have none", "That adds about $5K in profit every month", "Check stock every week"]),
          ("2", "Test a Colorbuds fix", "Goal: win back some of the lost Colorbuds sales",
-          ["Try **new colors**, a **bundle with Gamer Headphones**, or a **better shelf spot**", "Pilot in **10 stores** vs 10 similar stores that change nothing",
-           "Prize: a quarter of lost sales back is **$11K more profit a month**"]),
+          ["Try new colors, a bundle with Gamer Headphones, or a better shelf spot", "Test it in 10 stores, against 10 similar stores that change nothing",
+           "Winning back a quarter of the lost sales adds $11K profit a month"]),
          ("3", "Review in 8 weeks", "Goal: put effort behind what works",
-          ["**Scale** the Colorbuds fix if pilot stores sold **15% more**, otherwise stop", "Check whether **Playfoam is holding up** or cooling off",
-           "Pick the next **higher-margin toy** to back"])]
+          ["Roll out the Colorbuds fix if the test stores sold 15% more, otherwise drop it", "Check whether Playfoam is holding up or cooling off",
+           "Pick the next higher-margin toy to back"])]
 colw = (CW - 2 * 0.3) / 3
 for i, (num, head, goal, pts) in enumerate(steps):
     cx = LM + i * (colw + 0.3)
-    shape(s6, MSO_SHAPE.RECTANGLE, cx, 1.85, colw, 4.85, LIGHT, f"Panel {num}")
+    shape(s6, MSO_SHAPE.RECTANGLE, cx, 1.85, colw, 5.0, LIGHT, f"Panel {num}")
     badge = shape(s6, MSO_SHAPE.RECTANGLE, cx + 0.4, 2.1, 0.6, 0.6, (MINT_T, PINK_T, BLUE)[i], f"Number {num}")
     tf = badge.text_frame
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
@@ -416,7 +416,7 @@ for i, (num, head, goal, pts) in enumerate(steps):
     r.font.color.rgb = rgb("FFFFFF")
     text(s6, head, cx + 0.4, 2.85, colw - 0.8, 0.5, 22, NAVY, True, HEAD, name=f"Step {num}")
     text(s6, goal, cx + 0.4, 3.4, colw - 0.8, 0.7, 15, (MINT_T, PINK_T, BLUE)[i], True, name=f"Goal {num}")
-    bullets(s6, pts, cx + 0.4, 4.2, colw - 0.8, 2.4, 15, space=8, name=f"Step {num} details")
+    bullets(s6, pts, cx + 0.4, 4.05, colw - 0.8, 2.7, 15, space=8, name=f"Step {num} details")
 notes(s6, "1) Keep Playfoam in stock: refill the 13 stores that have zero, and keep every store above about two weeks of sales (roughly 26 units a store); "
           "check weekly. Each store sells about 57 Playfoam units a month at $7 profit, so 13 stores is about $5K a month. "
           "2) Test a Colorbuds fix: the options to try are new colors, a bundle with Gamer Headphones, or a better shelf spot. Run it in 10 stores and compare "
