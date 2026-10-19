@@ -545,6 +545,36 @@ def soaker2():
     return wrap("".join(s))
 M[32]=soaker2()
 
+# ---------- Dinosaurs v2: T-rex (left, facing right) and stegosaurus (right, facing left), no overlap ----------
+def dinos2():
+    s=[S(190,86)]
+    # ===== Stegosaurus (right) =====
+    g="#f08a24"; gl="#ffd9a0"
+    s.append(R(130,160,13,24,6,shade(g,.82))+R(176,160,13,24,6,shade(g,.82)))
+    s.append(Pa("M184 136 Q198 140 200 164 Q188 156 176 154Z",g,OUT(g,1.5)))
+    s.append(Pa("M196 150 l5 -9 l1 12Z","#fff3d0"))
+    s.append(E(156,146,36,23,g,OUT(g,1.6)))
+    s.append(E(154,156,22,10,gl,"opacity=\".75\""))
+    for x,y,h in ((130,126,16),(142,118,20),(156,114,23),(170,118,20),(182,126,16)):
+        s.append(Pa(f"M{x-8} {y+8} L{x} {y-h+8} L{x+8} {y+8}Z","#ffd23a",OUT("#ffd23a",1.2)))
+    s.append(Pa("M126 138 Q116 150 118 164 L132 160Z",g,OUT(g,1.2)))
+    s.append(E(112,158,14,9.5,g,OUT(g,1.4))+C(107,155,2.4,"#1c1f26")+Pa("M104 162 q5 3 9 0","none",'stroke="#8a3a08" stroke-width="1.8" stroke-linecap="round"'))
+    s.append(R(144,162,13,22,6,g)+R(162,162,13,22,6,g))
+    # ===== T-rex (left) =====
+    t="#2fb7a8"; tl="#c4f0e8"
+    s.append(R(54,164,14,20,6,shade(t,.78))+E(60,185,13,5,shade(t,.55)))
+    s.append(Pa("M32 128 Q14 136 4 160 Q24 154 42 154Z",t,OUT(t,1.6)))
+    s.append(E(52,138,24,22,t,OUT(t,1.6)))
+    s.append(E(58,146,13,12,tl,"opacity=\".8\""))
+    s.append(Pa("M62 124 Q64 94 82 90 L100 94 Q104 104 98 110 Q88 108 84 116 L76 136Z",t,OUT(t,1.4)))
+    s.append(Pa("M84 108 Q94 112 102 106 L100 112 Q92 118 84 114Z",shade(t,.8)))
+    s.append("".join(Pa(f"M{x} 107 l2.2 4.5 l2.2 -4.5Z","#fff") for x in (88,92.5,97)))
+    s.append(C(88,98,3.6,"#fff")+C(89,98,1.9,"#1c1f26")+C(98,99,1.3,shade(t,.55)))
+    s.append(Pa("M72 132 q9 3 11 12","none",f'stroke="{shade(t,.85)}" stroke-width="5" stroke-linecap="round"'))
+    s.append(E(50,156,15,19,shade(t,.9),OUT(t,1.2))+R(43,164,13,20,6,t)+E(49,185,14,5,shade(t,.6)))
+    return wrap("".join(s),"-2 0 212 200")
+M[10]=dinos2()
+
 ALL={**{k:v for k,v in BASE.items()},**M}
 if __name__=="__main__":
     json.dump(ALL,open(sys.argv[1],"w"),separators=(",",":"))
