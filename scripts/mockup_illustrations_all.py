@@ -961,15 +961,23 @@ M[27]=toolkit7()
 # --- Playfoam: coloured beads only (no white) ---
 def playfoam7():
     s=[S(188,62)]
-    random.seed(11)
+    random.seed(7)
     cols=["#ff7ab8","#7be0b3","#6aa8ff","#ffd23a","#b78cff","#ff9a5a","#2fd0c0"]
-    for _ in range(150):
-        x=random.randint(46,154); y=random.randint(38,114)
-        if (x-100)**2/60**2+((y-112)**2)/74**2<1:
-            c=random.choice(cols); r=random.choice([5,6,7])
-            s.append(C(x,y,r,c,f'stroke="{shade(c,.72)}" stroke-width=".9"')+C(x-r*.3,y-r*.3,r*.28,shade(c,1.25),"opacity=\".7\""))
+    placed=[]
+    def ok(x,y,r):
+        return all((x-px)**2+(y-py)**2>=((r+pr)*0.68)**2 for px,py,pr in placed)
+    # dense heap: many small beads, packed so there is no empty gap (bottom row first so top rows overlap it)
+    for _ in range(30000):
+        r=random.choice([2.6,3.2,3.8,4.4,5.0])
+        x=random.uniform(40,160); y=random.uniform(30,118)
+        if (x-100)**2/61**2+(y-112)**2/84**2>=1: continue
+        if ok(x,y,r): placed.append((x,y,r))
+    s.append(Pa("M40 114 A60 83 0 0 1 160 114Z","#b9a6ff"))   # backing so gaps between beads never show the page
+    for x,y,r in sorted(placed,key=lambda q:q[1]):
+        c=random.choice(cols)
+        s.append(C(round(x,1),round(y,1),r,c,f'stroke="{shade(c,.72)}" stroke-width=".7"')+C(round(x-r*.3,1),round(y-r*.3,1),round(r*.28,1),shade(c,1.25),'opacity=".7"'))
     s.append(Pa("M36 112 H164 L154 170 Q152 182 140 182 H60 Q48 182 46 170Z","#7b6bff",OUT("#7b6bff",1.6)))
-    s.append(R(30,100,140,16,7,"#9a8cff")+R(52,128,96,34,8,"#9a8cff","opacity=\".0\""))
+    s.append(R(30,100,140,16,7,"#9a8cff"))
     s.append(star(100,148,13,"#ffd23a"))
     return wrap("".join(s))
 M[28]=playfoam7()
