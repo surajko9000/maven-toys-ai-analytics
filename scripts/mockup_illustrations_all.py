@@ -981,6 +981,55 @@ def earbuds6b():
     return wrap("".join(s),"30 30 140 164")
 M[6]=earbuds6b()
 
+# ---------- v7: AirPods-style Colorbuds (buds + charging case) and a spike-free Dino Egg ----------
+def earbuds7():
+    s=[S(188,66)]
+    wh="#fbfbfd"; ed="#c9ccd6"; sh="#e4e6ee"
+    # charging case (white capsule, hinged lid, status LED, rainbow accent)
+    s.append(R(50,96,100,84,30,wh,'stroke="#d3d6e0" stroke-width="2.2"'))
+    s.append(R(58,104,22,64,10,"#fff","opacity=\".8\""))
+    s.append(Pa("M50 126 Q50 96 80 96 H120 Q150 96 150 126Z",sh,"opacity=\".55\""))
+    s.append(Pa("M52 126 H148","none",f'stroke="{ed}" stroke-width="2.4"'))
+    s.append(R(92,122,16,8,4,"#d5d8e2")+Pa("M62 114 Q100 102 138 114","none",'stroke="#ff7ab8" stroke-width="4" stroke-linecap="round"')+Pa("M62 120 Q100 108 138 120","none",'stroke="#7be0b3" stroke-width="4" stroke-linecap="round"')+Pa("M62 126 Q100 114 138 126","none",'stroke="#6aa8ff" stroke-width="0" stroke-linecap="round"'))
+    s.append(C(100,150,5,"#7be0b3",OUT("#3fae80",1.2))+C(98.5,148.5,1.6,"#e8fff3"))
+    s.append(Pa("M84 176 H116","none",f'stroke="{ed}" stroke-width="2" stroke-linecap="round"'))
+    # the two buds standing in front
+    for x,tilt,acc in ((64,8,"#ff7ab8"),(136,-8,"#2fd0c0")):
+        s.append(f'<g transform="rotate({tilt} {x} 100)">')
+        # stem (slim cylinder with flat end)
+        s.append(R(x-5.5,98,11,66,5.5,wh,'stroke="#d3d6e0" stroke-width="2"')+R(x-2,104,3.5,52,1.7,"#fff","opacity=\".9\""))
+        s.append(R(x-4.5,154,9,4,2,sh)+C(x,142,1.7,"#9da3b2"))
+        s.append(R(x-5.5,100,11,10,3,acc,"opacity=\".85\""))
+        # head (rounded bud) with speaker port facing the viewer
+        s.append(E(x,84,18,21,wh,'stroke="#d3d6e0" stroke-width="2"'))
+        s.append(Pa(f"M{x-13} 78 Q{x-6} 62 {x+8} 66","none",'stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".9"'))
+        s.append(E(x+4,92,8,9,"#e9ebf2",'stroke="#d3d6e0" stroke-width="1.2"')+E(x+4,92,5.4,6.4,"#aab0bf")+"".join(C(x+2.4+(i%3)*1.9,89.5+(i//3)*2.8,0.55,"#6e7587") for i in range(6)))
+        s.append(E(x-8,74,4,2.4,"#fff",f'opacity=".8" transform="rotate(-30 {x-8} 74)"'))
+        s.append('</g>')
+    return wrap("".join(s),"26 40 148 156")
+M[6]=earbuds7()
+
+def egg4():
+    sh="#f6edd3"; shd="#d9cba0"; sp="#5aa84a"
+    s=[S(188,64)]
+    g="#5ec15a"; gd="#3f9a4a"
+    # baby dino (behind the front shell): smooth round head, soft spots, no spikes
+    s.append(Pa("M68 132 Q60 72 100 64 Q140 72 132 132Z",g,OUT(gd,1.6)))
+    s.append("".join(C(cx,cy,r,gd,"opacity=\".35\"") for cx,cy,r in ((76,86,4.5),(124,84,5),(100,72,4),(86,70,3),(116,72,3.2),(70,104,3.4),(130,106,3.6))))
+    s.append(E(100,112,16,10,"#aee7a0","opacity=\".75\""))
+    s.append(C(86,94,11,"#fff")+C(114,94,11,"#fff")+C(88,95,5.8,"#1c1f26")+C(112,95,5.8,"#1c1f26")+C(90,93,1.9,"#fff")+C(114,93,1.9,"#fff"))
+    s.append(Pa("M90 116 Q100 125 110 116","none",'stroke="#2a6a32" stroke-width="3" stroke-linecap="round"')+C(96,109,1.6,gd)+C(104,109,1.6,gd))
+    s.append(E(80,106,5,3,"#ff9fb0","opacity=\".7\"")+E(120,106,5,3,"#ff9fb0","opacity=\".7\""))
+    s.append(E(60,138,8,6,g,OUT(gd,1))+E(140,138,8,6,g,OUT(gd,1)))
+    # bottom shell: rounded scalloped crack line instead of sharp points
+    s.append(Pa("M44 134 Q51 114 58 124 Q65 136 72 122 Q79 108 86 124 Q93 138 100 124 Q107 110 114 124 Q121 138 128 122 Q135 108 142 124 Q149 134 156 134 Q158 184 100 184 Q42 184 44 134Z",sh,OUT(shd,2)+' stroke-linejoin="round"'))
+    for cx,cy,r in ((62,152,5),(84,168,4.5),(112,160,5.5),(136,150,4.5),(98,146,3.5),(128,172,4),(66,172,3.5)): s.append(C(cx,cy,r,sp,"opacity=\".85\""))
+    # lifted top cap, also scalloped
+    s.append('<g transform="translate(150 54) rotate(24)">'+Pa("M-30 16 Q-24 2 -18 10 Q-12 20 -6 8 Q0 -4 6 8 Q12 20 18 8 Q24 -2 30 8 Q36 14 38 16 Q36 -34 4 -40 Q-30 -34 -30 16Z",sh,OUT(shd,2)+' stroke-linejoin="round"')+"".join(C(cx,cy,r,sp,"opacity=\".85\"") for cx,cy,r in ((-14,-14,4.5),(8,-22,4),(18,-6,3.5),(-4,-4,3)))+'</g>')
+    s.append(E(32,148,6,4,sh,OUT(shd,1.2))+E(170,150,6,4,sh,OUT(shd,1.2)))
+    return wrap("".join(s))
+M[9]=egg4()
+
 ALL={**{k:v for k,v in BASE.items()},**M}
 if __name__=="__main__":
     json.dump(ALL,open(sys.argv[1],"w"),separators=(",",":"))
