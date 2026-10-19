@@ -65,6 +65,7 @@ gap_k = round((cb_first - cb_last) * cb_unit_profit / 1000)
 peak_drop = lambda n: round((1 - units_m.loc[n].iloc[-1] / units_m.loc[n].max()) * 100)
 jenga_drop, etch_drop, hw_drop = peak_drop("Jenga"), peak_drop("Etch A Sketch"), peak_drop("Hot Wheels 5-Pack")
 etch_peak = str(units_m.loc["Etch A Sketch"].idxmax())
+mrp_drop, mrp_peak = peak_drop("Mr. Potatohead"), str(units_m.loc["Mr. Potatohead"].idxmax())
 
 # independent check against the numbers verified earlier with pandas
 assert (cb_first, cb_last, cb_drop) == (8110, 2594, 68), (cb_first, cb_last, cb_drop)
@@ -73,6 +74,7 @@ assert (pf_aug, pf_sep, pf_margin, pf_month_profit_k, pf_zero) == (1311, 2847, 6
 assert (len(faded), len(launched)) == (9, 10), (len(faded), len(launched))
 assert (q3_22_k, q3_23_k, pf_rank, stores_down, gap_k) == (142, 74, 5, 48, 44), (q3_22_k, q3_23_k, pf_rank, stores_down, gap_k)
 assert (jenga_drop, etch_drop, hw_drop, etch_peak) == (92, 56, 9, "2022-12"), (jenga_drop, etch_drop, hw_drop, etch_peak)
+assert (mrp_drop, mrp_peak) == (65, "2022-11"), (mrp_drop, mrp_peak)
 print("numbers verified:", dict(cb=(cb_first, cb_last, cb_drop), share=(share_22, share_23),
       playfoam=(pf_aug, pf_sep, pf_margin, pf_month_profit_k, pf_zero), faded=(len(faded), len(launched))))
 
@@ -106,10 +108,13 @@ def text(slide, s, x, y, w, h, size, color=INK, bold=False, font=BODY, align=PP_
     tf.vertical_anchor = anchor
     p = tf.paragraphs[0]
     p.alignment = align
-    r = p.add_run()
-    r.text = s
-    r.font.size, r.font.bold, r.font.name = Pt(size), bold, font
-    r.font.color.rgb = rgb(color)
+    for k, part in enumerate(s.split("**")):
+        if not part:
+            continue
+        r = p.add_run()
+        r.text = part
+        r.font.size, r.font.bold, r.font.name = Pt(size), (bold or k % 2 == 1), font
+        r.font.color.rgb = rgb(color)
     return tb
 
 
@@ -191,10 +196,10 @@ s1.background.fill.fore_color.rgb = rgb(NAVY)
 for k, c in enumerate((PINK, YELLOW, MINT)):
     shape(s1, MSO_SHAPE.RECTANGLE, LM + k * 0.2, 0.62, 0.14, 0.14, c, f"Mark {k+1}")
 text(s1, "MAVEN TOYS", LM + 0.8, 0.52, 4, 0.34, 14, "FFFFFF", True, name="Wordmark", anchor=MSO_ANCHOR.MIDDLE)
-_rows = [[BLUE, ORANGE, PINK, YELLOW], [MINT, BLUE, ORANGE], [PINK, MINT], [YELLOW]]
-for r_i, row in enumerate(_rows):
-    for c_i, col in enumerate(row):
-        shape(s1, MSO_SHAPE.RECTANGLE, 8.55 + r_i * 0.5 + c_i * 1.0, 6.15 - r_i * 1.0, 0.9, 0.9, col, f"Block r{r_i}c{c_i}")
+shape(s1, MSO_SHAPE.RECTANGLE, 8.5, 1.5, 4.23, 4.23, "FFFFFF", "Image panel")
+_pic = s1.shapes.add_picture(str(ROOT / "scripts" / "assets" / "colorbuds_illustration.png"), Inches(8.7), Inches(1.7), Inches(3.83), Inches(3.83))
+_pic.name = "Colorbuds illustration"
+_pic._element.nvPicPr.cNvPr.set("descr", "Illustration of Colorbuds: two colorful earbuds in an open charging case with a heart")
 _tb = text(s1, "Colorbuds, our #1 profit toy,", LM, 1.6, 7.9, 2.7, 40, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
 _p = _tb.text_frame.paragraphs[0]
 _p.add_line_break()
@@ -203,7 +208,6 @@ _r.text = "is in decline"
 _r.font.size, _r.font.bold, _r.font.name = Pt(40), True, HEAD
 _r.font.color.rgb = rgb("FFFFFF")
 text(s1, "A plan to protect profit by backing newer, higher-margin toys", LM, 4.55, 7.6, 0.9, 22, "D6E0EE", name="Subtitle")
-text(s1, "Colorbuds are our line of kids' wireless earbuds", LM, 5.55, 7.6, 0.4, 14, "A9B8CC", name="Descriptor")
 text(s1, "Business review  |  Data through Sep 30, 2023", LM, 6.75, 8, 0.4, 14, "A9B8CC", name="Date line")
 notes(s1, "Open with the one-line answer: Colorbuds (our line of kids' wireless earbuds), our #1 profit toy, is in decline. The plan is simple: back newer, "
           "higher-margin toys, test one cheap fix for Colorbuds, and review in 8 weeks. Keep the intro under 20 seconds.")
@@ -301,16 +305,16 @@ notes(s3, f"Monthly Colorbuds units fell from {cb_first:,} (Jan 2022) to {cb_las
 s4 = content_slide(f"Fading is normal for our toys: {len(faded)} of {len(launched)} recent launches are 40%+ below their peak", 4)
 shape(s4, MSO_SHAPE.RECTANGLE, LM, 1.85, 6.4, 4.9, LIGHT, "Stat panel")
 text(s4, f"{len(faded)} of {len(launched)}", LM + 0.4, 2.15, 5.6, 1.7, 88, ORANGE_T, True, HEAD, anchor=MSO_ANCHOR.MIDDLE, name="Big number")
-text(s4, "recent launches are 40%+ below their peak month", LM + 0.4, 3.95, 5.6, 0.9, 22, NAVY, name="Caption")
+text(s4, "recent launches are **40%+ below their peak month**", LM + 0.4, 3.95, 5.6, 0.9, 22, NAVY, name="Caption")
 for i in range(len(launched)):
     bx = LM + 0.4 + i * 0.54
     c = ORANGE if i < len(faded) else MID
     shape(s4, MSO_SHAPE.RECTANGLE, bx, 5.45, 0.42, 0.42, c, f"Toy marker {i+1}")
 label(s4, "Examples", 7.4, 1.95, 5, "Examples label")
-bullets(s4, [f"Jenga peaked in Jul 2022 and is now **down {jenga_drop}%**",
-             f"Etch A Sketch peaked its second month and is **down {etch_drop}%**",
-             f"Hot Wheels is the **lone exception**, down just {hw_drop}%",
-             "Colorbuds follows the **same pattern**"],
+bullets(s4, [f"Jenga peaked in Jul 2022 and is now down {jenga_drop}%",
+             f"Etch A Sketch peaked its second month and is down {etch_drop}%",
+             f"Mr. Potatohead peaked in Nov 2022 and is now down {mrp_drop}%",
+             "**Colorbuds is following the same trend**"],
         7.4, 2.45, CW - (7.4 - LM), 4.2, 20, space=16, name="Key points")
 notes(s4, "This is the likely explanation, not a proven cause. Of the 10 toys that started selling during this data (excluding Playfoam, "
           "which is too new), 9 now sell at least 40% less per month than in their peak month. Jenga -92%, Supersoaker -66%, "
@@ -365,9 +369,9 @@ notes(s5, f"Playfoam launched Aug 17, 2023 and sold {pf_aug + pf_sep:,} units in
           "Only six weeks of data; the $20K is a run-rate, not a forecast.")
 
 # ================================================================= slide 6: recommendation
-s6 = content_slide("We recommend three moves: back newer, higher-margin toys, test one Colorbuds fix, and review in 8 weeks", 6)
+s6 = content_slide("We recommend three moves: back newer, higher-margin toys, test a Colorbuds refresh, and review in 8 weeks", 6)
 steps = [("1", "Keep Playfoam in stock", ["Refill the **13 empty stores**", "Check weekly; worth about **$5K a month**"]),
-         ("2", "Test one Colorbuds fix", ["**10 test stores** vs 10 similar ones", "Up to about **$11K a month** if it works"]),
+         ("2", "Test a Colorbuds refresh", ["Try **new colors, a bundle with Gamer Headphones**, or a better shelf spot", "**10 test stores** vs 10 similar; up to about **$11K a month**"]),
          ("3", "Review in 8 weeks", ["**Scale what works**, stop what doesn't", "Pick the next **higher-margin toy**"])]
 colw = (CW - 2 * 0.3) / 3
 for i, (num, head, pts) in enumerate(steps):
@@ -384,10 +388,10 @@ for i, (num, head, pts) in enumerate(steps):
     r.font.size, r.font.bold, r.font.name = Pt(28), True, HEAD
     r.font.color.rgb = rgb("FFFFFF")
     text(s6, head, cx + 0.4, 3.3, colw - 0.8, 1.1, 24, NAVY, True, HEAD, name=f"Step {num}")
-    bullets(s6, pts, cx + 0.4, 4.6, colw - 0.8, 1.9, 17, space=10, name=f"Step {num} details")
+    bullets(s6, pts, cx + 0.4, 4.5, colw - 0.8, 1.9, 16, space=8, name=f"Step {num} details")
 notes(s6, "1) Keep Playfoam in stock: refill the 13 stores at zero and keep every store above about two weeks of sales (roughly 26 units a store); "
           "check weekly. Worth about $5K a month now. "
-          "2) Test one cheap Colorbuds fix: refresh, bundle with Gamer Headphones, or better shelf placement in about 10 stores against 10 similar "
+          "2) Test a Colorbuds refresh: the options to try are new colors, a bundle with Gamer Headphones, or a better shelf spot, in about 10 stores against 10 similar "
           "control stores for six weeks. Winning back a quarter of the lost sales is worth up to about $11K a month. "
           "3) Review at week 8: if the test stores sold about 15% more Colorbuds, scale the fix; if not, stop. Pick the next newer, higher-margin toy "
           "to back at the same review. The 15% threshold is a suggestion to agree on in advance, not something from the data. "
