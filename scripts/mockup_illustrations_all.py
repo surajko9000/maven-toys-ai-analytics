@@ -577,6 +577,91 @@ def dinos2():
     return wrap("".join(s),"-2 36 212 164")
 M[10]=dinos2()
 
+# ---------- v3 redraws: plush pony, dino egg, mini basketball hoop ----------
+def pony3():
+    b,bd,bl,m,mh="#c9a3ff","#a982f0","#e6d5ff","#ff7ab8","#ff9fcf"
+    s=[S(188,70)]
+    # tail (behind everything)
+    s.append(Pa("M150 112 Q186 100 184 140 Q182 168 168 158 Q172 136 148 130Z",m,OUT(m,1.4)))
+    s.append(Pa("M164 118 Q178 122 176 146",  "none", f'stroke="{mh}" stroke-width="3" stroke-linecap="round" opacity=".8"'))
+    # far legs (darker)
+    s.append(R(92,132,16,44,8,bd)+R(140,132,16,44,8,bd))
+    for x in (92,140): s.append(E(x+8,177,10,5.5,"#7a5ab8"))
+    # body
+    s.append(E(110,124,46,31,b,OUT(b,1.6)))
+    s.append(E(108,140,32,15,bl,"opacity=\".8\""))
+    # near legs
+    s.append(R(70,134,17,44,8,b,OUT(b,1))+R(124,134,17,44,8,b,OUT(b,1)))
+    for x in (70,124): s.append(E(x+8.5,178,11,6,"#8a64cc"))
+    # neck
+    s.append(Pa("M68 124 Q44 100 46 72 L86 56 Q92 90 106 122Z",b))
+    # mane down neck
+    s.append(Pa("M72 38 Q106 34 112 72 Q114 98 106 118 Q92 98 88 80 Q80 60 66 50Z",m,OUT(m,1.2)))
+    s.append(Pa("M88 52 Q100 64 98 88","none",f'stroke="{mh}" stroke-width="3.5" stroke-linecap="round"'))
+    s.append('<g transform="translate(-10 10)">')
+    # head
+    s.append(E(62,52,25,20,b,OUT(b,1.4)))
+    s.append(E(44,62,15,12,bl,OUT(bl,1)))
+    s.append(E(38,60,2.6,3.2,"#7a4ac0")+Pa("M40 70 q5 3.5 11 0","none",'stroke="#7a4ac0" stroke-width="2" stroke-linecap="round"'))
+    # ears
+    s.append(Pa("M72 36 L80 14 L88 38Z",b,OUT(b,1.2))+Pa("M76 34 L81 20 L85 35Z","#f6a8d0"))
+    s.append(Pa("M58 34 L60 14 L70 34Z",bd,OUT(bd,1.2)))
+    # forelock
+    s.append(Pa("M52 34 Q70 22 84 38 Q70 40 62 52 Q56 44 52 34Z",m,OUT(m,1.2)))
+    # eye + blush
+    s.append(C(58,50,6.2,"#fff")+C(58.5,51,4.4,"#2b1a4a")+C(60,49,1.6,"#fff"))
+    s.append(E(64,66,6,3.6,"#ff9fcf","opacity=\".75\""))
+    s.append('</g>')
+    # cutie mark
+    s.append(Pa("M110 126 q-9 -10 -2 -14 q4 -2 6 3 q2 -5 6 -3 q7 4 -2 14 l-4 4Z","#ff5aa0"))
+    return wrap("".join(s))
+M[29]=pony3()
+
+def egg3():
+    sh="#f6edd3"; shd="#d9cba0"; sp="#5aa84a"
+    s=[S(188,64)]
+    # baby dino (behind the front shell)
+    g="#5ec15a"
+    s.append(Pa("M70 130 Q64 74 100 66 Q136 74 130 130Z",g,OUT(g,1.6)))
+    s.append("".join(Pa(f"M{cx-7} 70 L{cx} 54 L{cx+7} 70Z","#ffd23a",OUT("#ffd23a",1)) for cx in (84,100,116)))
+    s.append(C(86,94,11,"#fff")+C(114,94,11,"#fff")+C(88,95,5.8,"#1c1f26")+C(112,95,5.8,"#1c1f26")+C(90,93,1.9,"#fff")+C(114,93,1.9,"#fff"))
+    s.append(Pa("M88 116 Q100 126 112 116","none",'stroke="#2a6a32" stroke-width="3" stroke-linecap="round"')+E(80,106,5,3,"#ff9fb0","opacity=\".7\"")+E(120,106,5,3,"#ff9fb0","opacity=\".7\""))
+    s.append(E(60,138,8,6,g,OUT(g,1))+E(140,138,8,6,g,OUT(g,1)))
+    # bottom shell with zigzag rim
+    s.append(Pa("M44 134 L58 118 L72 134 L86 116 L100 134 L114 116 L128 134 L142 118 L156 134 Q158 184 100 184 Q42 184 44 134Z",sh,OUT(shd,2)))
+    for cx,cy,r in ((62,152,5),(84,168,4.5),(112,160,5.5),(136,150,4.5),(98,146,3.5),(128,172,4),(66,172,3.5)): s.append(C(cx,cy,r,sp,"opacity=\".85\""))
+    # lifted top cap
+    s.append('<g transform="translate(150 54) rotate(24)">'+Pa("M-30 16 L-18 0 L-6 14 L6 -2 L18 14 L30 0 L38 16 Q36 -34 4 -40 Q-30 -34 -30 16Z",sh,OUT(shd,2))+"".join(C(cx,cy,r,sp,"opacity=\".85\"") for cx,cy,r in ((-14,-14,4.5),(8,-22,4),(18,-6,3.5),(-4,-4,3)))+'</g>')
+    s.append(Pa("M28 150 l8 -6 l4 8Z",sh,OUT(shd,1.2))+Pa("M166 150 l9 -4 l1 9Z",sh,OUT(shd,1.2)))
+    return wrap("".join(s))
+M[9]=egg3()
+
+def hoop3():
+    s=[S(190,62)]
+    grey="#8d97a8"
+    # over-the-door hooks
+    s.append(Pa("M56 28 V10 Q56 4 62 4 H72 Q78 4 78 10 V16","none",f'stroke="{grey}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"'))
+    s.append(Pa("M112 28 V10 Q112 4 118 4 H128 Q134 4 134 10 V16","none",f'stroke="{grey}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"'))
+    # backboard
+    s.append(R(36,26,122,76,8,"#ffffff",'stroke="#2a78d6" stroke-width="5"'))
+    s.append(R(70,50,54,40,3,"none",'stroke="#e8554e" stroke-width="5"'))
+    s.append(R(40,30,114,8,3,"#2a78d6","opacity=\".12\""))
+    # rim bracket + rim
+    s.append(R(92,96,10,12,3,"#f26a1b"))
+    s.append(E(97,110,32,9,"none",'stroke="#f26a1b" stroke-width="5.5"'))
+    # net
+    top=[(97+32*math.cos(a), 110+9*math.sin(a)) for a in [i*math.pi/6 for i in range(0,7)]]
+    bot=[(97+17*math.cos(a), 150+5*math.sin(a)) for a in [i*math.pi/6 for i in range(0,7)]]
+    for (x1,y1),(x2,y2) in zip(top,bot): s.append(Pa(f"M{x1:.1f} {y1+2:.1f} L{x2:.1f} {y2:.1f}","none",f'stroke="{grey}" stroke-width="2"'))
+    for (x1,y1),(x2,y2) in zip(top[:-1],bot[1:]): s.append(Pa(f"M{x1:.1f} {y1+2:.1f} L{x2:.1f} {y2:.1f}","none",f'stroke="{grey}" stroke-width="1.3" opacity=".7"'))
+    for (x1,y1),(x2,y2) in zip(top[1:],bot[:-1]): s.append(Pa(f"M{x1:.1f} {y1+2:.1f} L{x2:.1f} {y2:.1f}","none",f'stroke="{grey}" stroke-width="1.3" opacity=".7"'))
+    s.append(E(97,150,17,5,"none",f'stroke="{grey}" stroke-width="2"')+E(97,130,24,7,"none",f'stroke="{grey}" stroke-width="1.5" opacity=".7"'))
+    # ball
+    s.append(E(150,182,26,6,"#000","opacity=\".16\""))
+    s.append(C(150,158,25,"#f08a24",OUT("#f08a24",1.6))+Pa("M125 158 H175 M150 133 V183","none",'stroke="#7a3208" stroke-width="2.2"')+Pa("M133 141 Q150 158 133 175 M167 141 Q150 158 167 175","none",'stroke="#7a3208" stroke-width="2.2"')+E(140,146,7,4.5,"#fff",'opacity=".28" transform="rotate(-35 140 146)"'))
+    return wrap("".join(s))
+M[20]=hoop3()
+
 ALL={**{k:v for k,v in BASE.items()},**M}
 if __name__=="__main__":
     json.dump(ALL,open(sys.argv[1],"w"),separators=(",",":"))
