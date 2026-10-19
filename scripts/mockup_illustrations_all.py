@@ -561,6 +561,7 @@ def dinos2():
     s.append(E(112,158,14,9.5,g,OUT(g,1.4))+C(107,155,2.4,"#1c1f26")+Pa("M104 162 q5 3 9 0","none",'stroke="#8a3a08" stroke-width="1.8" stroke-linecap="round"'))
     s.append(R(144,162,13,22,6,g)+R(162,162,13,22,6,g))
     # ===== T-rex (left) =====
+    s.append('<g transform="translate(4 186) scale(1.12) translate(-4 -186)">')
     t="#2fb7a8"; tl="#c4f0e8"
     s.append(R(54,164,14,20,6,shade(t,.78))+E(60,185,13,5,shade(t,.55)))
     s.append(Pa("M32 128 Q14 136 4 160 Q24 154 42 154Z",t,OUT(t,1.6)))
@@ -572,7 +573,8 @@ def dinos2():
     s.append(C(88,98,3.6,"#fff")+C(89,98,1.9,"#1c1f26")+C(98,99,1.3,shade(t,.55)))
     s.append(Pa("M72 132 q9 3 11 12","none",f'stroke="{shade(t,.85)}" stroke-width="5" stroke-linecap="round"'))
     s.append(E(50,156,15,19,shade(t,.9),OUT(t,1.2))+R(43,164,13,20,6,t)+E(49,185,14,5,shade(t,.6)))
-    return wrap("".join(s),"-2 0 212 200")
+    s.append("</g>")
+    return wrap("".join(s),"-2 36 212 164")
 M[10]=dinos2()
 
 ALL={**{k:v for k,v in BASE.items()},**M}
