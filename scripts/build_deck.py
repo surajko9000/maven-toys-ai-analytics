@@ -239,15 +239,14 @@ _cover_card(0.85, "FBE6EE", "colorbuds_illustration.png", 1.6, "Colorbuds", "Col
 shape(s1, MSO_SHAPE.DOWN_ARROW, 8.4 + (13.333 - 8.4) / 2 - 0.2, 3.7, 0.4, 0.4, MINT, "Arrow from Colorbuds to Playfoam")
 _cover_card(4.35, "EAE6FF", "playfoam_illustration.png", 1.6, "Playfoam", "Playfoam", "Launched Aug 2023, already our #2 profit toy",
             "Illustration of Playfoam: a purple tub heaped with tiny colorful beads")
-_tb = text(s1, "Colorbuds, our #1 profit toy,", LM, 1.5, 7.7, 2.9, 38, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
+_tb = text(s1, "From Colorbuds", LM, 1.6, 7.7, 2.7, 46, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")
 _p = _tb.text_frame.paragraphs[0]
-for _txt, _col in (("is in decline.", "FFFFFF"), ("Playfoam is the next bet.", "8FE3C3")):
-    _p.add_line_break()
-    _r = _p.add_run()
-    _r.text = _txt
-    _r.font.size, _r.font.bold, _r.font.name = Pt(38), True, HEAD
-    _r.font.color.rgb = rgb(_col)
-text(s1, "A plan to protect profit by backing newer, higher-margin toys", LM, 4.55, 7.6, 0.9, 22, "D6E0EE", name="Subtitle")
+_p.add_line_break()
+_r = _p.add_run()
+_r.text = "to Playfoam"
+_r.font.size, _r.font.bold, _r.font.name = Pt(46), True, HEAD
+_r.font.color.rgb = rgb("FFFFFF")
+text(s1, "Our #1 profit toy is in decline. Here is how we protect profit.", LM, 4.55, 7.6, 0.9, 22, "D6E0EE", name="Subtitle")
 text(s1, "Business review  |  Data through Sep 30, 2023", LM, 6.75, 8, 0.4, 14, "A9B8CC", name="Date line")
 notes(s1, "Open with the one-line answer: Colorbuds (our line of kids' wireless earbuds), our #1 profit toy, is in decline, and Playfoam, a new toy launched in August, is the next bet. The plan is simple: back newer, "
           "higher-margin toys, test one cheap fix for Colorbuds, and review in 8 weeks. Keep the intro under 20 seconds.")
