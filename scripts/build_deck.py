@@ -237,7 +237,8 @@ def _cover_card(cy, fname, art_h, name, big, small, descr):
     text(s1, small, cx + 0.3, cy + 2.3, cw - 0.6, 0.32, 13, "3E4A5A", False, BODY, PP_ALIGN.CENTER, name=f"{name} card caption")
 _cover_card(0.85, "colorbuds_illustration.png", 1.6, "Colorbuds", "Colorbuds", "Our #1 profit toy, in decline",
             "Illustration of Colorbuds: two colorful earbuds in an open charging case with a heart")
-shape(s1, MSO_SHAPE.DOWN_ARROW, 8.4 + (13.333 - 8.4) / 2 - 0.2, 3.7, 0.4, 0.4, "5FA892", "Arrow from Colorbuds to Playfoam")
+_arr = shape(s1, MSO_SHAPE.DOWN_ARROW, 8.4 + (13.333 - 8.4) / 2 - 0.17, 3.725, 0.34, 0.5, "62A6A0", "Arrow from Colorbuds to Playfoam")
+_arr.adjustments[0], _arr.adjustments[1] = 0.38, 0.55
 _cover_card(4.35, "playfoam_illustration.png", 1.6, "Playfoam", "Playfoam", "Launched Aug 2023, already our #2 profit toy",
             "Illustration of Playfoam: a blue tub heaped with tiny teal beads")
 _tb = text(s1, "From Colorbuds", LM, 1.6, 7.7, 2.7, 46, "FFFFFF", True, HEAD, anchor=MSO_ANCHOR.BOTTOM, name="Title")

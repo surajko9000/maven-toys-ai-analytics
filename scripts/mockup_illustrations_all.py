@@ -1100,8 +1100,8 @@ def earbuds8():
         g.append(f'<path d="M{hx-13} {hy-5} Q{hx-11} {hy-15} {hx-2} {hy-17}" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".9"/>')
         g.append('</g>')
         return "".join(g)
-    s.append(bud(68,78,-14,"#5F80A6",(73,132),-6))
-    s.append(bud(132,66,12,"#7F9FB5",(127,132),6))
+    s.append(bud(68,78,-14,"#3F8C8A",(73,132),-6))
+    s.append(bud(132,66,12,"#62A6A0",(127,132),6))
     # squat rounded case; its top edge is the front lip, hiding the bottom of the stems
     s.append(f'<path d="M50 124 Q50 138 100 138 Q150 138 150 124 L150 160 Q150 188 124 188 L76 188 Q50 188 50 160 Z" fill="{case}" stroke="{line}" stroke-width="{lw}" stroke-linejoin="round"/>')
     s.append('<path d="M62 160 Q62 176 78 176" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".75"/>')
