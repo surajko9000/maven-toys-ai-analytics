@@ -195,7 +195,8 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .thumb{position:relative;border:3px solid transparent;border-radius:8px;padding:0;background:#fff;cursor:pointer;overflow:hidden;line-height:0;box-shadow:0 2px 0 var(--line)}
 .thumb img{width:100%;height:auto;display:block;opacity:.75}
 .thumb.on{border-color:var(--s1)}.thumb.on img{opacity:1}
-.thumb b{position:absolute;left:6px;top:4px;font:800 11px/1.4 var(--font);background:#fff;color:var(--ink);border-radius:999px;padding:0 7px}
+.thumb b{position:absolute;left:6px;top:6px;font:800 13px/1.5 var(--font);background:var(--ink);color:#fff;border-radius:999px;padding:1px 9px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.thumb.on b{background:var(--s1)}
 @media(max-width:700px){.navb{width:36px;height:36px;font-size:22px}.thumbs{margin:14px 0 0;grid-template-columns:repeat(3,1fr)}.deckbar .hint{margin-left:0;width:100%}}
 @media(max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.two,.askwrap{grid-template-columns:1fr}.tour{grid-template-columns:1fr 1fr}.deck{padding:28px}.deck h2{font-size:26px}.hero{padding:28px 22px}.hero h1{font-size:30px}.badge{display:none}.bar{gap:10px}}
 @media(max-width:560px){.tour{grid-template-columns:1fr}}
@@ -506,7 +507,7 @@ function renderDeck(){
     <div class="stage" id="stage" onclick="go(1)"><img id="deckimg" alt="" draggable="false"></div>
     <button class="navb" id="dnext" onclick="go(1)" aria-label="Next slide">›</button>
   </div>
-  <div class="thumbs">${Array.from({length:n},(_,i)=>`<button class="thumb" id="th${i}" onclick="goTo(${i})" aria-label="Go to slide ${i+1}"><img src="${deckImg(i)}" alt="" loading="lazy"><b>${i+1}</b></button>`).join("")}</div>
+  <div class="thumbs">${Array.from({length:n},(_,i)=>`<button class="thumb" id="th${i}" onclick="goTo(${i})" aria-label="Go to slide ${i+1}"><img src="${deckImg(i)}" alt="" loading="lazy"><b>#${i+1}</b></button>`).join("")}</div>
   <p class="src">Snapshot of the data through Sep 30, 2023. Numbers are computed from the CSVs and checked against an independent calculation. Profit is estimated from current price and cost.</p>`;
   showSlide();
 }
