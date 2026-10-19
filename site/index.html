@@ -400,7 +400,7 @@ function setPreset(k){const p=PRESETS.find(x=>x[0]==k);dash.preset=k;dash.m0=p[2
 function setRange(which,v){v=+v;if(which=="m0"){dash.m0=v;if(dash.m1<v)dash.m1=v}else{dash.m1=v;if(dash.m0>v)dash.m0=v}
   dash.preset=(PRESETS.find(x=>x[2]==dash.m0&&x[3]==dash.m1)||[null])[0];renderDash()}
 function fbar(key,open,sum,inner,reset){const re=key=="dash"?"renderDash":"renderToys";
-  return `<div class="fbar"><button class="fhead" onclick="${key}.fopen=!${key}.fopen;${re}()" aria-expanded="${!!open}"><span>🎛</span><span class="fsum">${sum}</span>${reset?`<span class="freset" onclick="event.stopPropagation();${key}Reset()">Reset</span>`:""}<span class="fch">${open?"Hide ▴":"Filters ▾"}</span></button>${open?`<div class="fbody">${inner}<button class="btn fdone" onclick="${key}.fopen=false;${re}()">Done</button></div>`:""}</div>`}
+  return `<div class="fbar"><button class="fhead" onclick="${key}.fopen=!${key}.fopen;${re}()" aria-expanded="${!!open}"><span class="fsum">${sum}</span>${reset?`<span class="freset" onclick="event.stopPropagation();${key}Reset()">Reset</span>`:""}<span class="fch">${open?"Hide ▴":"Filters ▾"}</span></button>${open?`<div class="fbody">${inner}<button class="btn fdone" onclick="${key}.fopen=false;${re}()">Done</button></div>`:""}</div>`}
 const sc=(l,on)=>`<span class="sc ${on?"on":""}">${l}</span>`;
 function dashReset(){Object.assign(dash,{cats:new Set(CATS),pid:null,m0:0,m1:20,preset:"all",metric:"rev",show:"val"});renderDash()}
 function renderDash(){
