@@ -48,6 +48,7 @@ pf_aug, pf_sep = int(pf["2023-08"]), int(pf["2023-09"])
 pf_unit_profit = float(prod.loc[prod.Product_Name == "Playfoam", "unit_profit"].iloc[0])
 pf_margin = round(pf_unit_profit / float(prod.loc[prod.Product_Name == "Playfoam", "Product_Price"].iloc[0]) * 100)
 pf_month_profit_k = round(pf_sep * pf_unit_profit / 1000)
+pf_aug_profit_k = round(pf_aug * pf_unit_profit / 1000)
 pf_pid = int(prod.loc[prod.Product_Name == "Playfoam", "Product_ID"].iloc[0])
 pf_zero = int(((inv.Product_ID == pf_pid) & (inv.Stock_On_Hand == 0)).sum())
 
@@ -216,7 +217,7 @@ notes(s1, "Open with the one-line answer: Colorbuds (our line of kids' wireless 
 s2 = content_slide("Our top profit toy is fading, and a newer toy is already making up part of the gap", 2)
 for i, (big, lab, cap, bx, bcol) in enumerate([
     (f"{share_22}% → {share_23}%", "Colorbuds' share of quarterly profit", "Q3 2022 to Q3 2023", LM, PINK_T),
-    (f"${pf_month_profit_k}K", "Playfoam profit per month", "At its September pace", LM + CW / 2 + 0.2, MINT_T),
+    (f"${pf_aug_profit_k}K → ${pf_month_profit_k}K", "Playfoam profit per month", f"{pf_aug:,} → {pf_sep:,} units sold  |  Aug (from the 17th) to Sep", LM + CW / 2 + 0.2, MINT_T),
 ]):
     w = CW / 2 - 0.2
     shape(s2, MSO_SHAPE.RECTANGLE, bx, 1.85, w, 2.75, LIGHT, f"Panel {i+1}")
@@ -229,7 +230,7 @@ bullets(s2, ["Colorbuds is still our **#1 profit toy**, but its share has **more
         LM, 4.95, CW, 1.8, 20, name="Key points")
 notes(s2, f"Colorbuds earned about {share_22}% of Q3 2022 profit and {share_23}% of Q3 2023 profit; it is still our #1 profit toy, "
           f"so it is fading, not dead. Playfoam launched in mid-August 2023; at its September pace ({pf_sep:,} units x "
-          f"${pf_unit_profit:.0f} profit per unit) it earns about ${pf_month_profit_k}K a month. Colorbuds' monthly profit is about ${gap_k}K lower than in "
+          f"${pf_unit_profit:.0f} profit per unit) it earns about ${pf_month_profit_k}K a month. August covers only the 17th onward, so the rise is partly a longer month. Colorbuds' monthly profit is about ${gap_k}K lower than in "
           "Jan 2022 ((8,110 - 2,594) units x $8). Profit is estimated from current price and cost, not accounting figures.")
 
 # ================================================================= slide 3: the fall
