@@ -617,6 +617,49 @@ def pony3():
     return wrap("".join(s))
 M[29]=pony3()
 
+# ---------- v4: pink plush unicorn pony (clipart style) ----------
+def pony4():
+    b,bd,bl,mn,rb="#f2709f","#d9558a","#f9a3c3","#fde6ef","#ee5b93"
+    hoof,silver,silv2="#fff3ee","#cfd4de","#aab1c0"
+    mo='stroke="#f2b8cf" stroke-width="1.4" stroke-linejoin="round"'
+    s=[S(190,62)]
+    # tail (behind body)
+    s.append(Pa("M150 92 Q192 84 188 138 Q186 168 170 160 Q178 132 148 118Z",mn,mo))
+    s.append(Pa("M160 100 Q184 108 178 148","none",f'stroke="{rb}" stroke-width="3.2" stroke-linecap="round"'))
+    s.append(Pa("M170 100 Q190 118 184 142","none",'stroke="#f7c3d8" stroke-width="2.4" stroke-linecap="round"'))
+    # far legs
+    s.append(Pa("M98 104 L98 172 Q98 176 104 176 L112 176 Q116 176 116 172 L114 104Z",bd)+Pa("M140 104 L140 172 Q140 176 146 176 L154 176 Q158 176 158 172 L156 104Z",bd))
+    for x in (107,149): s.append(E(x,178,11,5.5,"#f3d9d2"))
+    # near legs (long, slightly tapered)
+    s.append(Pa("M78 106 L77 170 Q77 174 83 174 L92 174 Q96 174 96 170 L98 106Z",b,OUT(b,1))+Pa("M128 106 L127 170 Q127 174 133 174 L142 174 Q146 174 146 170 L148 106Z",b,OUT(b,1)))
+    for x in (86.5,136.5): s.append(E(x,176,12,6.5,hoof,OUT(hoof,1)))
+    # body
+    s.append(E(112,100,46,26,b,OUT(b,1.6)))
+    s.append(E(110,112,30,10,bl,'opacity=".6"'))
+    # neck (tall, slim)
+    s.append(Pa("M74 104 Q62 84 60 58 L88 46 Q96 82 108 104Z",b))
+    # mane down neck
+    s.append(Pa("M72 32 Q100 26 108 56 Q112 84 108 104 Q94 88 92 72 Q86 52 68 42Z",mn,mo))
+    s.append(Pa("M84 40 Q98 54 96 82","none",f'stroke="{rb}" stroke-width="3.2" stroke-linecap="round"'))
+    s.append(Pa("M96 48 Q108 68 104 94","none",'stroke="#f7c3d8" stroke-width="2.6" stroke-linecap="round"'))
+    # head (smaller)
+    s.append(E(62,54,21,16,b,OUT(b,1.4)))
+    s.append(E(46,63,12.5,9.5,bl,OUT(bl,1)))
+    s.append(E(41,63,1.6,2.2,"#c2447a")+Pa("M44 70 q4 2.6 9 0","none",'stroke="#c2447a" stroke-width="1.8" stroke-linecap="round"'))
+    # ear + horn
+    s.append(Pa("M70 42 L76 20 L86 40Z",b,OUT(b,1.2))+Pa("M74 39 L78 26 L83 38Z","#f9b8d0"))
+    s.append(Pa("M57 40 L52 8 L69 36Z",silver,OUT(silver,1.2)))
+    s.append(Pa("M54 26 L64 31","none",f'stroke="{silv2}" stroke-width="2" stroke-linecap="round"')+Pa("M53 17 L60 21","none",f'stroke="{silv2}" stroke-width="1.8" stroke-linecap="round"'))
+    # forelock
+    s.append(Pa("M58 38 Q72 29 82 40 Q71 40 66 47 Q60 44 58 38Z",mn,mo))
+    # eye + blush
+    s.append(C(58,52,4.4,"#2a1822")+C(59.4,50.4,1.5,"#fff"))
+    s.append(E(54,64,5,3,"#ff8fb8",'opacity=".7"'))
+    # sparkles
+    s.append(star(130,50,5,"#fff")+star(24,30,4,"#fff4b8"))
+    return wrap("".join(s))
+M[29]=pony4()
+
 def egg3():
     sh="#f6edd3"; shd="#d9cba0"; sp="#5aa84a"
     s=[S(188,64)]
