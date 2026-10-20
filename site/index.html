@@ -168,6 +168,11 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .shero{background:#fff;border:2px solid var(--line);border-left:8px solid var(--s7);border-radius:var(--radius);padding:24px 28px;margin-bottom:18px;box-shadow:0 5px 0 var(--line)}
 .shero h1{margin:12px 0 10px;font-size:34px;line-height:1.15}.shero p{font-size:16.5px;line-height:1.55;margin:8px 0;max-width:820px;color:var(--ink)}
 .cta{display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;margin-top:22px;font-size:15.5px;line-height:1.5;background:#fff}.cta:hover{transform:translateY(-1px)}
+.lnk{color:#1c5cab;font-weight:800;cursor:pointer;text-decoration:none;white-space:nowrap;margin-left:6px}.lnk:hover{text-decoration:underline}
+.mut{color:var(--ink2)}
+.h3b{margin:0 0 6px !important;font-size:17px !important}
+.two ul.plain li{font-size:15px}
+.whom{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:22px}.whom p{margin:0;font-size:15px;line-height:1.5;color:var(--ink2)}
 .shl{margin:6px 0 10px !important}.shl li{font-size:16.5px !important;margin:4px 0 !important}
 .lead{font-size:16px;line-height:1.55;max-width:820px;margin:0 0 14px;color:var(--ink2)}
 .jobs{display:grid;gap:10px}
@@ -344,23 +349,33 @@ function renderStart(){
   <div class="shero">
     <span class="tag">🧸 Prototype</span> <span class="tag">🤖 Built with Claude Code</span>
     <h1>How can Claude Code augment the work of a data analyst?</h1>
-    <p>This site is a test. I gave <b>Claude Code</b> (an AI coding assistant) a set of toy-sales data and asked it to build what a data analyst normally builds:</p>
-    <ul class="plain shl"><li>A <b>dashboard</b></li><li>A <b>presentation</b></li><li>A way to answer <b>ad hoc questions</b></li></ul>
-    <p>The data is free, public data on toy sales across Mexico, from Maven Analytics. It describes a made-up toy store chain.</p>
+    <p>This site is a test. I gave <b>Claude Code</b> (an AI coding assistant) toy-sales data and asked it to produce the three things data analysts are asked for most:</p>
+    <ul class="plain shl">
+      <li><b>Dashboards</b> <span class="mut">· charts and tables people can filter</span> <a class="lnk" onclick="show('dashboard')">Open the dashboard →</a></li>
+      <li><b>Data presentations</b> <span class="mut">· a short deck that tells the story</span> <a class="lnk" onclick="show('presentation')">Open the presentation →</a></li>
+      <li><b>Answers to ad hoc questions</b> <span class="mut">· one-off questions, answered fast</span> <a class="lnk" onclick="show('ask')">Try Ask →</a></li>
+    </ul>
+    <p class="mut" style="margin-top:10px">Test case: the data shows Colorbuds, the #1 profit toy, in decline, and a newer toy, Playfoam, as the next bet.</p>
   </div>
+
+  <div class="two">
+    <div class="card"><h3 class="h3b">🗂️ The data</h3>
+      <ul class="plain"><li>It is <b>free, public data</b> from Maven Analytics.</li>
+      <li>It is about <b>toy sales for a fictional company in Mexico</b>: 50 stores, 35 toys, Jan 2022 to Sep 2023.</li></ul></div>
+    <div class="card"><h3 class="h3b">🤖 Made with AI</h3>
+      <ul class="plain"><li><b>Claude made everything you see:</b> the code, charts, slides, toy drawings and text.</li>
+      <li>The data is the only part not made by AI. I wrote the requests and checked the numbers.</li></ul></div>
+  </div>
+
+  <h2 class="sec">🗺️ Explore</h2>
   <div class="tour">${arts}</div>
 
   <div class="card cta" onclick="show('about')"><div><b>Want the details?</b> See what data analysts do, how Claude helps, and how the data is set up, with its assumptions.</div><span class="btn pri">How it works →</span></div>
 
-  <h2 class="sec">🚀 Try these</h2>
-  <div class="quick">
-    <button class="btn" onclick="show('presentation')">🎤 Flip through the deck</button>
-    <button class="btn" onclick="show('ask');ask('Which products generated the most profit last quarter?',true)">💬 Ask: top profit last quarter</button>
-    <button class="btn" onclick="show('toys');openToy(18)">🧸 Open a toy’s detail page</button>
-    <button class="btn" onclick="dash.cats=new Set(['Electronics']);show('dashboard')">📊 Dashboard: Electronics only</button>
-  </div>`;
+  <div class="card whom"><div><h3 class="h3b">👋 Who made this, and why</h3>
+    <p>Built by <a class="lnk" href="https://github.com/surajko9000" target="_blank" rel="noopener">@surajko9000</a> to see how far Claude Code can go on everyday analyst work, with a human directing it and checking the results.</p></div>
+    <a class="btn pri" href="https://github.com/surajko9000/maven-toys-ai-analytics" target="_blank" rel="noopener" style="text-decoration:none;white-space:nowrap">View the code on GitHub ↗</a></div>`;
 }
-
 
 function renderAbout(){
   const steps=[
