@@ -17,7 +17,7 @@ no server, no API keys.
 | **Toy Finder** | Visual catalog of the 35 toys with detail view, comparison, stock by store |
 | **Ask** | Chat-style Q&A that matches a typed question to ~20-30 verified questions; declines what it can't answer |
 
-All tabs share one `agg()` function in the template, so revenue, profit and margin mean the same thing everywhere.
+All tabs share one `agg()` function in `site-src/js/02-metrics.js`, so revenue, profit and margin mean the same thing everywhere.
 
 ## Status
 
