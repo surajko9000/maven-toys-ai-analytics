@@ -303,8 +303,8 @@ function renderStart(){
   const conf=[["62%","12%","#ffd34d",14,-20],["88%","16%","#ff8fb1",12,25],["72%","74%","#7be0b3",16,40],["50%","82%","#ffd34d",10,15],["94%","58%","#ffffff",10,-30],["78%","40%","#7be0b3",10,30]]
     .map(([l,t,c,s,r])=>`<span class="conf" style="left:${l};top:${t};width:${s}px;height:${s}px;background:${c};transform:rotate(${r}deg)"></span>`).join("");
   const tour=[["dashboard","📊","Dashboard","Filter by time, category and toy. KPIs, trends, rankings, a sortable table and CSV export.","Analyst job: build a dashboard","#e3eefb"],
-              ["presentation","🎤","Presentation","Click through the Colorbuds deck, or download it as PowerPoint or PDF.","Analyst job: make a presentation","#fcf0d2"],
               ["toys","🧸","Toy Finder","Browse the 35 toys like a catalog. Tap one to see sales, profit and stock.","Bonus: a small data app","#fbe6ee"],
+              ["presentation","🎤","Presentation","Click through the Colorbuds deck, or download it as PowerPoint or PDF.","Analyst job: make a presentation","#fcf0d2"],
               ["ask","💬","Ask","Type a question in plain English and get an answer with the chart and how it was calculated.","Analyst job: answer ad-hoc questions","#def5ec"]]
     .map(([k,e,n,d,j,c])=>`<div class="card t" style="background:${c}" onclick="show('${k}')"><div class="e">${e}</div><h3>${n}</h3><p>${d}</p><span class="job">${j}</span><span class="go">Open ${n} →</span></div>`).join("");
   document.getElementById("start").innerHTML=`
@@ -337,8 +337,8 @@ function renderStart(){
       <div class="node" style="background:#fcf0d2">📁 Toy-store data<small>4 CSV files</small></div><div class="arrow">→</div>
       <div class="node" style="background:#ece8fb">🤖 Claude Code<small>you describe, it builds</small></div><div class="arrow">→</div>
       <div class="outs">
-        <div class="node" style="background:#e3eefb">📊 Dashboard</div><div class="node" style="background:#fcf0d2">🎤 Presentation</div>
-        <div class="node" style="background:#def5ec">💬 Ask</div><div class="node" style="background:#fbe6ee">🧸 Toy Finder</div>
+        <div class="node" style="background:#e3eefb">📊 Dashboard</div><div class="node" style="background:#fbe6ee">🧸 Toy Finder</div>
+        <div class="node" style="background:#fcf0d2">🎤 Presentation</div><div class="node" style="background:#def5ec">💬 Ask</div>
       </div>
     </div>
   </div>
@@ -717,7 +717,7 @@ function answer(q){
 }
 
 /* ---------- router ---------- */
-const TABS=[["start","🏠","Start here","var(--s7)"],["dashboard","📊","Dashboard","var(--s1)"],["presentation","🎤","Presentation","#d68700"],["toys","🧸","Toy Finder","var(--s5)"],["ask","💬","Ask","var(--s3)"]];
+const TABS=[["start","🏠","Start here","var(--s7)"],["dashboard","📊","Dashboard","var(--s1)"],["toys","🧸","Toy Finder","var(--s5)"],["presentation","🎤","Presentation","#d68700"],["ask","💬","Ask","var(--s3)"]];
 let current="start";
 function show(t){current=t;history.replaceState(null,"","#"+t);
   document.querySelectorAll(".tab").forEach(e=>e.classList.toggle("on",e.id==t));
