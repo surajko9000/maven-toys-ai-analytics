@@ -37,15 +37,22 @@ h3,.card h3,.hcard h3{font-weight:600}
 header{background:#fffaf0 radial-gradient(circle at 12px 12px,#f6e8c8 3.2px,transparent 3.6px) 0 0/24px 24px}
 nav button.on{box-shadow:0 4px 0 rgba(0,0,0,.18)}
 .hherowrap{position:relative}
-.ht{position:absolute;width:92px;height:92px;pointer-events:none;filter:drop-shadow(0 7px 4px rgba(60,40,10,.14));animation:htf 6s ease-in-out infinite}
-.ht svg{width:100%;height:100%;display:block}
-.ht:nth-child(1){left:3%;top:4px;transform:rotate(-10deg)}
-.ht:nth-child(2){left:10%;top:62px;width:72px;height:72px;transform:rotate(9deg);animation-delay:-2s}
-.ht:nth-child(3){right:3%;top:2px;transform:rotate(9deg);animation-delay:-1s}
-.ht:nth-child(4){right:10%;top:62px;width:72px;height:72px;transform:rotate(-8deg);animation-delay:-3s}
-@keyframes htf{0%,100%{translate:0 0}50%{translate:0 -7px}}
-@media(prefers-reduced-motion:reduce){.ht{animation:none}}
-@media(max-width:1000px){.ht{display:none}}
+
+.cf{position:absolute;opacity:.7;pointer-events:none;animation:cff 7s ease-in-out infinite}
+.c-ci{border-radius:50%}.c-sq{border-radius:4px;rotate:18deg}
+.c-st{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+@keyframes cff{0%,100%{translate:0 0}50%{translate:0 -9px}}
+.shelf{display:flex;justify-content:center;align-items:flex-end;gap:6px;max-width:1120px;margin:2px auto 0;padding:0 6px}
+.shelf button{flex:1;max-width:92px;aspect-ratio:1;background:none;border:0;cursor:pointer;padding:0;filter:drop-shadow(0 6px 3px rgba(60,40,10,.15));animation:bob 5s ease-in-out infinite;animation-delay:calc(var(--i)*-.45s);transition:scale .15s,rotate .15s}
+.shelf button svg{width:100%;height:100%;display:block}
+.shelf button:hover,.shelf button:focus-visible{animation-play-state:paused;scale:1.18;rotate:0deg;outline:none}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -8px}}
+.shelfboard{height:16px;max-width:1120px;margin:-8px auto 0;border-radius:10px;background:linear-gradient(#f3dcab,#e6c07a);box-shadow:0 5px 0 #d4ac66}
+.shelfhint{text-align:center;color:var(--ink3);font-size:13px;margin:12px 0 18px;font-weight:700}
+.h1t{display:inline-block;width:50px;height:50px;vertical-align:-12px;margin-right:8px}.h1t svg{width:100%;height:100%;display:block}
+.bot{display:inline-block;width:22px;height:22px;vertical-align:-6px;margin-right:2px}.bot svg{width:100%;height:100%;display:block}
+@media(max-width:900px){.shelf button:nth-child(n+7){display:none}}
+@media(prefers-reduced-motion:reduce){.cf,.shelf button{animation:none}}
 .hcard:nth-child(1) .hb{background:#f4f8ff}.hcard:nth-child(2) .hb{background:#fffaf0}.hcard:nth-child(3) .hb{background:#f1fbf6}.hcard:nth-child(4) .hb{background:#fff3f8}
 .hcard:hover{transform:translateY(-5px) rotate(-.7deg)}
 .hcard:nth-child(even):hover{transform:translateY(-5px) rotate(.7deg)}
@@ -398,15 +405,20 @@ function renderStart(){
                ["ask","3","Ask questions","img/home-ask.jpg","Type a one-off question and get an answer with a chart. A demo of ad hoc requests.","Try Ask","#1baf7a",""],
                ["toys","✨","Toy Finder","img/home-toys.jpg","A custom data app: browse all 35 toys like a store catalog. I asked for a picture of every toy, and Claude drew all 35 as original illustrations. Normally this takes a developer, a designer and weeks of work.","Open the Toy Finder","#d6336c","Bonus · only possible with Claude"]]
     .map(([k,n,h,img,d,b,c,tag])=>`<div class="hcard" onclick="show('${k}')"><img src="${img}" alt="Preview of the ${h} tab" loading="lazy"><div class="hb">${tag?`<span class="hunlock">${tag}</span>`:`<span class="hn" style="background:${c}">${n}</span>`}<h3>${h}</h3><p>${d}</p><span class="btn pri" style="background:${c};border-color:${c}">${b} →</span></div></div>`).join("");
+  const SH=[[6,"Colorbuds",-6],[18,"Lego Bricks",5],[29,"Plush Pony",-4],[28,"Playfoam",6],[9,"Dino Egg",-5],[33,"Teddy Bear",4],[34,"Toy Robot",-6],[30,"Rubik's Cube",5],[16,"Jenga",-4],[11,"Etch A Sketch",6],[14,"Glass Marbles",-5],[31,"Splash Balls",4]];
+  const shelf=SH.map(([id,n,r],i)=>`<button style="--i:${i};rotate:${r}deg" title="${n}" aria-label="Meet ${n}" onclick="show('toys');openToy(${id})">${ILLUS[id]}</button>`).join("");
+  const CF=[["8%","10px","#ffd34d","c-sq",14],["16%","120px","#ff8fb1","c-ci",12],["27%","30px","#7be0b3","c-st",18],["38%","150px","#9fc2ff","c-sq",12],["61%","24px","#ff9a5a","c-ci",14],["72%","140px","#b78cff","c-st",18],["84%","14px","#7be0b3","c-sq",13],["92%","118px","#ffd34d","c-ci",12],["3%","90px","#9fc2ff","c-st",16],["50%","6px","#ff8fb1","c-st",14]];
+  const confetti=CF.map(([l,tp,c,k,s],i)=>`<span class="cf ${k}" style="left:${l};top:${tp};width:${s}px;height:${s}px;background:${c};animation-delay:${-i*.7}s"></span>`).join("");
   document.getElementById("start").innerHTML=`
   <div class="hherowrap">
-    <div class="ht" aria-hidden="true">${ILLUS[18]}</div><div class="ht" aria-hidden="true">${ILLUS[29]}</div>
-    <div class="ht" aria-hidden="true">${ILLUS[6]}</div><div class="ht" aria-hidden="true">${ILLUS[28]}</div>
+    ${confetti}
     <div class="hhero">
       <span class="eyebrow">A Claude Code experiment</span>
       <h1>Maven Toys Analytics Hub</h1>
     </div>
   </div>
+  <div class="shelf">${shelf}</div><div class="shelfboard"></div>
+  <p class="shelfhint">Tap a toy to meet it</p>
   <div class="card hctx">
     <p>This site is a <b>demonstration</b> of what Claude Code can build for a data analyst.</p>
     <p>Data analysts are usually asked for <b>three</b> things:</p>
@@ -466,7 +478,7 @@ function renderDash(){
   const dashSum=sc("📅 "+tl,dash.preset!="all")+sc("🏷️ "+(cats?cats.join(", "):"All categories"),!!cats)+sc("🧸 "+(dash.pid?P[dash.pid].name:"All toys"),!!dash.pid)+sc("📐 "+MET[m].n+(m!="mg"&&dash.show=="pct"?" · % share":""),m!="rev"||dash.show!="val");
   const dashDirty=dash.preset!="all"||!!cats||!!dash.pid||m!="rev"||dash.show!="val";
   document.getElementById("dashboard").innerHTML=`
-  <h1>📊 Sales Performance Dashboard</h1><p class="sub">Revenue, profit and units across 50 stores and 35 toys, Jan 2022 – Sep 2023. Click the filter bar to change the time window, category, toy or measure.</p>
+  <h1><span class="h1t">${ILLUS[30]}</span>Sales Performance Dashboard</h1><p class="sub">Revenue, profit and units across 50 stores and 35 toys, Jan 2022 – Sep 2023. Click the filter bar to change the time window, category, toy or measure.</p>
   ${fbar("dash",dash.fopen,dashSum,`<div class="fgroup"><span class="lbl">📅 Time</span>
     ${PRESETS.map(([k,l])=>`<button class="chip ${dash.preset==k?"on":""}" onclick="setPreset('${k}')">${l}</button>`).join("")}
     <span style="color:var(--ink3)">or</span>
@@ -528,7 +540,7 @@ let slide=0;
 const deckImg=i=>`deck/preview/slide-${i+1}.jpg`;
 function renderDeck(){
   const n=DECK.titles.length;
-  document.getElementById("presentation").innerHTML=`<h1>🎤 From Colorbuds to Playfoam: The Business Review</h1>
+  document.getElementById("presentation").innerHTML=`<h1><span class="h1t">${ILLUS[6]}</span>From Colorbuds to Playfoam: The Business Review</h1>
   <p class="sub">The deck Claude drafted from the data. Click through it here, or download it to edit.</p>
   <div class="deckbar"><span class="dlabel">⬇ Download</span>
     <a class="btn pri" href="${DECK.pptx}" download>PowerPoint (.pptx)</a>
@@ -574,7 +586,7 @@ function renderToys(){
   const tDirty=toys.preset!="all"||toys.cat!="All"||toys.sort!="gp"||toys.dir!=-1||!!toys.q;
   const list=DATA.P.filter(p=>(toys.cat=="All"||p.cat==toys.cat)&&p.name.toLowerCase().includes(toys.q.toLowerCase()))
     .map(p=>({p,...(R.byProd[p.id]||Z)})).sort((a,b)=>{const x=val(a),y=val(b);return (typeof x=="string"?x.localeCompare(y):x-y)*toys.dir});
-  document.getElementById("toys").innerHTML=`<h1>🧸 Toy Catalog: How Every Toy Performs</h1><p class="sub">Browse the catalog and tap any toy to see how it performs. <span class="tag">Toy art is original illustration, not product photos.</span></p>
+  document.getElementById("toys").innerHTML=`<h1><span class="h1t">${ILLUS[33]}</span>Toy Catalog: How Every Toy Performs</h1><p class="sub">Browse the catalog and tap any toy to see how it performs. <span class="tag">Toy art is original illustration, not product photos.</span></p>
   ${fbar("toys",toys.fopen,tSum,`<div class="fgroup"><span class="lbl">📅 Time</span>
     ${PRESETS.map(([k,l])=>`<button class="chip ${toys.preset==k?"on":""}" onclick="toyPreset('${k}')">${l}</button>`).join("")}
     <span style="color:var(--ink3)">or</span>
@@ -1188,7 +1200,7 @@ function runEval(){
 const chat=[];let askBusy=false;let lastAsk=null;let askHelpOpen=false;
 function renderAsk(){
   const groups={};for(const q of QS)(groups[q.group]??=[]).push(q);
-  document.getElementById("ask").innerHTML=`<h1>💬 Ask the Data: Questions in Plain English</h1><p class="sub"><span class="tag" style="background:#ffe9a0">🧪 Demo, not real AI</span> Type a question in plain English. This page picks from 15 prepared questions and shows its work.</p>
+  document.getElementById("ask").innerHTML=`<h1><span class="h1t">${ILLUS[34]}</span>Ask the Data: Questions in Plain English</h1><p class="sub"><span class="tag" style="background:#ffe9a0">🧪 Demo, not real AI</span> Type a question in plain English. This page picks from 15 prepared questions and shows its work.</p>
   <details class="card demo" ${askHelpOpen?"open":""} ontoggle="askHelpOpen=this.open"><summary><span class="tag" style="background:#ffe9a0">💡 How it works</span> How does this work? Click to learn more</summary>
     <div class="mini"><div class="node" style="background:#e3eefb">🙋 You<small>ask in chat</small></div><div class="arrow">→</div><div class="node" style="background:#ece8fb">💬 Claude<small>or another AI chat tool</small></div><div class="arrow">→</div><div class="node" style="background:#fcf0d2">🗄️ Company data<small>AI writes and runs SQL</small></div><div class="arrow">→</div><div class="node" style="background:#def5ec">📊 Answer<small>in the chat: text, tables, charts</small></div></div>
     <p class="note" style="text-align:center;margin:6px 0 0;font-size:12.5px">In real life, you ask Claude (or a similar AI chat tool) connected to your company's data, and it answers right in the chat.</p>
@@ -1210,7 +1222,7 @@ function renderAsk(){
     </div>
   </details>
   <div class="askwrap"><div>
-    <div class="chat" id="chatlog">${chat.length?chat.map(m=>m.html).join(""):`<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>Hi! I'm a demo analyst, not real AI. Ask about toys, stores, categories, time or stock, and add a toy, category or time period, like <i>“best-selling toys in Games last quarter”</i>. I remember your last question, so you can follow up with <i>“what about Electronics?”</i><div class="sugg">${["Which toys generated the most profit last quarter?","How does 2023 compare with 2022?","Which category has the best gross margin?","Where do popular toys have zero stock?"].map(q=>`<button class="chip" onclick="ask(this.textContent)">${q}</button>`).join("")}</div></div>`}</div>
+    <div class="chat" id="chatlog">${chat.length?chat.map(m=>m.html).join(""):`<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>Hi! I'm a demo analyst, not real AI. Ask about toys, stores, categories, time or stock, and add a toy, category or time period, like <i>“best-selling toys in Games last quarter”</i>. I remember your last question, so you can follow up with <i>“what about Electronics?”</i><div class="sugg">${["Which toys generated the most profit last quarter?","How does 2023 compare with 2022?","Which category has the best gross margin?","Where do popular toys have zero stock?"].map(q=>`<button class="chip" onclick="ask(this.textContent)">${q}</button>`).join("")}</div></div>`}</div>
     <div class="askrow"><input type="text" id="askin" placeholder="Ask about toys, stores, categories, time or stock…" onkeydown="if(event.key=='Enter')ask()"><button class="btn pri" onclick="ask()">Ask</button></div>
   </div>
   <div class="card side"><h3>📚 Browse approved questions</h3>${Object.entries(groups).map(([g,qs])=>`<div class="grp"><div class="gt">${g}</div>${qs.map(q=>`<button onclick="ask(this.textContent,true)">${q.title}</button>`).join("")}</div>`).join("")}<div class="note">Tip: add a toy, category or time period to any question.</div></div></div>`;
@@ -1233,26 +1245,26 @@ function answer(q){
   const slots=parseSlots(q);
   const FOLLOW=/^\s*(and|what about|how about|same|now|ok|okay|then|what if|also|instead|just)\b/i;
   const metric=METRICW.test(q);
-  if(UNSUP.test(q)) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div><b>I can't answer that from this dataset.</b> It has sales, toys, stores and a stock snapshot, but no customer, survey, review, promotion or forecast data. Closest things I can answer:${chips(["Which toys generated the most profit?","How has revenue changed over time?","How does 2023 compare with 2022?"])}</div>`;
-  if(/\bwhy\b/i.test(q)) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div><b>I can show you <i>what</i> changed, but not <i>why</i>.</b> The data has no information about causes like promotions or supply problems. I can show where the change happened:${chips(["How has revenue changed over time?","How does 2023 compare with 2022?","Which category has the best gross margin?"])}</div>`;
-  if(AMBIG.test(q)&&!metric&&/\b(toy|toys|product|products)\b/i.test(q)) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>“Best” can mean different things. Which do you mean?${chips(["What were the best-selling toys?","Which toys generated the most profit?","Which toys brought in the most revenue?"])}</div>`;
+  if(UNSUP.test(q)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div><b>I can't answer that from this dataset.</b> It has sales, toys, stores and a stock snapshot, but no customer, survey, review, promotion or forecast data. Closest things I can answer:${chips(["Which toys generated the most profit?","How has revenue changed over time?","How does 2023 compare with 2022?"])}</div>`;
+  if(/\bwhy\b/i.test(q)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div><b>I can show you <i>what</i> changed, but not <i>why</i>.</b> The data has no information about causes like promotions or supply problems. I can show where the change happened:${chips(["How has revenue changed over time?","How does 2023 compare with 2022?","Which category has the best gross margin?"])}</div>`;
+  if(AMBIG.test(q)&&!metric&&/\b(toy|toys|product|products)\b/i.test(q)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>“Best” can mean different things. Which do you mean?${chips(["What were the best-selling toys?","Which toys generated the most profit?","Which toys brought in the most revenue?"])}</div>`;
   let {best,score,near}=match2(q);
   const isFollow=!!lastAsk&&slots.chips.length>0&&(!best||score<MATCH_MIN||FOLLOW.test(q));
   if(isFollow){best=lastAsk.q;near=[best,...best.rel.map(id=>QI[id])]}
   const ctx=isFollow?{m0:0,m1:20,...lastAsk.slots,...slots}:{m0:0,m1:20,...slots};
   if(isFollow){const key=c=>c.split(":")[0];const mine=new Set(slots.chips.map(key));slots.chips=[...slots.chips,...lastAsk.chips.filter(c=>!mine.has(key(c)))]}
-  if(!isFollow&&(!best||score<MATCH_MIN)) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>I'm not sure I have an approved answer for that. Did you mean one of these?${chips(near.map(x=>x.title))}</div>`;
-  if(best.needs=="pid"&&!ctx.pid) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>Which toy do you mean?${chips(["Lego Bricks","Colorbuds","Rubik's Cube","Nerf Gun","Monopoly","Jenga"].map(n=>`Which stores sell the most ${n}?`))}</div>`;
+  if(!isFollow&&(!best||score<MATCH_MIN)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>I'm not sure I have an approved answer for that. Did you mean one of these?${chips(near.map(x=>x.title))}</div>`;
+  if(best.needs=="pid"&&!ctx.pid) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>Which toy do you mean?${chips(["Lego Bricks","Colorbuds","Rubik's Cube","Nerf Gun","Monopoly","Jenga"].map(n=>`Which stores sell the most ${n}?`))}</div>`;
   const r=best.run(ctx);
   if(r)lastAsk={q:best,slots:{...ctx},chips:[...slots.chips]};
-  if(!r) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>I understood this as <b>${best.title}</b>, but there are no sales for that combination${slots.chips.length?` (${slots.chips.join(", ")})`:""}. Try a wider time period.${chips(near.map(x=>x.title))}</div>`;
+  if(!r) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>I understood this as <b>${best.title}</b>, but there are no sales for that combination${slots.chips.length?` (${slots.chips.join(", ")})`:""}. Try a wider time period.${chips(near.map(x=>x.title))}</div>`;
   let chart="";
   if(r.chart=="line") chart=line(r.series,{w:600,h:200,fmt:r.fmt,labels:i=>mlabel(i+r.offset)});
   else if(r.chart=="cards") chart=`<div class="bignum">${r.cards.map(c=>`<div><span style="font-size:12px;color:var(--ink2);font-weight:700">${c.l}</span><b class="${c.v>=0?"up":"down"}">${c.v>=0?"▲":"▼"} ${Math.abs(c.v).toFixed(1)}%</b></div>`).join("")}</div>`;
   else chart=hbars(r.rows,{w:600,fmt:r.fmt});
   const follow=[...best.rel.map(id=>QI[id].title)];
   const extra=[];if(!ctx.period&&best.needs!="pid"&&best.id!="yoy"&&best.id!="low_stock"&&best.id!="zero_stock")extra.push(best.title.replace(/\?$/,"")+" last quarter?");if(!ctx.cats&&best.needs!="pid"&&!["low_stock","zero_stock"].includes(best.id))extra.push(best.title.replace(/\?$/,"")+" in Games?");
-  return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>
+  return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>
     <div style="font-size:12px;color:var(--ink2);margin-bottom:6px">${isFollow?"Following up on your last question. ":""}I understood this as: <b>${best.title}</b>${slots.chips.length?`<br>${slots.chips.map(c=>`<span class="slot">${esc(c)}</span>`).join("")}`:""}</div>${esc(r.text)}
     <div style="margin:6px 0">${chart}</div>
     <div class="meta"><span class="ok">✓ Approved question</span> · computed live from the CSVs · Source: ${r.src}<br><b>How it's calculated:</b> ${r.def}
