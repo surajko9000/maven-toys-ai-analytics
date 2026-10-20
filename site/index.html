@@ -1156,29 +1156,29 @@ function runEval(){
 const chat=[];let askBusy=false;let lastAsk=null;let askHelpOpen=false;
 function renderAsk(){
   const groups={};for(const q of QS)(groups[q.group]??=[]).push(q);
-  document.getElementById("ask").innerHTML=`<h1>💬 Ask the Data: Questions in Plain English</h1><p class="sub">Type a question in your own words. I answer from a list of approved questions and show my work. If I can't answer, I'll say so.</p>
-  <details class="card demo" ${askHelpOpen?"open":""} ontoggle="askHelpOpen=this.open"><summary><span class="tag" style="background:#ffe9a0">💡 How it works</span> Curious how this works? Click to learn more</summary>
-    <div class="mini"><div class="node" style="background:#e3eefb">🙋 You<small>type a question</small></div><div class="arrow">→</div><div class="node" style="background:#ece8fb">💬 Claude chat<small>or your AI chat tool of choice</small></div><div class="arrow">→</div><div class="node" style="background:#fcf0d2">🗄️ Company data<small>AI writes and runs a SQL query</small></div><div class="arrow">→</div><div class="node" style="background:#def5ec">📊 Answer<small>table, chart and the SQL used</small></div></div>
-    <p class="note" style="text-align:center;margin:6px 0 0;font-size:12.5px">The real thing: you ask in a chat tool like Claude, connected to the company's database.</p>
+  document.getElementById("ask").innerHTML=`<h1>💬 Ask the Data: Questions in Plain English</h1><p class="sub"><span class="tag" style="background:#ffe9a0">🧪 Demo, not real AI</span> Type a question in plain English. This page picks from 15 prepared questions and shows its work.</p>
+  <details class="card demo" ${askHelpOpen?"open":""} ontoggle="askHelpOpen=this.open"><summary><span class="tag" style="background:#ffe9a0">💡 How it works</span> How does this work? Click to learn more</summary>
+    <div class="mini"><div class="node" style="background:#e3eefb">🙋 You<small>ask in chat</small></div><div class="arrow">→</div><div class="node" style="background:#ece8fb">💬 Claude<small>or another AI chat tool</small></div><div class="arrow">→</div><div class="node" style="background:#fcf0d2">🗄️ Company data<small>AI writes and runs SQL</small></div><div class="arrow">→</div><div class="node" style="background:#def5ec">📊 Answer<small>in the chat: text, tables, charts</small></div></div>
+    <p class="note" style="text-align:center;margin:6px 0 0;font-size:12.5px">In real life, you ask Claude (or a similar AI chat tool) connected to your company's data, and it answers right in the chat.</p>
     <div class="cmp">
-      <div><h4>🚀 The real thing, in a company</h4><ul>
-        <li>You open <b>Claude</b> (or ChatGPT, Gemini or another AI chat tool) that has been connected to the company's database.</li>
-        <li>You ask any question in plain English. The AI writes the database query (SQL), runs it, and shows you the result as a table or chart.</li>
-        <li>It can answer questions nobody planned for, and you can keep asking follow-ups.</li>
-        <li>Examples: Claude with an MCP connector (a standard plug-in for AI tools) to BigQuery, Snowflake or Postgres. Some data platforms have this built in, such as Databricks Genie, Snowflake Cortex Analyst and Looker's Conversational Analytics.</li></ul></div>
-      <div><h4>🧪 What you're using on this page</h4><ul>
-        <li>There is no AI service behind this chat. It matches what you type to one of <b>15 questions I prepared</b>, using about 200 example phrasings.</li>
-        <li>The answer is then calculated from the CSV files, right in your browser.</li>
-        <li>It remembers your last question, so follow-ups like "what about Electronics?" work.</li>
-        <li>It can't answer anything outside those 15 questions, and it says so.</li></ul></div>
-      <div><h4>🤔 Why isn't this page real AI?</h4><ul>
-        <li>Every real AI answer costs money: the AI service charges per question, and the database has to be running.</li>
-        <li>It also needs safety rules so the AI can't run a wrong or harmful query.</li>
-        <li>A free public page can't safely pay for that, so this demo shows the idea without the bill.</li></ul></div>
+      <div><h4>🚀 The real thing</h4><ul>
+        <li>Open Claude (or ChatGPT, Gemini or similar), connected to your company's database.</li>
+        <li>Ask anything in plain English. The AI writes the SQL, runs it, and answers in the chat, with a table or chart if you want.</li>
+        <li>It handles new questions and follow-ups.</li>
+        <li>Examples: Claude with an MCP connector (a plug-in for AI tools) to BigQuery, Snowflake or Postgres. Or built-in tools like Databricks Genie, Snowflake Cortex Analyst and Looker Conversational Analytics.</li></ul></div>
+      <div><h4>🧪 This page is a demo, not the real thing</h4><ul>
+        <li>There is no AI here. Your question is matched to 1 of 15 prepared questions.</li>
+        <li>The answer is calculated from the CSV files in your browser.</li>
+        <li>It remembers your last question, so "what about Electronics?" works.</li>
+        <li>Anything else gets "I can't answer that."</li></ul></div>
+      <div><h4>🤔 Why not real AI here?</h4><ul>
+        <li>Real AI costs money for every question, plus a live database.</li>
+        <li>It also needs safety rules.</li>
+        <li>A free public page can't cover that.</li></ul></div>
     </div>
   </details>
   <div class="askwrap"><div>
-    <div class="chat" id="chatlog">${chat.length?chat.map(m=>m.html).join(""):`<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>Hi! I can answer questions about toys, stores, categories, time and stock. You can add a toy, a category or a time period, like <i>“best-selling toys in Games last quarter”</i> or <i>“which stores sell the most Lego Bricks?”</i> I remember the last question, so you can follow up with <i>“what about Electronics?”</i> or <i>“and in 2022?”</i><div class="sugg">${["Which toys generated the most profit last quarter?","How does 2023 compare with 2022?","Which category has the best gross margin?","Where do popular toys have zero stock?"].map(q=>`<button class="chip" onclick="ask(this.textContent)">${q}</button>`).join("")}</div></div>`}</div>
+    <div class="chat" id="chatlog">${chat.length?chat.map(m=>m.html).join(""):`<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>Hi! I'm a demo analyst, not real AI. Ask about toys, stores, categories, time or stock, and add a toy, category or time period, like <i>“best-selling toys in Games last quarter”</i>. I remember your last question, so you can follow up with <i>“what about Electronics?”</i><div class="sugg">${["Which toys generated the most profit last quarter?","How does 2023 compare with 2022?","Which category has the best gross margin?","Where do popular toys have zero stock?"].map(q=>`<button class="chip" onclick="ask(this.textContent)">${q}</button>`).join("")}</div></div>`}</div>
     <div class="askrow"><input type="text" id="askin" placeholder="Ask about toys, stores, categories, time or stock…" onkeydown="if(event.key=='Enter')ask()"><button class="btn pri" onclick="ask()">Ask</button></div>
   </div>
   <div class="card side"><h3>📚 Browse approved questions</h3>${Object.entries(groups).map(([g,qs])=>`<div class="grp"><div class="gt">${g}</div>${qs.map(q=>`<button onclick="ask(this.textContent,true)">${q.title}</button>`).join("")}</div>`).join("")}<div class="note">Tip: add a toy, category or time period to any question.</div></div></div>`;
