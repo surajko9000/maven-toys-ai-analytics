@@ -280,7 +280,6 @@ ul.plain{margin:0;padding-left:20px}ul.plain li{margin:8px 0;font-size:15px;line
 </div></header>
 <main>
   <div id="start" class="tab"></div>
-  <div id="about" class="tab"></div>
   <div id="dashboard" class="tab"></div>
   <div id="presentation" class="tab"></div>
   <div id="toys" class="tab"></div>
@@ -394,67 +393,7 @@ function renderStart(){
     <div><span class="hfi">🤖</span><div><b>Made by Claude, checked by a human</b><br>Claude wrote all the code, charts, slides, drawings and text. I wrote the requests and checked the numbers.</div></div>
   </div>
   <div class="hfoot">Built by <a class="lnk" href="https://github.com/surajko9000" target="_blank" rel="noopener" style="margin-left:0">@surajko9000</a> to see how far Claude Code can go on everyday analyst work
-    · <a class="lnk" href="https://github.com/surajko9000/maven-toys-ai-analytics" target="_blank" rel="noopener">View the code on GitHub ↗</a>
-    · <a class="lnk" onclick="show('about')">How it works →</a></div>`;
-}
-
-function renderAbout(){
-  const steps=[
-    ["❓","Ask the question","A manager asks: “How were sales last month?” The analyst decides what to measure.","#e3eefb","#2a78d6",null],
-    ["🧹","Prepare the data","Load, join and check the tables, so the numbers can be trusted.","#fcf0d2","#eda100",null],
-    ["📊","Build dashboards","Charts and tables that people can filter themselves.","#def5ec","#1baf7a",["dashboard","Dashboard"]],
-    ["⚡","Answer ad hoc requests","One-off questions, answered fast, with the working shown.","#fbe6ee","#e87ba4",["ask","Ask"]],
-    ["🎤","Tell the story","Pick the few facts that matter, then recommend what to do.","#ece8fb","#6250d6",["presentation","Presentation"]]
-  ];
-  const flow=steps.map(([e,h,d,bg,c,link],i)=>`<div class="fstep" style="background:${bg};border-color:${c}"><div class="fic" style="background:${c}">${e}</div><div class="fnum">Step ${i+1}</div><h3>${h}</h3><p>${d}</p>${link?`<button class="flink" style="color:${c}" onclick="show('${link[0]}')">See it: ${link[1]} →</button>`:`<span class="flink off">&nbsp;</span>`}</div>${i<steps.length-1?`<div class="farrow" style="color:${c}">➜</div>`:""}`).join("");
-  const help=[
-    ["❓","Ask the question","#2a78d6","Turns a vague request into specific questions, and flags what is unclear (does “best” mean units, revenue or profit?).","Decides what matters to the business."],
-    ["🧹","Prepare the data","#eda100","Writes the code to load, join and check the files, and spots problems like a misspelled city.","Confirms the fixes make sense."],
-    ["📊","Build dashboards","#1baf7a","Writes the charts, filters and tables from a plain description, and reworks them in minutes.","Checks the numbers are right."],
-    ["⚡","Answer ad hoc requests","#e87ba4","Turns a plain-English question into a database query (SQL) and runs it. This site only demos that.","Sanity-checks the answer."],
-    ["🎤","Tell the story","#6250d6","Drafts slides, charts and speaker notes, and shortens the wording.","Chooses the message and checks every claim."]
-  ].map(([e,h,c,cl,me])=>`<div class="hrow"><div class="hstep"><span class="hic" style="background:${c}">${e}</span><b>${h}</b></div><div class="hcl">${cl}</div><div class="hme">${me}</div></div>`).join("");
-  document.getElementById("about").innerHTML=`
-  <h1>📖 How it works</h1><p class="sub">What data analysts do, how Claude helps, and how the data is set up.</p>
-  <h2 class="sec" style="margin-top:8px">👩‍💻 What data analysts do</h2>
-  <p class="lead">A data analyst helps people make decisions using numbers. The work usually follows this flow:</p>
-  <div class="flowrow">${flow}</div>
-  <div class="fbase"><div class="fbi">📏</div><div><b>Always: keep definitions consistent.</b> If “revenue” means one thing in the dashboard and another in the deck, people stop trusting both. So analysts write definitions down and use them everywhere.</div></div>
-  <div class="floop">↻ Then a new question arrives, and it starts again at step 1.</div>
-
-  <h3 class="sub3">🤖 How Claude makes this easier</h3>
-  <p class="lead">Claude does not replace the analyst. It does the slow, repetitive parts, so the analyst can spend time on judgment.</p>
-  <div class="card helpt"><div class="hrow hhead"><div>Step</div><div>🤖 Claude does</div><div>🧑 You still do</div></div>${help}</div>
-  <div class="fbase" style="border-color:#e87b7b;margin-top:12px"><div class="fbi" style="background:#fbe6ee">⚠️</div><div><b>The catch: Claude can be confidently wrong.</b> So in this project, code checks every number against the CSVs, and the totals are matched to a separate calculation.</div></div>
-
-  <h2 class="sec">🗂️ The data set-up</h2>
-  <p class="lead">Four CSV files, kept exactly as downloaded. The site reads them in your browser and calculates every number on the spot. There is no server or database.</p>
-  <div class="card"><table class="tbl ftbl"><thead><tr><th>File</th><th>Each row is…</th><th class="r">Rows</th><th>Main columns</th></tr></thead><tbody>
-    <tr><td><b>sales.csv</b></td><td>one sale line</td><td class="r">829,262</td><td>date, store, toy, units sold</td></tr>
-    <tr><td><b>products.csv</b></td><td>one toy</td><td class="r">35</td><td>name, category, cost, price</td></tr>
-    <tr><td><b>stores.csv</b></td><td>one store</td><td class="r">50</td><td>city, location type, open date</td></tr>
-    <tr><td><b>inventory.csv</b></td><td>one toy in one store</td><td class="r">1,593</td><td>units on the shelf now</td></tr></tbody></table>
-    <p class="note" style="margin:10px 0 0">Sales cover Jan 1, 2022 to Sep 30, 2023. Sales and inventory link to toys and stores by ID. There are 5 toy categories and 29 cities.</p></div>
-
-  <h3 class="sub3">Assumptions</h3>
-  <div class="card"><ul class="plain">
-    <li><b>The data is clean.</b> No missing values, and every sale matches a real toy and store. I checked this, and it makes the data easy to use.</li>
-    <li><b>Every sale line counts.</b> Many lines share the same date, store and toy. They are separate sales, so none are removed.</li>
-    <li><b>Revenue = units × price.</b> The data has one current price per toy, no price history, so this is an estimate, not accounting revenue.</li>
-    <li><b>Profit = units × (price − cost).</b> It ignores rent, pay and every other cost, so call it “estimated gross profit”.</li>
-    <li><b>“Latest” means Sep 30, 2023</b>, the last day in the data, not today.</li>
-    <li><b>A toy with no inventory row is “not stocked”</b> in that store. The data does not say, so this is a guess.</li>
-  </ul></div>
-
-  <h3 class="sub3">Good to know</h3>
-  <div class="card"><ul class="plain">
-    <li><b>Stock is one snapshot,</b> with no date. It shows what is on shelves now, not how it changed.</li>
-    <li><b>The store list spells “Cuidad de Mexico”.</b> The site shows the correct “Ciudad de Mexico”.</li>
-    <li><b>“Best-selling” is ambiguous.</b> It could mean units, revenue or profit, so the site always says which.</li>
-    <li><b>The Ask tab is a demo,</b> not real AI. It answers from 15 prepared questions.</li>
-    <li><b>Toy pictures are original drawings,</b> not product photos.</li>
-  </ul></div>
-  <div class="quick" style="margin-top:22px"><button class="btn pri" onclick="show('dashboard')">📊 See the dashboard →</button><button class="btn" onclick="show('start')">🏠 Back to Home</button></div>`;
+    · <a class="lnk" href="https://github.com/surajko9000/maven-toys-ai-analytics" target="_blank" rel="noopener">View the code on GitHub ↗</a></div>`;
 }
 
 /* ================= TAB 1: DASHBOARD ================= */
@@ -1294,12 +1233,12 @@ function answer(q){
 }
 
 /* ---------- router ---------- */
-const TABS=[["start","🏠","Home","var(--s7)"],["dashboard","📊","Dashboard","var(--s1)"],["toys","🧸","Toy Finder","var(--s5)"],["presentation","🎤","Presentation","#d68700"],["ask","💬","Ask","var(--s3)"],["about","📖","How it works","#6b7a90"]];
+const TABS=[["start","🏠","Home","var(--s7)"],["dashboard","📊","Dashboard","var(--s1)"],["toys","🧸","Toy Finder","var(--s5)"],["presentation","🎤","Presentation","#d68700"],["ask","💬","Ask","var(--s3)"]];
 let current="start";
 function show(t){current=t;history.replaceState(null,"","#"+t);
   document.querySelectorAll(".tab").forEach(e=>e.classList.toggle("on",e.id==t));
   document.getElementById("nav").innerHTML=TABS.map(([k,e,l,c])=>`<button class="${k==t?"on":""}" style="${k==t?`background:${c}`:""}" onclick="show('${k}')">${e} ${l}</button>`).join("");
-  ({start:renderStart,dashboard:renderDash,presentation:renderDeck,toys:renderToys,ask:renderAsk,about:renderAbout})[t]();
+  ({start:renderStart,dashboard:renderDash,presentation:renderDeck,toys:renderToys,ask:renderAsk})[t]();
   closeToy();scrollTo(0,0)}
 (function(){const h=location.hash.slice(1);
   if(h=="dash-open"){dash.fopen=true;show("dashboard");return}
