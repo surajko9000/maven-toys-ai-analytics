@@ -172,6 +172,17 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .job .jn{flex:none;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:800;display:grid;place-items:center}
 .job h3{margin:0 0 4px;font-size:16.5px}.job p{margin:0 0 6px;font-size:15px;line-height:1.5;color:var(--ink2);max-width:780px}
 .job .jw{display:inline-block;font-size:12.5px;font-weight:700;background:#e3eefb;color:#1c5cab;border-radius:999px;padding:2px 10px}
+.flowrow{display:flex;align-items:stretch;gap:6px}
+.fstep{flex:1;min-width:0;border:2px solid;border-radius:20px;padding:16px 12px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.fic{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:28px;box-shadow:0 3px 0 rgba(0,0,0,.18);margin-bottom:8px}
+.fnum{font-size:11.5px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+.fstep h3{margin:2px 0 6px;font-size:16px}.fstep p{margin:0 0 8px;font-size:14px;line-height:1.45;color:var(--ink2);flex:1}
+.flink{border:0;background:none;font:inherit;font-weight:800;font-size:13px;cursor:pointer;padding:2px 0}.flink.off{cursor:default}
+.farrow{align-self:center;font-size:26px;font-weight:800;flex:none}
+.fbase{display:flex;gap:14px;align-items:center;background:#fff;border:2px dashed var(--s4);border-radius:18px;padding:12px 16px;margin-top:12px;font-size:14.5px;line-height:1.5}
+.fbi{flex:none;width:44px;height:44px;border-radius:12px;background:#fcf0d2;display:grid;place-items:center;font-size:24px}
+.floop{text-align:center;margin-top:10px;font-weight:700;color:var(--ink2);font-size:14px}
+@media(max-width:980px){.flowrow{flex-direction:column}.farrow{transform:rotate(90deg);margin:-2px 0}}
 .sub3{margin:22px 0 8px;font-size:18px}
 ul.plain{margin:0;padding-left:20px}ul.plain li{margin:8px 0;font-size:15px;line-height:1.5}
 .ftbl td,.ftbl th{padding:9px 8px;font-size:14.5px}.ftbl th{cursor:default;position:static}
@@ -319,14 +330,14 @@ function renderStart(){
               ["presentation","🎤","Presentation","A 6-slide business review, with PowerPoint and PDF downloads.","#fcf0d2"],
               ["ask","💬","Ask","Type a question and get an answer. A demo of ad hoc requests.","#def5ec"]]
     .map(([k,e,n,d,c])=>`<div class="card t" style="background:${c}" onclick="show('${k}')"><div class="e">${e}</div><h3>${n}</h3><p>${d}</p><span class="go">Open →</span></div>`).join("");
-  const jobs=[
-    ["1","Turn a business question into something measurable","A manager asks “is Colorbuds in trouble?” The analyst decides what to measure (sales, profit, share of total), over what time period, and compared with what.","Every tab starts from a question like this."],
-    ["2","Get the data ready and check it","Before any chart, the analyst loads the data, joins the tables, fixes errors, and checks the totals. A wrong number that looks confident is worse than no number.","Totals are checked against an independent calculation."],
-    ["3","Build dashboards","A dashboard is a page of charts and tables that people can filter themselves, so they can check the numbers without asking the analyst each time. It has to stay correct as the data updates.","Dashboard and Toy Finder tabs."],
-    ["4","Answer ad hoc requests","Someone asks a one-off question, such as “which stores ran out of Playfoam?” The analyst finds the answer, often in minutes, and explains how they got it.","Ask tab (a demo of this)."],
-    ["5","Tell the story and recommend","Numbers alone do not change decisions. The analyst picks the few facts that matter, shows them clearly, and ends with what to do next.","Presentation tab."],
-    ["6","Keep definitions consistent","If “revenue” means one thing in the dashboard and another in the deck, people stop trusting both. Analysts write definitions down and use them everywhere.","One shared set of definitions, below."]
-  ].map(([n,h,d,w])=>`<div class="job"><div class="jn">${n}</div><div><h3>${h}</h3><p>${d}</p><span class="jw">In this project: ${w}</span></div></div>`).join("");
+  const steps=[
+    ["❓","Ask the question","A manager asks: “Is Colorbuds in trouble?” The analyst decides what to measure.","#e3eefb","#2a78d6",null],
+    ["🧹","Prepare the data","Load, join and check the tables, so the numbers can be trusted.","#fcf0d2","#eda100",null],
+    ["📊","Build dashboards","Charts and tables that people can filter themselves.","#def5ec","#1baf7a",["dashboard","Dashboard"]],
+    ["⚡","Answer ad hoc requests","One-off questions, answered fast, with the working shown.","#fbe6ee","#e87ba4",["ask","Ask"]],
+    ["🎤","Tell the story","Pick the few facts that matter, then recommend what to do.","#ece8fb","#6250d6",["presentation","Presentation"]]
+  ];
+  const flow=steps.map(([e,h,d,bg,c,link],i)=>`<div class="fstep" style="background:${bg};border-color:${c}"><div class="fic" style="background:${c}">${e}</div><div class="fnum">Step ${i+1}</div><h3>${h}</h3><p>${d}</p>${link?`<button class="flink" style="color:${c}" onclick="show('${link[0]}')">See it: ${link[1]} →</button>`:`<span class="flink off">&nbsp;</span>`}</div>${i<steps.length-1?`<div class="farrow" style="color:${c}">➜</div>`:""}`).join("");
   document.getElementById("start").innerHTML=`
   <div class="shero">
     <span class="tag">🧸 Prototype</span> <span class="tag">🤖 Built with Claude Code</span>
@@ -337,8 +348,10 @@ function renderStart(){
   <div class="tour">${arts}</div>
 
   <h2 class="sec">👩‍💻 What data analysts do</h2>
-  <p class="lead">A data analyst helps people make decisions using numbers. In a typical week that means:</p>
-  <div class="jobs">${jobs}</div>
+  <p class="lead">A data analyst helps people make decisions using numbers. The work usually follows this flow:</p>
+  <div class="flowrow">${flow}</div>
+  <div class="fbase"><div class="fbi">📏</div><div><b>Always: keep definitions consistent.</b> If “revenue” means one thing in the dashboard and another in the deck, people stop trusting both. So analysts write definitions down and use them everywhere.</div></div>
+  <div class="floop">↻ Then a new question arrives, and it starts again at step 1.</div>
 
   <h2 class="sec">🗂️ The data set-up</h2>
   <p class="lead">Four CSV files, kept exactly as downloaded. The site reads them in your browser and calculates every number on the spot. There is no server or database.</p>
