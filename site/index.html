@@ -164,6 +164,17 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .msg.a .meta .btn{padding:4px 10px;font-size:12.5px;box-shadow:0 2px 0 var(--line)}
 .slot{display:inline-block;background:#e3eefb;color:#1c5cab;border-radius:999px;font-size:12px;font-weight:800;padding:2px 10px;margin:0 4px 4px 0}
 .typing span{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ink3);margin-right:4px;animation:b 1s infinite}
+.shero{background:#fff;border:2px solid var(--line);border-left:8px solid var(--s7);border-radius:var(--radius);padding:24px 28px;margin-bottom:18px;box-shadow:0 5px 0 var(--line)}
+.shero h1{margin:12px 0 10px;font-size:34px;line-height:1.15}.shero p{font-size:16.5px;line-height:1.55;margin:8px 0;max-width:820px;color:var(--ink)}
+.lead{font-size:16px;line-height:1.55;max-width:820px;margin:0 0 14px;color:var(--ink2)}
+.jobs{display:grid;gap:10px}
+.job{display:flex;gap:14px;background:#fff;border:2px solid var(--line);border-radius:18px;padding:14px 16px;align-items:flex-start}
+.job .jn{flex:none;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:800;display:grid;place-items:center}
+.job h3{margin:0 0 4px;font-size:16.5px}.job p{margin:0 0 6px;font-size:15px;line-height:1.5;color:var(--ink2);max-width:780px}
+.job .jw{display:inline-block;font-size:12.5px;font-weight:700;background:#e3eefb;color:#1c5cab;border-radius:999px;padding:2px 10px}
+.sub3{margin:22px 0 8px;font-size:18px}
+ul.plain{margin:0;padding-left:20px}ul.plain li{margin:8px 0;font-size:15px;line-height:1.5}
+.ftbl td,.ftbl th{padding:9px 8px;font-size:14.5px}.ftbl th{cursor:default;position:static}
 .stp{font-size:12px;color:var(--ink2);margin-left:8px;font-style:normal}
 .typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
 @keyframes b{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
@@ -303,94 +314,66 @@ const tileBg=pid=>TILE_OVERRIDE[pid]||STRONG[P[pid].cat];
 
 /* ================= TAB 0: START HERE ================= */
 function renderStart(){
-  const conf=[["62%","12%","#ffd34d",14,-20],["88%","16%","#ff8fb1",12,25],["72%","74%","#7be0b3",16,40],["50%","82%","#ffd34d",10,15],["94%","58%","#ffffff",10,-30],["78%","40%","#7be0b3",10,30]]
-    .map(([l,t,c,s,r])=>`<span class="conf" style="left:${l};top:${t};width:${s}px;height:${s}px;background:${c};transform:rotate(${r}deg)"></span>`).join("");
-  const tour=[["dashboard","📊","Dashboard","Filter by time, category and toy. KPIs, trends, rankings, a sortable table and CSV export.","Analyst job: build a dashboard","#e3eefb"],
-              ["toys","🧸","Toy Finder","Browse the 35 toys like a catalog. Tap one to see sales, profit and stock.","Bonus: a small data app","#fbe6ee"],
-              ["presentation","🎤","Presentation","Click through the Colorbuds deck, or download it as PowerPoint or PDF.","Analyst job: make a presentation","#fcf0d2"],
-              ["ask","💬","Ask","Type a question in plain English and get an answer with the chart and how it was calculated.","Analyst job: answer ad-hoc questions","#def5ec"]]
-    .map(([k,e,n,d,j,c])=>`<div class="card t" style="background:${c}" onclick="show('${k}')"><div class="e">${e}</div><h3>${n}</h3><p>${d}</p><span class="job">${j}</span><span class="go">Open ${n} →</span></div>`).join("");
+  const arts=[["dashboard","📊","Dashboard","Charts and tables you filter yourself.","#e3eefb"],
+              ["toys","🧸","Toy Finder","A catalog of all 35 toys with sales and stock.","#fbe6ee"],
+              ["presentation","🎤","Presentation","A 6-slide business review, with PowerPoint and PDF downloads.","#fcf0d2"],
+              ["ask","💬","Ask","Type a question and get an answer. A demo of ad hoc requests.","#def5ec"]]
+    .map(([k,e,n,d,c])=>`<div class="card t" style="background:${c}" onclick="show('${k}')"><div class="e">${e}</div><h3>${n}</h3><p>${d}</p><span class="go">Open →</span></div>`).join("");
+  const jobs=[
+    ["1","Turn a business question into something measurable","A manager asks “is Colorbuds in trouble?” The analyst decides what to measure (sales, profit, share of total), over what time period, and compared with what.","Every tab starts from a question like this."],
+    ["2","Get the data ready and check it","Before any chart, the analyst loads the data, joins the tables, fixes errors, and checks the totals. A wrong number that looks confident is worse than no number.","Totals are checked against an independent calculation."],
+    ["3","Build dashboards","A dashboard is a page of charts and tables that people can filter themselves, so they can check the numbers without asking the analyst each time. It has to stay correct as the data updates.","Dashboard and Toy Finder tabs."],
+    ["4","Answer ad hoc requests","Someone asks a one-off question, such as “which stores ran out of Playfoam?” The analyst finds the answer, often in minutes, and explains how they got it.","Ask tab (a demo of this)."],
+    ["5","Tell the story and recommend","Numbers alone do not change decisions. The analyst picks the few facts that matter, shows them clearly, and ends with what to do next.","Presentation tab."],
+    ["6","Keep definitions consistent","If “revenue” means one thing in the dashboard and another in the deck, people stop trusting both. Analysts write definitions down and use them everywhere.","One shared set of definitions, below."]
+  ].map(([n,h,d,w])=>`<div class="job"><div class="jn">${n}</div><div><h3>${h}</h3><p>${d}</p><span class="jw">In this project: ${w}</span></div></div>`).join("");
   document.getElementById("start").innerHTML=`
-  <div class="hero">${conf}
-    <span class="pill">🧸 Prototype</span><span class="pill">🤖 Built with Claude Code</span>
-    <h1>Can an AI coding assistant work like a data analyst's teammate?</h1>
-    <p>This site is a prototype of that idea. We gave Claude Code a pile of toy-store data and asked it to build the things analysts normally build by hand.</p>
-    <button class="btn" onclick="show('dashboard')">Start with the Dashboard →</button>
+  <div class="shero">
+    <span class="tag">🧸 Prototype</span> <span class="tag">🤖 Built with Claude Code</span>
+    <h1>Can Claude Code do the work of a data analyst?</h1>
+    <p>This site is a test. I gave <b>Claude Code</b> (an AI coding assistant) a set of toy-sales data and asked it to build what a data analyst normally builds: a <b>dashboard</b>, a <b>presentation</b>, and a way to answer <b>ad hoc questions</b>.</p>
+    <p>The data is free, public data on toy sales across Mexico, from Maven Analytics. It describes a made-up toy store chain.</p>
   </div>
+  <div class="tour">${arts}</div>
 
-  <h2 class="sec">🧩 The idea</h2>
-  <div class="two">
-    <div class="card"><h3>When new data lands, analysts usually…</h3>
-      <ul>
-        <li><b>📊 Build dashboards</b> so people can check the numbers themselves</li>
-        <li><b>🎤 Make presentations</b> that tell the story to leaders</li>
-        <li><b>💬 Answer ad-hoc questions</b> like “which toys made the most money?”</li>
-      </ul>
-      <p class="note" style="margin-top:10px">Each one usually means a different tool, a lot of clicking, and a lot of waiting.</p></div>
-    <div class="card"><h3>This project asks: what if you just describe it?</h3>
-      <ul>
-        <li>Describe what you want in plain language</li>
-        <li>Claude Code writes the app, the charts and the logic</li>
-        <li>A human checks the numbers (that part doesn't go away)</li>
-        <li>Publish it free on the web</li>
-      </ul></div>
-  </div>
-  <div class="card" style="margin-top:14px">
-    <div class="flow">
-      <div class="node" style="background:#fcf0d2">📁 Toy-store data<small>4 CSV files</small></div><div class="arrow">→</div>
-      <div class="node" style="background:#ece8fb">🤖 Claude Code<small>you describe, it builds</small></div><div class="arrow">→</div>
-      <div class="outs">
-        <div class="node" style="background:#e3eefb">📊 Dashboard</div><div class="node" style="background:#fbe6ee">🧸 Toy Finder</div>
-        <div class="node" style="background:#fcf0d2">🎤 Presentation</div><div class="node" style="background:#def5ec">💬 Ask</div>
-      </div>
-    </div>
-  </div>
+  <h2 class="sec">👩‍💻 What data analysts do</h2>
+  <p class="lead">A data analyst helps people make decisions using numbers. In a typical week that means:</p>
+  <div class="jobs">${jobs}</div>
 
-  <h2 class="sec">🗺️ Take the tour</h2>
-  <div class="tour">${tour}</div>
+  <h2 class="sec">🗂️ The data set-up</h2>
+  <p class="lead">Four CSV files, kept exactly as downloaded. The site reads them in your browser and calculates every number on the spot. There is no server or database.</p>
+  <div class="card"><table class="tbl ftbl"><thead><tr><th>File</th><th>Each row is…</th><th class="r">Rows</th><th>Main columns</th></tr></thead><tbody>
+    <tr><td><b>sales.csv</b></td><td>one sale line</td><td class="r">829,262</td><td>date, store, toy, units sold</td></tr>
+    <tr><td><b>products.csv</b></td><td>one toy</td><td class="r">35</td><td>name, category, cost, price</td></tr>
+    <tr><td><b>stores.csv</b></td><td>one store</td><td class="r">50</td><td>city, location type, open date</td></tr>
+    <tr><td><b>inventory.csv</b></td><td>one toy in one store</td><td class="r">1,593</td><td>units on the shelf now</td></tr></tbody></table>
+    <p class="note" style="margin:10px 0 0">Sales cover Jan 1, 2022 to Sep 30, 2023. Sales and inventory link to toys and stores by ID. There are 5 toy categories and 29 cities.</p></div>
 
-  <h2 class="sec">🧰 The setup</h2>
-  <div class="two">
-    <div class="card"><h3>Where the data comes from</h3>
-      <ul>
-        <li>A free public sample dataset from <b>Maven Analytics</b> (“Mexico Toy Sales”)</li>
-        <li>A <b>made-up</b> toy chain with <b>50 stores</b> across Mexico and <b>35 toys</b> in 5 categories</li>
-        <li><b>829,262</b> sales lines from Jan 2022 to Sep 2023</li>
-        <li>Plus a one-time snapshot of what's on the shelves</li>
-      </ul>
-      <h3 style="margin-top:14px">How the site works</h3>
-      <ul>
-        <li>The CSV files load right in your browser. Every number is calculated on the spot.</li>
-        <li>No server, no database, no sign-in</li>
-        <li>Hosted free on GitHub Pages</li>
-        <li>One shared set of definitions, so “revenue” means the same thing on every tab</li>
-      </ul></div>
-    <div class="card"><h3>The four files and how they connect</h3>
-      <svg viewBox="0 0 460 280" width="100%">
-        <g stroke="#cdbb8f" stroke-width="2"><line x1="90" y1="60" x2="90" y2="180"/><line x1="90" y1="60" x2="330" y2="180"/><line x1="370" y1="60" x2="90" y2="180"/><line x1="370" y1="60" x2="330" y2="180"/></g>
-        <g font-weight="800"><rect x="20" y="30" width="140" height="60" rx="16" fill="#fbe6ee"/><text x="90" y="55" text-anchor="middle" style="fill:#1f1a17;font-size:14px">products</text><text x="90" y="75" text-anchor="middle" style="font-size:12px">35 toys</text>
-        <rect x="300" y="30" width="140" height="60" rx="16" fill="#def5ec"/><text x="370" y="55" text-anchor="middle" style="fill:#1f1a17;font-size:14px">stores</text><text x="370" y="75" text-anchor="middle" style="font-size:12px">50 stores</text>
-        <rect x="20" y="180" width="140" height="60" rx="16" fill="#e3eefb"/><text x="90" y="205" text-anchor="middle" style="fill:#1f1a17;font-size:14px">sales</text><text x="90" y="225" text-anchor="middle" style="font-size:12px">829,262 lines</text>
-        <rect x="260" y="180" width="140" height="60" rx="16" fill="#fcf0d2"/><text x="330" y="205" text-anchor="middle" style="fill:#1f1a17;font-size:14px">inventory</text><text x="330" y="225" text-anchor="middle" style="font-size:12px">1,593 stock rows</text></g>
-        <text x="230" y="268" text-anchor="middle" style="font-size:12px">sales and inventory each point to a toy and a store</text>
-      </svg></div>
-  </div>
+  <h3 class="sub3">Assumptions</h3>
+  <div class="card"><ul class="plain">
+    <li><b>The data is clean.</b> No missing values, and every sale matches a real toy and store. I checked this, and it makes the data easy to use.</li>
+    <li><b>Every sale line counts.</b> Many lines share the same date, store and toy. They are separate sales, so none are removed.</li>
+    <li><b>Revenue = units × price.</b> The data has one current price per toy, no price history, so this is an estimate, not accounting revenue.</li>
+    <li><b>Profit = units × (price − cost).</b> It ignores rent, pay and every other cost, so call it “estimated gross profit”.</li>
+    <li><b>“Latest” means Sep 30, 2023</b>, the last day in the data, not today.</li>
+    <li><b>A toy with no inventory row is “not stocked”</b> in that store. The data does not say, so this is a guess.</li>
+  </ul></div>
 
-  <h2 class="sec">⚠️ Good to know</h2>
-  <div class="card"><ul>
-    <li><b>Revenue and profit are estimates.</b> The data only has one current price and cost per toy (no price history), so revenue = units × price and profit = units × (price − cost).</li>
-    <li><b>Stock is a single snapshot</b>, not a history, so we can't see how it changed over time.</li>
-    <li><b>“Latest” means the end of the data</b> (Sep 30, 2023), not today.</li>
-    <li><b>Ask is a mock-up.</b> It answers from a list of approved questions. In a real company you'd connect Claude to a SQL database so it can answer any question, but that's hard to offer to everyone for free.</li>
-    <li><b>Toy pictures are placeholders for now.</b> Real photos need proper credit and are on the to-do list.</li>
+  <h3 class="sub3">Good to know</h3>
+  <div class="card"><ul class="plain">
+    <li><b>Stock is one snapshot,</b> with no date. It shows what is on shelves now, not how it changed.</li>
+    <li><b>The store list spells “Cuidad de Mexico”.</b> The site shows the correct “Ciudad de Mexico”.</li>
+    <li><b>“Best-selling” is ambiguous.</b> It could mean units, revenue or profit, so the site always says which.</li>
+    <li><b>The Ask tab is a demo,</b> not real AI. It answers from 15 prepared questions.</li>
+    <li><b>Toy pictures are original drawings,</b> not product photos.</li>
   </ul></div>
 
   <h2 class="sec">🚀 Try these</h2>
   <div class="quick">
-    <button class="btn" onclick="show('presentation')">🎤 Flip through the Colorbuds deck</button>
+    <button class="btn" onclick="show('presentation')">🎤 Flip through the deck</button>
     <button class="btn" onclick="show('ask');ask('Which products generated the most profit last quarter?',true)">💬 Ask: top profit last quarter</button>
     <button class="btn" onclick="show('toys');openToy(18)">🧸 Open Lego Bricks</button>
-    <button class="btn" onclick="dash.cats=new Set(['Electronics']);show('dashboard')">📊 Filter the dashboard to Electronics</button>
+    <button class="btn" onclick="dash.cats=new Set(['Electronics']);show('dashboard')">📊 Dashboard: Electronics only</button>
   </div>`;
 }
 
