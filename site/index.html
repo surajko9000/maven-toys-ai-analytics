@@ -1225,7 +1225,7 @@ const chat=[];let askBusy=false;let lastAsk=null;let askHelpOpen=false;
 function renderAsk(){
   const groups={};for(const q of QS)(groups[q.group]??=[]).push(q);
   document.getElementById("ask").innerHTML=`<h1><span class="h1t">${ILLUS[34]}</span>Ask the Data: Questions in Plain English <span class="demobadge">🧪 Demo, not real AI</span></h1><p class="sub">Type a question in plain English. This page picks from 15 prepared questions and shows its work.</p>
-  <details class="card demo" ${askHelpOpen?"open":""} ontoggle="askHelpOpen=this.open"><summary><span class="tag" style="background:#ffe9a0">💡 How it works</span> How does this work? Click to learn more</summary>
+  <details class="card demo" ${askHelpOpen?"open":""} ontoggle="askHelpOpen=this.open"><summary><span class="tag" style="background:#ffe9a0">💡 How it works</span> How does this demo work? How will this work in practice? Click to learn more</summary>
     <div class="mini"><div class="node" style="background:#e3eefb">🙋 You<small>ask in chat</small></div><div class="arrow">→</div><div class="node" style="background:#ece8fb">💬 Claude<small>or another AI chat tool</small></div><div class="arrow">→</div><div class="node" style="background:#fcf0d2">🗄️ Company data<small>AI writes and runs SQL</small></div><div class="arrow">→</div><div class="node" style="background:#def5ec">📊 Answer<small>in the chat: text, tables, charts</small></div></div>
     <p class="note" style="text-align:center;margin:6px 0 0;font-size:12.5px">In real life, you ask Claude (or a similar AI chat tool) connected to your company's data, and it answers right in the chat.</p>
     <div class="cmp">
