@@ -184,6 +184,12 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .hcard .hb{padding:16px 18px 18px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;flex:1}
 .hcard .hn{width:30px;height:30px;border-radius:50%;color:#fff;font-weight:800;display:grid;place-items:center;font-size:15px}
 .hcard h3{font-size:22px;margin:0}.hcard p{margin:0;color:var(--ink2);font-size:15.5px;line-height:1.5;flex:1}
+.hwide{flex-direction:row !important;margin-top:20px;align-items:stretch}
+.hwide img{width:52%;aspect-ratio:auto !important;border-bottom:0 !important;border-right:2px solid var(--line);object-fit:cover;object-position:top left}
+.hwide .hb{justify-content:center;padding:22px 26px !important}
+.hwide h3{font-size:24px !important}
+.hunlock{font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#d6336c;background:#fbe6ee;border-radius:999px;padding:4px 12px}
+@media(max-width:900px){.hwide{flex-direction:column !important}.hwide img{width:100%;border-right:0;border-bottom:2px solid var(--line) !important}}
 .halso{text-align:center;color:var(--ink2);margin:18px 0 0;font-size:15px}
 .hfacts{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:30px auto 0;max-width:980px;padding-top:24px;border-top:2px dashed var(--line)}
 .hfacts>div{display:flex;gap:14px;font-size:15.5px;line-height:1.55;color:var(--ink2)}.hfacts b{color:var(--ink);font-size:16.5px}
@@ -368,7 +374,13 @@ function renderStart(){
     <p>I gave Claude Code free toy-sales data and asked it to produce the three things data analysts are asked for most.</p>
   </div>
   <div class="hcards">${cards}</div>
-  <p class="halso">Also in the site: <a class="lnk" onclick="show('toys')" style="margin-left:0">🧸 Toy Finder</a>, a catalog of all 35 toys with sales and stock.</p>
+  <div class="hcard hwide" onclick="show('toys')">
+    <img src="img/home-toys.jpg" alt="Preview of the Toy Finder data app" loading="lazy">
+    <div class="hb"><span class="hunlock">✨ Bonus · Only possible with Claude</span><h3>Toy Finder: a custom data app</h3>
+      <p>Browse all 35 toys like a store catalog. Filter by time and category, sort by profit, and open any toy to see its sales, stores and stock.</p>
+      <p>A data analyst would not normally build this. A custom app like this usually takes a software developer, weeks of work and real budget. Claude Code built it from plain-language requests.</p>
+      <span class="btn pri" style="background:#d6336c;border-color:#d6336c">Open the Toy Finder →</span></div>
+  </div>
 
   <div class="hfacts">
     <div><span class="hfi">🗂️</span><div><b>The data</b><br>Free, public data from Maven Analytics. It covers toy sales for a fictional company in Mexico: 50 stores, 35 toys, Jan 2022 to Sep 2023.</div></div>
