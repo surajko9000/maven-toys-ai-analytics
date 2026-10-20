@@ -183,6 +183,12 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .fbi{flex:none;width:44px;height:44px;border-radius:12px;background:#fcf0d2;display:grid;place-items:center;font-size:24px}
 .floop{text-align:center;margin-top:10px;font-weight:700;color:var(--ink2);font-size:14px}
 @media(max-width:980px){.flowrow{flex-direction:column}.farrow{transform:rotate(90deg);margin:-2px 0}}
+.helpt{padding:6px 14px}
+.hrow{display:grid;grid-template-columns:190px 1fr 210px;gap:14px;align-items:center;padding:11px 4px;border-bottom:2px solid var(--line);font-size:14.5px;line-height:1.45}
+.hrow:last-child{border-bottom:0}.hhead{font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2);padding:8px 4px}
+.hstep{display:flex;align-items:center;gap:10px}.hic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:17px;flex:none}
+.hme{color:var(--ink2)}
+@media(max-width:900px){.hrow{grid-template-columns:1fr}.hhead{display:none}}
 .sub3{margin:22px 0 8px;font-size:18px}
 ul.plain{margin:0;padding-left:20px}ul.plain li{margin:8px 0;font-size:15px;line-height:1.5}
 .ftbl td,.ftbl th{padding:9px 8px;font-size:14.5px}.ftbl th{cursor:default;position:static}
@@ -338,6 +344,13 @@ function renderStart(){
     ["🎤","Tell the story","Pick the few facts that matter, then recommend what to do.","#ece8fb","#6250d6",["presentation","Presentation"]]
   ];
   const flow=steps.map(([e,h,d,bg,c,link],i)=>`<div class="fstep" style="background:${bg};border-color:${c}"><div class="fic" style="background:${c}">${e}</div><div class="fnum">Step ${i+1}</div><h3>${h}</h3><p>${d}</p>${link?`<button class="flink" style="color:${c}" onclick="show('${link[0]}')">See it: ${link[1]} →</button>`:`<span class="flink off">&nbsp;</span>`}</div>${i<steps.length-1?`<div class="farrow" style="color:${c}">➜</div>`:""}`).join("");
+  const help=[
+    ["❓","Ask the question","#2a78d6","Turns a vague request into specific questions, and flags what is unclear (does “best” mean units, revenue or profit?).","Decides what matters to the business."],
+    ["🧹","Prepare the data","#eda100","Writes the code to load, join and check the files, and spots problems like a misspelled city.","Confirms the fixes make sense."],
+    ["📊","Build dashboards","#1baf7a","Writes the charts, filters and tables from a plain description, and reworks them in minutes.","Checks the numbers are right."],
+    ["⚡","Answer ad hoc requests","#e87ba4","Turns a plain-English question into a database query (SQL) and runs it. This site only demos that.","Sanity-checks the answer."],
+    ["🎤","Tell the story","#6250d6","Drafts slides, charts and speaker notes, and shortens the wording.","Chooses the message and checks every claim."]
+  ].map(([e,h,c,cl,me])=>`<div class="hrow"><div class="hstep"><span class="hic" style="background:${c}">${e}</span><b>${h}</b></div><div class="hcl">${cl}</div><div class="hme">${me}</div></div>`).join("");
   document.getElementById("start").innerHTML=`
   <div class="shero">
     <span class="tag">🧸 Prototype</span> <span class="tag">🤖 Built with Claude Code</span>
@@ -352,6 +365,11 @@ function renderStart(){
   <div class="flowrow">${flow}</div>
   <div class="fbase"><div class="fbi">📏</div><div><b>Always: keep definitions consistent.</b> If “revenue” means one thing in the dashboard and another in the deck, people stop trusting both. So analysts write definitions down and use them everywhere.</div></div>
   <div class="floop">↻ Then a new question arrives, and it starts again at step 1.</div>
+
+  <h3 class="sub3">🤖 How Claude makes this easier</h3>
+  <p class="lead">Claude does not replace the analyst. It does the slow, repetitive parts, so the analyst can spend time on judgment.</p>
+  <div class="card helpt"><div class="hrow hhead"><div>Step</div><div>🤖 Claude does</div><div>🧑 You still do</div></div>${help}</div>
+  <div class="fbase" style="border-color:#e87b7b;margin-top:12px"><div class="fbi" style="background:#fbe6ee">⚠️</div><div><b>The catch: Claude can be confidently wrong.</b> So in this project, code checks every number against the CSVs, and the totals are matched to a separate calculation.</div></div>
 
   <h2 class="sec">🗂️ The data set-up</h2>
   <p class="lead">Four CSV files, kept exactly as downloaded. The site reads them in your browser and calculates every number on the spot. There is no server or database.</p>
