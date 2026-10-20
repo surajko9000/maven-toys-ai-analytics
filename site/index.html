@@ -337,7 +337,7 @@ function renderStart(){
               ["ask","💬","Ask","Type a question and get an answer. A demo of ad hoc requests.","#def5ec"]]
     .map(([k,e,n,d,c])=>`<div class="card t" style="background:${c}" onclick="show('${k}')"><div class="e">${e}</div><h3>${n}</h3><p>${d}</p><span class="go">Open →</span></div>`).join("");
   const steps=[
-    ["❓","Ask the question","A manager asks: “Is Colorbuds in trouble?” The analyst decides what to measure.","#e3eefb","#2a78d6",null],
+    ["❓","Ask the question","A manager asks: “How were sales last month?” The analyst decides what to measure.","#e3eefb","#2a78d6",null],
     ["🧹","Prepare the data","Load, join and check the tables, so the numbers can be trusted.","#fcf0d2","#eda100",null],
     ["📊","Build dashboards","Charts and tables that people can filter themselves.","#def5ec","#1baf7a",["dashboard","Dashboard"]],
     ["⚡","Answer ad hoc requests","One-off questions, answered fast, with the working shown.","#fbe6ee","#e87ba4",["ask","Ask"]],
@@ -403,7 +403,7 @@ function renderStart(){
   <div class="quick">
     <button class="btn" onclick="show('presentation')">🎤 Flip through the deck</button>
     <button class="btn" onclick="show('ask');ask('Which products generated the most profit last quarter?',true)">💬 Ask: top profit last quarter</button>
-    <button class="btn" onclick="show('toys');openToy(18)">🧸 Open Lego Bricks</button>
+    <button class="btn" onclick="show('toys');openToy(18)">🧸 Open a toy’s detail page</button>
     <button class="btn" onclick="dash.cats=new Set(['Electronics']);show('dashboard')">📊 Dashboard: Electronics only</button>
   </div>`;
 }
