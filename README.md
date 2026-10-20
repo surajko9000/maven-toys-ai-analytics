@@ -57,3 +57,13 @@ python3 scripts/build_deck.py            # writes site/deck/Colorbuds_to_Playfoa
 soffice --headless --convert-to pdf --outdir site/deck site/deck/Colorbuds_to_Playfoam.pptx
 pdftoppm -jpeg -r 110 site/deck/Colorbuds_to_Playfoam.pdf site/deck/preview/slide
 ```
+
+## Rebuild the site and test the Ask matcher
+
+```
+python3 scripts/build_site.py <template.html> <data.json> <illustrations.json>   # splices data, art, Ask phrasing bank and test set into site/index.html
+```
+
+The Ask tab matches questions against `evaluations/ask_paraphrases.json` (about 200 example phrasings for the 15 approved questions).
+`evaluations/ask_eval.json` holds held-out test phrasings. Open `site/index.html#ask-eval` in a browser (or dump the DOM headlessly) to see
+the accuracy of the old keyword matcher versus the phrasing-bank matcher.

@@ -162,6 +162,7 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .sugg{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px}
 .slot{display:inline-block;background:#e3eefb;color:#1c5cab;border-radius:999px;font-size:12px;font-weight:800;padding:2px 10px;margin:0 4px 4px 0}
 .typing span{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ink3);margin-right:4px;animation:b 1s infinite}
+.stp{font-size:12px;color:var(--ink2);margin-left:8px;font-style:normal}
 .typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
 @keyframes b{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
 .side h3{margin:0 0 8px;font-size:15px}.side .grp{margin-bottom:12px}.side .gt{font-size:12px;font-weight:800;color:var(--ink2);margin-bottom:4px}
@@ -656,7 +657,503 @@ function match(q){const t=toks(q);let all=[];
       if(w.length>=5&&kws.some(k=>k.length>=5&&lev(w,k)<=(w.length>=8?2:1)))hit+=.8}
     all.push([Q,hit/Math.max(3,t.length)])}
   all.sort((a,b)=>b[1]-a[1]);return {best:all[0][0],score:all[0][1],near:all.slice(0,3).map(x=>x[0])}}
-const chat=[];let askBusy=false;
+
+/* ---------- improved matcher: phrasing bank + IDF cosine + synonyms + typo repair ---------- */
+const PARA={
+"top_profit": ["Which toys generated the most profit?","what toys make us the most profit","most profitable toys","which products earn the most profit","top profit toys","which toy is our biggest profit maker","highest profit products","what are we making the most profit on","list the toys by profit","which items bring in the most profit","biggest earners by profit","show me toy profit ranking","which toy is most profitable","where does our profit come from by toy"],
+"top_units": ["What were the best-selling toys?","best sellers","which toys sold the most units","top selling products","what sells the most","most popular toys","which toy sold the most","highest unit sales by toy","what are our top sellers by units","which items moved the most units","how many units did each toy sell","most units sold toys","what is flying off the shelves","which toys do customers buy the most"],
+"top_rev": ["Which toys brought in the most revenue?","which toys made the most money","top toys by revenue","highest revenue products","which toy has the biggest sales dollars","what toys bring in the most sales","revenue ranking of toys","which items generate the most revenue","biggest revenue toys","which products make the most money","top grossing toys","which toy earned the most revenue","how much revenue does each toy make","which toys are our top earners in sales dollars"],
+"low_margin": ["Which toys have the lowest margin?","which toys have thin margins","lowest margin products","what toys make the least profit per sale","worst margin toys","which toys are least profitable per dollar","toys with the smallest margin","which items have poor margins","least profitable toys by margin","where are our margins weakest","which toys barely make any money per sale","lowest profit percentage toys","which toys have low profitability","bottom toys by gross margin"],
+"store_rev": ["Which stores had the highest revenue?","best stores by revenue","top stores by sales","which locations sell the most","which store makes the most money","highest revenue shops","top performing stores","which branch has the highest sales","biggest stores by revenue","what are our best locations","rank stores by revenue","which store brings in the most revenue","strongest stores in sales","where do we sell the most"],
+"store_profit": ["Which stores had the greatest estimated profit?","most profitable stores","which stores earn the most profit","top stores by profit","which location makes the most profit","highest profit shops","best stores by profit","rank stores by profit","which store is our biggest profit maker","stores with the highest estimated profit","which branch is most profitable","where do we make the most profit by store","most profitable locations","which stores bring in the most profit"],
+"store_for_toy": ["Which stores sell the most of a particular toy?","which stores sell the most Lego","where is Colorbuds selling best","top stores for Nerf Gun","which locations sell the most of one toy","best stores for a specific toy","who sells the most Jenga","where do we sell the most of this toy","stores that sell the most of a given product","which shops move the most Rubik's Cube","top selling stores for a toy","which store is best for this toy","which stores are best at selling Monopoly","where does this toy sell the best"],
+"cat_margin": ["Which category has the best gross margin?","best margin category","which category is most profitable per dollar","category with the highest margin","which product category has the best margins","what type of toy has the best margin","compare margins by category","which category makes the most profit per sale","highest margin department","best gross margin by category","which categories are the most profitable percentage wise","margin by category","which category has the worst margin","where are our margins strongest by category"],
+"cat_rev": ["How does revenue compare across categories?","revenue by category","compare categories by revenue","which category sells the most","category sales breakdown","how do the categories stack up on revenue","split of revenue between categories","which product category brings in the most money","sales by category","how much revenue does each category make","category revenue comparison","which category is biggest","breakdown of sales by category","top category by revenue"],
+"trend": ["How has revenue changed over time?","revenue trend","are sales going up or down","sales over time","monthly revenue","how have sales changed","show me revenue by month","revenue history","how is revenue trending","are we growing","sales trend over the months","how have we been doing over time","month by month sales","revenue growth over time"],
+"best_month": ["Which month had the highest revenue?","best month for sales","peak month","what was our busiest month","which month sold the most","highest sales month","when do we sell the most","best sales month ever","strongest month for revenue","what month is the peak season","which month made the most money","top month by revenue","when was revenue highest","busiest time of year"],
+"yoy": ["How does 2023 compare with 2022?","year over year growth","2023 versus 2022","are we up from last year","how are we doing compared to last year","this year vs last year","yoy comparison","growth from 2022 to 2023","did sales grow this year","compare this year with last year","how does this year stack up","annual comparison of sales","is 2023 better than 2022","year on year change"],
+"low_stock": ["Which toys have the least stock right now?","lowest inventory","which toys are running low","what is almost out of stock","least stock on hand","toys with the lowest inventory","which products have the fewest units in stock","what are we running low on","low stock items","which toys have little inventory left","where is inventory thinnest","fewest units on the shelf","which toys need restocking soon","current lowest stock levels"],
+"zero_stock": ["Which toys are out of stock in the most stores?","most out of stock toys","which toys have empty shelves","toys with zero inventory in many stores","where are we out of stock","which products are sold out the most","how many stores are out of each toy","stockouts by toy","which toy has the most stockouts","what toys are unavailable in lots of stores","which items are out of stock the most","number of stores with zero stock per toy","which toys are missing from shelves","what is out of stock across stores"],
+"restock": ["Where do popular toys have zero stock?","which popular toys need restocking","where are we missing our best sellers","best sellers that are out of stock","where should we restock first","which stores have no stock of popular toys","stockouts of top selling toys","where are we losing sales to empty shelves","restock priorities","popular toys with empty shelves","which store toy pairs are out of stock and selling well","where do we need to reorder","where are hot items sold out","missed sales from stockouts"]
+}
+;
+const EVAL={
+"note": "Held-out phrasings (not in ask_paraphrases.json). expected=null means the Ask tab should say it can't answer.",
+"cases": [
+[
+"what toy brings home the biggest profit",
+"top_profit"
+],
+[
+"rank our toys by how much profit they earn",
+"top_profit"
+],
+[
+"whats our most profitable product in 2023",
+"top_profit"
+],
+[
+"which toys are cash cows profit wise last quarter",
+"top_profit"
+],
+[
+"biggest profit toys in games",
+"top_profit"
+],
+[
+"wich toys make the most profit",
+"top_profit"
+],
+[
+"what are the hottest selling toys",
+"top_units"
+],
+[
+"which toys do people buy most often",
+"top_units"
+],
+[
+"most units shifted by product",
+"top_units"
+],
+[
+"best selling items last quarter",
+"top_units"
+],
+[
+"top sellers in electronics",
+"top_units"
+],
+[
+"whats the most popular toy in 2022",
+"top_units"
+],
+[
+"which products gross the most",
+"top_rev"
+],
+[
+"toys ranked by sales revenue",
+"top_rev"
+],
+[
+"what makes us the most money in sales",
+"top_rev"
+],
+[
+"highest earning toys by revenue in 2023",
+"top_rev"
+],
+[
+"which toy has the largest revenue",
+"top_rev"
+],
+[
+"top toys by dollars sold",
+"top_rev"
+],
+[
+"which toys have the worst profit margins",
+"low_margin"
+],
+[
+"what products have slim margins",
+"low_margin"
+],
+[
+"toys where we make the least per dollar of sales",
+"low_margin"
+],
+[
+"lowest margin toys in games",
+"low_margin"
+],
+[
+"which items are not very profitable per sale",
+"low_margin"
+],
+[
+"whos got the thinnest margin",
+"low_margin"
+],
+[
+"which shops have the best sales",
+"store_rev"
+],
+[
+"top locations by revenue",
+"store_rev"
+],
+[
+"what store brings in the most dollars",
+"store_rev"
+],
+[
+"best performing store last quarter",
+"store_rev"
+],
+[
+"which of our stores sells the most overall",
+"store_rev"
+],
+[
+"highest grossing stores in 2023",
+"store_rev"
+],
+[
+"which store makes us the most profit",
+"store_profit"
+],
+[
+"rank locations by profit",
+"store_profit"
+],
+[
+"most profitable shop in 2022",
+"store_profit"
+],
+[
+"which stores are the biggest earners profit wise",
+"store_profit"
+],
+[
+"where do we earn the most profit geographically",
+"store_profit"
+],
+[
+"top profit stores last quarter",
+"store_profit"
+],
+[
+"where does Lego sell best",
+"store_for_toy"
+],
+[
+"which stores move the most Nerf Gun",
+"store_for_toy"
+],
+[
+"best stores for Jenga",
+"store_for_toy"
+],
+[
+"top locations selling Colorbuds",
+"store_for_toy"
+],
+[
+"who sells the most Monopoly",
+"store_for_toy"
+],
+[
+"stores selling lots of rubiks cube",
+"store_for_toy"
+],
+[
+"which category earns the highest margin",
+"cat_margin"
+],
+[
+"best margin by product category",
+"cat_margin"
+],
+[
+"category margins compared",
+"cat_margin"
+],
+[
+"which type of toy is most profitable percentage wise",
+"cat_margin"
+],
+[
+"highest margin category last quarter",
+"cat_margin"
+],
+[
+"whats the margin for each category",
+"cat_margin"
+],
+[
+"revenue split across categories",
+"cat_rev"
+],
+[
+"which categories sell the most",
+"cat_rev"
+],
+[
+"compare categories by sales",
+"cat_rev"
+],
+[
+"how much does each category bring in",
+"cat_rev"
+],
+[
+"category revenue in 2023",
+"cat_rev"
+],
+[
+"which category is our biggest in sales",
+"cat_rev"
+],
+[
+"is revenue rising or falling",
+"trend"
+],
+[
+"how have sales moved over the last two years",
+"trend"
+],
+[
+"revenue by month over time",
+"trend"
+],
+[
+"show me the sales trend",
+"trend"
+],
+[
+"are we selling more or less than before",
+"trend"
+],
+[
+"monthly sales history",
+"trend"
+],
+[
+"when was our best month",
+"best_month"
+],
+[
+"what month had peak sales",
+"best_month"
+],
+[
+"which month did we make the most",
+"best_month"
+],
+[
+"highest revenue month in 2023",
+"best_month"
+],
+[
+"busiest month for sales",
+"best_month"
+],
+[
+"which month is our strongest",
+"best_month"
+],
+[
+"did we grow in 2023",
+"yoy"
+],
+[
+"this year compared to last year",
+"yoy"
+],
+[
+"are we doing better than 2022",
+"yoy"
+],
+[
+"year on year revenue growth",
+"yoy"
+],
+[
+"how does 2023 stack up against 2022",
+"yoy"
+],
+[
+"is 2023 up or down vs 2022",
+"yoy"
+],
+[
+"what toys are nearly out of stock",
+"low_stock"
+],
+[
+"which products have the lowest inventory",
+"low_stock"
+],
+[
+"what are we running short on",
+"low_stock"
+],
+[
+"toys with the least units on hand",
+"low_stock"
+],
+[
+"low inventory items right now",
+"low_stock"
+],
+[
+"which toys are almost sold out",
+"low_stock"
+],
+[
+"which toys have the most stockouts",
+"zero_stock"
+],
+[
+"what is out of stock in lots of stores",
+"zero_stock"
+],
+[
+"toys with zero stock in the most stores",
+"zero_stock"
+],
+[
+"where are shelves empty across stores",
+"zero_stock"
+],
+[
+"which products are unavailable in many stores",
+"zero_stock"
+],
+[
+"count of stores out of stock by toy",
+"zero_stock"
+],
+[
+"where are we out of our best sellers",
+"restock"
+],
+[
+"popular toys we need to restock",
+"restock"
+],
+[
+"which stores ran out of popular items",
+"restock"
+],
+[
+"best selling toys with empty shelves",
+"restock"
+],
+[
+"where are we losing sales because of stockouts",
+"restock"
+],
+[
+"what should we restock first",
+"restock"
+],
+[
+"how satisfied are our customers",
+"none"
+],
+[
+"what will sales be next year",
+"none"
+],
+[
+"which toy has the best reviews",
+"none"
+],
+[
+"do discounts increase sales",
+"none"
+],
+[
+"who is our biggest competitor",
+"none"
+],
+[
+"how many employees work in each store",
+"none"
+],
+[
+"what is the weather like in Mexico City",
+"none"
+],
+[
+"what is the capital of France",
+"none"
+],
+[
+"write me a poem",
+"none"
+],
+[
+"hello",
+"none"
+],
+[
+"which customers return toys the most",
+"none"
+],
+[
+"forecast revenue for 2024",
+"none"
+],
+[
+"which toys made the most profit",
+"top_profit"
+],
+[
+"which toys made the most revenue",
+"top_rev"
+],
+[
+"which stores made the most profit",
+"store_profit"
+],
+[
+"which toys generated the most revenue",
+"top_rev"
+]
+]
+};
+const CANON={};
+[["toy","toys","product","products","item","items"],["store","stores","shop","shops","location","locations","branch","branches"],
+ ["sell","sells","selling","sold","sale","sales","seller","sellers"],["revenue","revenues","gross","grossing","dollars","money"],
+ ["profit","profits","profitable","profitability","earn","earns","earned","earner","earners","earnings"],["margin","margins"],
+ ["stock","inventory","stocked","shelf","shelves","shelved","hand"],["stockout","stockouts","unavailable","missing"],
+ ["zero","empty","none"],["low","lowest","least","fewest","smallest","thin","thinnest","slim","worst","short","little","weakest","thinner"],
+ ["top","best","biggest","highest","largest","greatest","strongest","hottest","peak","busiest"],
+ ["month","months","monthly"],["year","years","yearly","annual","annually","yoy"],["compare","compared","comparison","versus","vs","against"],
+ ["grow","growing","growth","rising","grew"],["trend","trending","history"],["category","categories","department","type"],
+ ["unit","units"],["restock","reorder","restocking"],["low","nearly","almost","running"]].forEach(g=>g.slice(1).forEach(w=>CANON[w]=g[0]));
+const NOISE=new Set(("last latest recent recently lately past this quarter q1 q2 q3 q4 2022 2023 games game art crafts sports outdoors electronics gadgets "+
+  "january february march april may june july august september october november december all right now from do does did was were is are the a an of in on at by to for and with me my our we us you your show tell give list what which who how when where why many much each every ever per than that them these those it its be can will would should have has had get got into out as or one specific particular given any some made make makes making bring brings brought generate generated generates").split(" "));
+NOISE.delete("out");NOISE.delete("month");
+const ALIASRE=ALIAS.map(([a])=>new RegExp(`\\b${a}s?\\b`,"g"));
+const DIMW=new Set(["toy","store","category","month","year"]);
+const KEYW=new Set(["toy","store","category","month","year","stock","stockout","zero","margin","profit","revenue","unit","restock","popular","compare","trend","toyname","low","top"]);
+const t2=s=>{const o=[];const yrs=new Set((s.match(/\b(2022|2023)\b/g)||[]));
+  let s2=s.toLowerCase().replace(/['’]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ");for(const re of ALIASRE)s2=s2.replace(re," toyname ");
+  for(let w of s2.split(/\s+/)){if(!w)continue;
+    w=CANON[w]||CANON[w.replace(/s$/,"")]||w;if(NOISE.has(w))continue;if(!o.includes(w))o.push(w)}
+  if(yrs.size>1)for(const w of["year","compare"])if(!o.includes(w))o.push(w);
+  if(!o.some(w=>DIMW.has(w)||w=="stock"||w=="stockout"))o.push("toy");
+  return o};
+const BANK=[];const DF={};
+for(const [id,list] of Object.entries(PARA))for(const p of list){const tk=t2(p);BANK.push({id,tk});for(const w of tk)DF[w]=(DF[w]||0)+1}
+const VOCAB=Object.keys(DF),NB=BANK.length,idf=w=>Math.log(1+NB/(DF[w]||0.5))*(KEYW.has(w)?1.6:1);
+function repair(w){if(DF[w])return w;if(w.length<5)return w;let b=null,bd=9;for(const v of VOCAB){if(v.length<5)continue;const d=lev(w,v);if(d<bd&&d<=(w.length>=8?2:1)){bd=d;b=v}}return b||w}
+function match2(q){
+  const qt=t2(q).map(repair);if(!qt.length)return {best:null,score:0,near:[],via:"none"};
+  const qn=Math.sqrt(qt.reduce((s,w)=>s+idf(w)**2,0));const by={};
+  for(const b of BANK){let dot=0;for(const w of qt)if(b.tk.includes(w))dot+=idf(w)**2;
+    const bn=Math.sqrt(b.tk.reduce((s,w)=>s+idf(w)**2,0))||1;const sc=dot/(qn*bn);if(!(by[b.id]>=sc))by[b.id]=sc}
+  const all=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+  return {best:QI[all[0][0]],score:all[0][1],margin:all[0][1]-(all[1]?all[1][1]:0),near:all.slice(0,3).map(x=>QI[x[0]]),via:"phrasing bank"}}
+const MATCH_MIN=0.34;
+/* route(): the intent decision the chat makes, reused by the self-test */
+function route(q,m=match2){
+  if(UNSUP.test(q)||/\bwhy\b/i.test(q))return null;
+  const r=m(q);if(!r.best)return null;
+  const s=m===match2?r.score:r.score;if(s<(m===match2?MATCH_MIN:0.4))return null;return r.best.id}
+function runEval(){
+  const cases=EVAL.cases;let o={old:0,neu:0,n:cases.length,inScope:0,oldIn:0,neuIn:0,fails:[]};
+  for(const [q,exp] of cases){const e=exp=="none"?null:exp;const a=route(q,match),b=route(q,match2);
+    if(a===e)o.old++;if(b===e)o.neu++;if(e){o.inScope++;if(a===e)o.oldIn++;if(b===e)o.neuIn++}
+    if(b!==e)o.fails.push({q,exp:e,got:b,score:+(match2(q).score).toFixed(2)})}
+  return o}
+
+const chat=[];let askBusy=false;let lastAsk=null;
 function renderAsk(){
   const groups={};for(const q of QS)(groups[q.group]??=[]).push(q);
   document.getElementById("ask").innerHTML=`<h1>💬 Ask the Data: Questions in Plain English</h1><p class="sub">Type a question in your own words. I answer from a list of approved questions and show my work. If I can't answer, I'll say so.</p>
@@ -664,7 +1161,7 @@ function renderAsk(){
     <div class="mini"><div class="node" style="background:#e3eefb">🙋 You ask<small>in plain English</small></div><div class="arrow">→</div><div class="node" style="background:#ece8fb">🤖 Claude<small>writes the SQL</small></div><div class="arrow">→</div><div class="node" style="background:#fcf0d2">🗄️ Your data<small>runs the query</small></div><div class="arrow">→</div><div class="node" style="background:#def5ec">📊 Answer<small>table, chart, SQL shown</small></div></div>
     <div class="cmp">
       <div><h4>🧪 This demo (free, public)</h4><ul>
-        <li>Matches your words to a fixed list of <b>approved questions</b></li>
+        <li>Matches your words to a fixed list of <b>approved questions</b>, using about 200 example phrasings, and remembers your last question for follow-ups</li>
         <li>Every answer is computed from the CSVs in your browser</li>
         <li>Can't answer anything that isn't on the list</li>
         <li>Costs nothing to run, so anyone can open it</li></ul></div>
@@ -676,7 +1173,7 @@ function renderAsk(){
     <p class="note" style="margin:12px 0 0;color:var(--ink2);font-size:13px"><b>Why the demo doesn't do that:</b> AI is much better at this than a fixed list, but it's hard to share broadly for free. Every question costs real money (AI usage plus a live database), and it needs guardrails so the AI can't write wrong or unsafe queries. A free public page can't safely pay for that, so the real version lives behind a company login.</p>
   </details>
   <div class="askwrap"><div>
-    <div class="chat" id="chatlog">${chat.length?chat.map(m=>m.html).join(""):`<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>Hi! I can answer questions about toys, stores, categories, time and stock. You can add a toy, a category or a time period, like <i>“best-selling toys in Games last quarter”</i> or <i>“which stores sell the most Lego Bricks?”</i><div class="sugg">${["Which toys generated the most profit last quarter?","How does 2023 compare with 2022?","Which category has the best gross margin?","Where do popular toys have zero stock?"].map(q=>`<button class="chip" onclick="ask(this.textContent)">${q}</button>`).join("")}</div></div>`}</div>
+    <div class="chat" id="chatlog">${chat.length?chat.map(m=>m.html).join(""):`<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>Hi! I can answer questions about toys, stores, categories, time and stock. You can add a toy, a category or a time period, like <i>“best-selling toys in Games last quarter”</i> or <i>“which stores sell the most Lego Bricks?”</i> I remember the last question, so you can follow up with <i>“what about Electronics?”</i> or <i>“and in 2022?”</i><div class="sugg">${["Which toys generated the most profit last quarter?","How does 2023 compare with 2022?","Which category has the best gross margin?","Where do popular toys have zero stock?"].map(q=>`<button class="chip" onclick="ask(this.textContent)">${q}</button>`).join("")}</div></div>`}</div>
     <div class="askrow"><input type="text" id="askin" placeholder="Ask about toys, stores, categories, time or stock…" onkeydown="if(event.key=='Enter')ask()"><button class="btn pri" onclick="ask()">Ask</button></div>
   </div>
   <div class="card side"><h3>📚 Browse approved questions</h3>${Object.entries(groups).map(([g,qs])=>`<div class="grp"><div class="gt">${g}</div>${qs.map(q=>`<button onclick="ask(this.textContent,true)">${q.title}</button>`).join("")}</div>`).join("")}<div class="note">Tip: add a toy, category or time period to any question.</div></div></div>`;
@@ -688,19 +1185,29 @@ function ask(text,instant){
   chat.push({html:`<div class="msg u">${esc(q)}</div>`});
   const done=()=>{chat.pop();chat.push({html:answer(q)});askBusy=false;renderAsk()};
   if(instant){chat.push({html:""});done();return}
-  askBusy=true;chat.push({html:`<div class="msg a typing"><span></span><span></span><span></span></div>`});renderAsk();setTimeout(done,550);
+  askBusy=true;const steps=["Reading your question…","Matching it to an approved calculation…","Computing from the CSVs…"];
+  const tp=s=>`<div class="msg a typing"><span></span><span></span><span></span><i class="stp">${s}</i></div>`;
+  chat.push({html:tp(steps[0])});renderAsk();
+  steps.slice(1).forEach((s,k)=>setTimeout(()=>{if(askBusy){chat[chat.length-1].html=tp(s);renderAsk()}},(k+1)*380));
+  setTimeout(done,steps.length*380);
 }
 const chips=(arr)=>`<div class="sugg">${arr.map(t=>`<button class="chip" onclick="ask(this.textContent)">${esc(t)}</button>`).join("")}</div>`;
 function answer(q){
-  const slots=parseSlots(q), ctx={m0:0,m1:20,...slots};
+  const slots=parseSlots(q);
+  const FOLLOW=/^\s*(and|what about|how about|same|now|ok|okay|then|what if|also|instead|just)\b/i;
   const metric=METRICW.test(q);
   if(UNSUP.test(q)) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div><b>I can't answer that from this dataset.</b> It has sales, toys, stores and a stock snapshot, but no customer, survey, review, promotion or forecast data. Closest things I can answer:${chips(["Which toys generated the most profit?","How has revenue changed over time?","How does 2023 compare with 2022?"])}</div>`;
   if(/\bwhy\b/i.test(q)) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div><b>I can show you <i>what</i> changed, but not <i>why</i>.</b> The data has no information about causes like promotions or supply problems. I can show where the change happened:${chips(["How has revenue changed over time?","How does 2023 compare with 2022?","Which category has the best gross margin?"])}</div>`;
   if(AMBIG.test(q)&&!metric&&/\b(toy|toys|product|products)\b/i.test(q)) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>“Best” can mean different things. Which do you mean?${chips(["What were the best-selling toys?","Which toys generated the most profit?","Which toys brought in the most revenue?"])}</div>`;
-  const {best,score,near}=match(q);
-  if(score<0.4) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>I'm not sure I have an approved answer for that. Did you mean one of these?${chips(near.map(x=>x.title))}</div>`;
+  let {best,score,near}=match2(q);
+  const isFollow=!!lastAsk&&slots.chips.length>0&&(!best||score<MATCH_MIN||FOLLOW.test(q));
+  if(isFollow){best=lastAsk.q;near=[best,...best.rel.map(id=>QI[id])]}
+  const ctx=isFollow?{m0:0,m1:20,...lastAsk.slots,...slots}:{m0:0,m1:20,...slots};
+  if(isFollow){const key=c=>c.split(":")[0];const mine=new Set(slots.chips.map(key));slots.chips=[...slots.chips,...lastAsk.chips.filter(c=>!mine.has(key(c)))]}
+  if(!isFollow&&(!best||score<MATCH_MIN)) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>I'm not sure I have an approved answer for that. Did you mean one of these?${chips(near.map(x=>x.title))}</div>`;
   if(best.needs=="pid"&&!ctx.pid) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>Which toy do you mean?${chips(["Lego Bricks","Colorbuds","Rubik's Cube","Nerf Gun","Monopoly","Jenga"].map(n=>`Which stores sell the most ${n}?`))}</div>`;
   const r=best.run(ctx);
+  if(r)lastAsk={q:best,slots:{...ctx},chips:[...slots.chips]};
   if(!r) return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>I understood this as <b>${best.title}</b>, but there are no sales for that combination${slots.chips.length?` (${slots.chips.join(", ")})`:""}. Try a wider time period.${chips(near.map(x=>x.title))}</div>`;
   let chart="";
   if(r.chart=="line") chart=line(r.series,{w:600,h:200,fmt:r.fmt,labels:i=>mlabel(i+r.offset)});
@@ -709,7 +1216,7 @@ function answer(q){
   const follow=[...best.rel.map(id=>QI[id].title)];
   const extra=[];if(!ctx.period&&best.needs!="pid"&&best.id!="yoy"&&best.id!="low_stock"&&best.id!="zero_stock")extra.push(best.title.replace(/\?$/,"")+" last quarter?");if(!ctx.cats&&best.needs!="pid"&&!["low_stock","zero_stock"].includes(best.id))extra.push(best.title.replace(/\?$/,"")+" in Games?");
   return `<div class="msg a"><div class="who">🤖 Toy-Box Analyst</div>
-    <div style="font-size:12px;color:var(--ink2);margin-bottom:6px">I understood this as: <b>${best.title}</b>${slots.chips.length?`<br>${slots.chips.map(c=>`<span class="slot">${esc(c)}</span>`).join("")}`:""}</div>${esc(r.text)}
+    <div style="font-size:12px;color:var(--ink2);margin-bottom:6px">${isFollow?"Following up on your last question. ":""}I understood this as: <b>${best.title}</b>${slots.chips.length?`<br>${slots.chips.map(c=>`<span class="slot">${esc(c)}</span>`).join("")}`:""}</div>${esc(r.text)}
     <div style="margin:10px 0">${chart}</div>
     <div class="meta"><span class="ok">✓ Approved question</span> · computed live from the CSVs · Source: ${r.src}<br><b>How it's calculated:</b> ${r.def}<br>
     <button class="btn" style="margin-top:8px" onclick='csvDownload("answer.csv",[${JSON.stringify(r.cols)},...${JSON.stringify(r.rows.map(x=>[x.label,x.v]))}])'>⬇ Download CSV</button></div>
@@ -737,6 +1244,8 @@ function show(t){current=t;history.replaceState(null,"","#"+t);
   else if(h.startsWith("deck:")){slide=+h.slice(5);show("presentation")}
   else if(h=="ask-demo"){show("ask");["which toys made the most profit last quarter","best selling toys in games in 2022","which stores sell the most lego","how satisfied are our customers?","which toy is the best?","wich category has the best margn"].forEach(q=>ask(q,true))}
   else if(h=="ask-ex"){show("ask")}
+  else if(h=="ask-eval"){show("ask");const o=runEval();document.getElementById("ask").insertAdjacentHTML("afterbegin",`<pre id="evalout">${JSON.stringify(o)}</pre>`)}
+  else if(h=="ask-follow"){show("ask");["which toys made the most profit","what about electronics?","and in 2022?","best selling toys","which stores sell the most lego"].forEach(q=>ask(q,true))}
   else show(TABS.some(t=>t[0]==h)?h:"start")})();
 </script>
 </body>

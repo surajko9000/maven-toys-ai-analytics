@@ -1,0 +1,429 @@
+{
+"note": "Held-out phrasings (not in ask_paraphrases.json). expected=null means the Ask tab should say it can't answer.",
+"cases": [
+[
+"what toy brings home the biggest profit",
+"top_profit"
+],
+[
+"rank our toys by how much profit they earn",
+"top_profit"
+],
+[
+"whats our most profitable product in 2023",
+"top_profit"
+],
+[
+"which toys are cash cows profit wise last quarter",
+"top_profit"
+],
+[
+"biggest profit toys in games",
+"top_profit"
+],
+[
+"wich toys make the most profit",
+"top_profit"
+],
+[
+"what are the hottest selling toys",
+"top_units"
+],
+[
+"which toys do people buy most often",
+"top_units"
+],
+[
+"most units shifted by product",
+"top_units"
+],
+[
+"best selling items last quarter",
+"top_units"
+],
+[
+"top sellers in electronics",
+"top_units"
+],
+[
+"whats the most popular toy in 2022",
+"top_units"
+],
+[
+"which products gross the most",
+"top_rev"
+],
+[
+"toys ranked by sales revenue",
+"top_rev"
+],
+[
+"what makes us the most money in sales",
+"top_rev"
+],
+[
+"highest earning toys by revenue in 2023",
+"top_rev"
+],
+[
+"which toy has the largest revenue",
+"top_rev"
+],
+[
+"top toys by dollars sold",
+"top_rev"
+],
+[
+"which toys have the worst profit margins",
+"low_margin"
+],
+[
+"what products have slim margins",
+"low_margin"
+],
+[
+"toys where we make the least per dollar of sales",
+"low_margin"
+],
+[
+"lowest margin toys in games",
+"low_margin"
+],
+[
+"which items are not very profitable per sale",
+"low_margin"
+],
+[
+"whos got the thinnest margin",
+"low_margin"
+],
+[
+"which shops have the best sales",
+"store_rev"
+],
+[
+"top locations by revenue",
+"store_rev"
+],
+[
+"what store brings in the most dollars",
+"store_rev"
+],
+[
+"best performing store last quarter",
+"store_rev"
+],
+[
+"which of our stores sells the most overall",
+"store_rev"
+],
+[
+"highest grossing stores in 2023",
+"store_rev"
+],
+[
+"which store makes us the most profit",
+"store_profit"
+],
+[
+"rank locations by profit",
+"store_profit"
+],
+[
+"most profitable shop in 2022",
+"store_profit"
+],
+[
+"which stores are the biggest earners profit wise",
+"store_profit"
+],
+[
+"where do we earn the most profit geographically",
+"store_profit"
+],
+[
+"top profit stores last quarter",
+"store_profit"
+],
+[
+"where does Lego sell best",
+"store_for_toy"
+],
+[
+"which stores move the most Nerf Gun",
+"store_for_toy"
+],
+[
+"best stores for Jenga",
+"store_for_toy"
+],
+[
+"top locations selling Colorbuds",
+"store_for_toy"
+],
+[
+"who sells the most Monopoly",
+"store_for_toy"
+],
+[
+"stores selling lots of rubiks cube",
+"store_for_toy"
+],
+[
+"which category earns the highest margin",
+"cat_margin"
+],
+[
+"best margin by product category",
+"cat_margin"
+],
+[
+"category margins compared",
+"cat_margin"
+],
+[
+"which type of toy is most profitable percentage wise",
+"cat_margin"
+],
+[
+"highest margin category last quarter",
+"cat_margin"
+],
+[
+"whats the margin for each category",
+"cat_margin"
+],
+[
+"revenue split across categories",
+"cat_rev"
+],
+[
+"which categories sell the most",
+"cat_rev"
+],
+[
+"compare categories by sales",
+"cat_rev"
+],
+[
+"how much does each category bring in",
+"cat_rev"
+],
+[
+"category revenue in 2023",
+"cat_rev"
+],
+[
+"which category is our biggest in sales",
+"cat_rev"
+],
+[
+"is revenue rising or falling",
+"trend"
+],
+[
+"how have sales moved over the last two years",
+"trend"
+],
+[
+"revenue by month over time",
+"trend"
+],
+[
+"show me the sales trend",
+"trend"
+],
+[
+"are we selling more or less than before",
+"trend"
+],
+[
+"monthly sales history",
+"trend"
+],
+[
+"when was our best month",
+"best_month"
+],
+[
+"what month had peak sales",
+"best_month"
+],
+[
+"which month did we make the most",
+"best_month"
+],
+[
+"highest revenue month in 2023",
+"best_month"
+],
+[
+"busiest month for sales",
+"best_month"
+],
+[
+"which month is our strongest",
+"best_month"
+],
+[
+"did we grow in 2023",
+"yoy"
+],
+[
+"this year compared to last year",
+"yoy"
+],
+[
+"are we doing better than 2022",
+"yoy"
+],
+[
+"year on year revenue growth",
+"yoy"
+],
+[
+"how does 2023 stack up against 2022",
+"yoy"
+],
+[
+"is 2023 up or down vs 2022",
+"yoy"
+],
+[
+"what toys are nearly out of stock",
+"low_stock"
+],
+[
+"which products have the lowest inventory",
+"low_stock"
+],
+[
+"what are we running short on",
+"low_stock"
+],
+[
+"toys with the least units on hand",
+"low_stock"
+],
+[
+"low inventory items right now",
+"low_stock"
+],
+[
+"which toys are almost sold out",
+"low_stock"
+],
+[
+"which toys have the most stockouts",
+"zero_stock"
+],
+[
+"what is out of stock in lots of stores",
+"zero_stock"
+],
+[
+"toys with zero stock in the most stores",
+"zero_stock"
+],
+[
+"where are shelves empty across stores",
+"zero_stock"
+],
+[
+"which products are unavailable in many stores",
+"zero_stock"
+],
+[
+"count of stores out of stock by toy",
+"zero_stock"
+],
+[
+"where are we out of our best sellers",
+"restock"
+],
+[
+"popular toys we need to restock",
+"restock"
+],
+[
+"which stores ran out of popular items",
+"restock"
+],
+[
+"best selling toys with empty shelves",
+"restock"
+],
+[
+"where are we losing sales because of stockouts",
+"restock"
+],
+[
+"what should we restock first",
+"restock"
+],
+[
+"how satisfied are our customers",
+"none"
+],
+[
+"what will sales be next year",
+"none"
+],
+[
+"which toy has the best reviews",
+"none"
+],
+[
+"do discounts increase sales",
+"none"
+],
+[
+"who is our biggest competitor",
+"none"
+],
+[
+"how many employees work in each store",
+"none"
+],
+[
+"what is the weather like in Mexico City",
+"none"
+],
+[
+"what is the capital of France",
+"none"
+],
+[
+"write me a poem",
+"none"
+],
+[
+"hello",
+"none"
+],
+[
+"which customers return toys the most",
+"none"
+],
+[
+"forecast revenue for 2024",
+"none"
+],
+[
+"which toys made the most profit",
+"top_profit"
+],
+[
+"which toys made the most revenue",
+"top_rev"
+],
+[
+"which stores made the most profit",
+"store_profit"
+],
+[
+"which toys generated the most revenue",
+"top_rev"
+]
+]
+}
