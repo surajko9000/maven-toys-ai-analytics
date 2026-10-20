@@ -177,13 +177,19 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .hhero .eyebrow{font-weight:800;letter-spacing:.09em;text-transform:uppercase;font-size:12.5px;color:var(--s7)}
 .hhero h1{font-size:44px;line-height:1.1;margin:10px 0 14px;letter-spacing:-.025em}
 .hhero p{font-size:19px;line-height:1.5;color:var(--ink2);margin:0}
-.hcards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.hctx{max-width:860px;margin:0 auto 24px;text-align:center;padding:22px 26px}
+.hctx p{margin:8px 0;font-size:17px;line-height:1.55;color:var(--ink)}
+.hchips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 12px}
+.hchips span{background:#e3eefb;color:#1c5cab;font-weight:800;border-radius:999px;padding:7px 16px;font-size:15.5px}
+.hchips span:nth-child(2){background:#fcf0d2;color:#9a5b00}.hchips span:nth-child(3){background:#def5ec;color:#0e7a4f}
+.hdown{font-size:26px;margin-top:6px}
+.hcards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .hcard{background:#fff;border:2px solid var(--line);border-radius:22px;overflow:hidden;cursor:pointer;box-shadow:0 6px 0 var(--line);transition:transform .15s;display:flex;flex-direction:column}
 .hcard:hover{transform:translateY(-4px)}
 .hcard img{width:100%;display:block;border-bottom:2px solid var(--line);aspect-ratio:16/10;object-fit:cover;object-position:top;background:#fff7e8}
-.hcard .hb{padding:16px 18px 18px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;flex:1}
+.hcard .hb{padding:14px 16px 16px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;flex:1}
 .hcard .hn{width:30px;height:30px;border-radius:50%;color:#fff;font-weight:800;display:grid;place-items:center;font-size:15px}
-.hcard h3{font-size:22px;margin:0}.hcard p{margin:0;color:var(--ink2);font-size:15.5px;line-height:1.5;flex:1}
+.hcard h3{font-size:20px;margin:0}.hcard p{margin:0;color:var(--ink2);font-size:14.5px;line-height:1.5;flex:1}
 .hwide{flex-direction:row !important;margin-top:20px;align-items:stretch}
 .hwide img{width:52%;aspect-ratio:auto !important;border-bottom:0 !important;border-right:2px solid var(--line);object-fit:cover;object-position:top left}
 .hwide .hb{justify-content:center;padding:22px 26px !important}
@@ -195,7 +201,8 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .hfacts>div{display:flex;gap:14px;font-size:15.5px;line-height:1.55;color:var(--ink2)}.hfacts b{color:var(--ink);font-size:16.5px}
 .hfi{font-size:30px;line-height:1}
 .hfoot{text-align:center;color:var(--ink2);font-size:14px;margin-top:30px;line-height:1.8}
-@media(max-width:900px){.hcards,.hfacts{grid-template-columns:1fr}.hhero h1{font-size:32px}}
+@media(max-width:1100px){.hcards{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.hcards,.hfacts{grid-template-columns:1fr}.hhero h1{font-size:32px}}
 .shl{margin:6px 0 10px !important}.shl li{font-size:16.5px !important;margin:4px 0 !important}
 .lead{font-size:16px;line-height:1.55;max-width:820px;margin:0 0 14px;color:var(--ink2)}
 .jobs{display:grid;gap:10px}
@@ -363,27 +370,27 @@ const tileBg=pid=>TILE_OVERRIDE[pid]||STRONG[P[pid].cat];
 
 /* ================= TAB 0: START HERE ================= */
 function renderStart(){
-  const cards=[["dashboard","1","Dashboard","img/home-dashboard.jpg","Charts and tables that people can filter themselves, so they can check the numbers without asking an analyst.","Open the dashboard","#2a78d6"],
-               ["presentation","2","Presentation","deck/preview/slide-1.jpg","A short slide deck that tells the story in the data and ends with a recommendation. Download it as PowerPoint or PDF.","Open the presentation","#e08a00"],
-               ["ask","3","Ask questions","img/home-ask.jpg","Type a one-off question in plain English and get an answer with a chart. This part is a demo.","Try Ask","#1baf7a"]]
-    .map(([k,n,h,img,d,b,c])=>`<div class="hcard" onclick="show('${k}')"><img src="${img}" alt="Preview of the ${h} tab" loading="lazy"><div class="hb"><span class="hn" style="background:${c}">${n}</span><h3>${h}</h3><p>${d}</p><span class="btn pri" style="background:${c};border-color:${c}">${b} →</span></div></div>`).join("");
+  const cards=[["dashboard","1","Dashboard","img/home-dashboard.jpg","Charts and tables that people can filter themselves, without asking an analyst.","Open the dashboard","#2a78d6",""],
+               ["presentation","2","Presentation","deck/preview/slide-1.jpg","A short deck that tells the story and ends with a recommendation. Download it as PowerPoint or PDF.","Open the presentation","#e08a00",""],
+               ["ask","3","Ask questions","img/home-ask.jpg","Type a one-off question and get an answer with a chart. A demo of ad hoc requests.","Try Ask","#1baf7a",""],
+               ["toys","✨","Toy Finder","img/home-toys.jpg","A custom data app: browse all 35 toys like a store catalog. I asked for a picture of every toy, and Claude drew all 35 as original illustrations. Normally this takes a developer, a designer and weeks of work.","Open the Toy Finder","#d6336c","Bonus · only possible with Claude"]]
+    .map(([k,n,h,img,d,b,c,tag])=>`<div class="hcard" onclick="show('${k}')"><img src="${img}" alt="Preview of the ${h} tab" loading="lazy"><div class="hb">${tag?`<span class="hunlock">${tag}</span>`:`<span class="hn" style="background:${c}">${n}</span>`}<h3>${h}</h3><p>${d}</p><span class="btn pri" style="background:${c};border-color:${c}">${b} →</span></div></div>`).join("");
   document.getElementById("start").innerHTML=`
   <div class="hhero">
     <span class="eyebrow">A Claude Code experiment</span>
     <h1>How can Claude Code augment the work of a data analyst?</h1>
-    <p>I gave Claude Code free toy-sales data and asked it to produce the three things data analysts are asked for most.</p>
+  </div>
+  <div class="card hctx">
+    <p>Data analysts are usually asked to deliver a few things:</p>
+    <div class="hchips"><span>📊 Dashboards</span><span>🎤 Presentations</span><span>💬 Ad hoc data requests</span></div>
+    <p>Instead of traditional tools and methods, <b>I used Claude entirely to build them.</b></p>
+    <p>For the project, I got <b>free data from a fictional toy company in Mexico</b> and did financial analysis on the numbers (sales, profit, margin and stock). You can see the results below.</p>
+    <div class="hdown">👇</div>
   </div>
   <div class="hcards">${cards}</div>
-  <div class="hcard hwide" onclick="show('toys')">
-    <img src="img/home-toys.jpg" alt="Preview of the Toy Finder data app" loading="lazy">
-    <div class="hb"><span class="hunlock">✨ Bonus · Only possible with Claude</span><h3>Toy Finder: a custom data app</h3>
-      <p>Browse all 35 toys like a store catalog. Filter by time and category, sort by profit, and open any toy to see its sales, stores and stock.</p>
-      <p>A data analyst would not normally build this. A custom app like this usually takes a software developer, weeks of work and real budget. Claude Code built it from plain-language requests.</p>
-      <span class="btn pri" style="background:#d6336c;border-color:#d6336c">Open the Toy Finder →</span></div>
-  </div>
 
   <div class="hfacts">
-    <div><span class="hfi">🗂️</span><div><b>The data</b><br>Free, public data from Maven Analytics. It covers toy sales for a fictional company in Mexico: 50 stores, 35 toys, Jan 2022 to Sep 2023.</div></div>
+    <div><span class="hfi">🗂️</span><div><b>The data</b><br>Free, public data from Maven Analytics: 50 stores, 35 toys, Jan 2022 to Sep 2023.</div></div>
     <div><span class="hfi">🤖</span><div><b>Made by Claude, checked by a human</b><br>Claude wrote all the code, charts, slides, drawings and text. I wrote the requests and checked the numbers.</div></div>
   </div>
   <div class="hfoot">Built by <a class="lnk" href="https://github.com/surajko9000" target="_blank" rel="noopener" style="margin-left:0">@surajko9000</a> to see how far Claude Code can go on everyday analyst work
