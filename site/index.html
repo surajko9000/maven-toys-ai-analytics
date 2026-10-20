@@ -115,7 +115,16 @@ svg text{font:11px var(--font);fill:var(--ink2)}
 .btn.pri{background:var(--s1);color:#fff;border-color:var(--s1);box-shadow:0 3px 0 #1c5cab}
 .defs{font-size:12px;color:var(--ink2);margin-top:16px;border-top:2px dashed var(--line);padding-top:10px}
 #tip{position:fixed;pointer-events:none;background:#1f1a17;color:#fff;border-radius:10px;padding:6px 10px;font-size:12px;opacity:0;transition:opacity .08s;z-index:60;white-space:nowrap}
-.tab{display:none}.tab.on{display:block}
+.tab{display:none}.tab.on{display:block;animation:tabin .3s ease-out}
+@keyframes tabin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+main.leaving{opacity:0;transform:translateY(-8px);transition:opacity .2s ease,transform .2s ease}
+.shelf button.pop{animation:popt .28s ease-out forwards !important;scale:1.35;z-index:3}
+@keyframes popt{0%{translate:0 0}50%{translate:0 -22px}100%{translate:0 -10px;opacity:.9}}
+.drawer.on .panel{animation:panelin .28s ease-out}
+.drawer.on{animation:fadein .22s ease-out}
+@keyframes panelin{from{transform:translateX(48px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.tab.on,.drawer.on,.drawer.on .panel{animation:none}main.leaving{transition:none}}
 /* combo */
 .combo{position:relative}
 .combo input{min-width:220px;padding-right:30px}
@@ -409,6 +418,10 @@ const STRONG={"Toys":"#e6effb","Art & Crafts":"#fdeee6","Games":"#e3f6ee","Sport
 const tileBg=pid=>TILE_OVERRIDE[pid]||STRONG[P[pid].cat];
 
 /* ================= TAB 0: START HERE ================= */
+function goToy(btn,id){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){show("toys");openToy(id);return}
+  btn.classList.add("pop");document.querySelector("main").classList.add("leaving");
+  setTimeout(()=>{document.querySelector("main").classList.remove("leaving");show("toys");openToy(id)},230)}
 function renderStart(){
   const cards=[["dashboard","1","Dashboard","img/home-dashboard.jpg","Charts and tables that people can filter themselves, without asking an analyst.","Open the dashboard","#2a78d6",""],
                ["presentation","2","Presentation","deck/preview/slide-1.jpg","A short deck that tells the story and ends with a recommendation. Download it as PowerPoint or PDF.","Open the presentation","#e08a00",""],
@@ -416,19 +429,19 @@ function renderStart(){
                ["toys","✨","Toy Finder","img/home-toys.jpg","A custom data app: browse all 35 toys like a store catalog. I asked for a picture of every toy, and Claude drew all 35 as original illustrations. Normally this takes a developer, a designer and weeks of work.","Open the Toy Finder","#d6336c","Bonus · only possible with Claude"]]
     .map(([k,n,h,img,d,b,c,tag])=>`<div class="hcard" onclick="show('${k}')"><img src="${img}" alt="Preview of the ${h} tab" loading="lazy"><div class="hb">${tag?`<span class="hunlock">${tag}</span>`:`<span class="hn" style="background:${c}">${n}</span>`}<h3>${h}</h3><p>${d}</p><span class="btn pri" style="background:${c};border-color:${c}">${b} →</span></div></div>`).join("");
   const SH=[[6,"Colorbuds",-6],[18,"Lego Bricks",5],[29,"Plush Pony",-4],[28,"Playfoam",6],[9,"Dino Egg",-5],[33,"Teddy Bear",4],[34,"Toy Robot",-6],[30,"Rubik's Cube",5],[16,"Jenga",-4],[11,"Etch A Sketch",6],[14,"Glass Marbles",-5],[31,"Splash Balls",4]];
-  const shelf=SH.map(([id,n,r],i)=>`<button style="--i:${i};rotate:${r}deg" title="${n}" aria-label="Meet ${n}" onclick="show('toys');openToy(${id})">${ILLUS[id]}</button>`).join("");
+  const shelf=SH.map(([id,n,r],i)=>`<button style="--i:${i};rotate:${r}deg" title="${n}" aria-label="Meet ${n}" onclick="goToy(this,${id})">${ILLUS[id]}</button>`).join("");
   const CF=[["8%","10px","#ffd34d","c-sq",14],["16%","120px","#ff8fb1","c-ci",12],["27%","30px","#7be0b3","c-st",18],["38%","150px","#9fc2ff","c-sq",12],["61%","24px","#ff9a5a","c-ci",14],["72%","140px","#b78cff","c-st",18],["84%","14px","#7be0b3","c-sq",13],["92%","118px","#ffd34d","c-ci",12],["3%","90px","#9fc2ff","c-st",16],["50%","6px","#ff8fb1","c-st",14]];
   const confetti=CF.map(([l,tp,c,k,s],i)=>`<span class="cf ${k}" style="left:${l};top:${tp};width:${s}px;height:${s}px;background:${c};animation-delay:${-i*.7}s"></span>`).join("");
   document.getElementById("start").innerHTML=`
   <div class="hherowrap">
     ${confetti}
     <div class="hhero">
-      <span class="eyebrow">A Claude Code experiment</span>
+      <span class="eyebrow">✨ A Claude Code experiment ✨</span>
       <h1>Maven Toys Analytics Hub</h1>
     </div>
   </div>
   <div class="shelf">${shelf}</div><div class="shelfboard"></div>
-  <p class="shelfhint">Tap a toy to meet it</p>
+  <p class="shelfhint">Tap a toy to meet it :)</p>
   <div class="card hctx">
     <p>This site is a <b>demonstration</b> of what Claude Code can build for a data analyst.</p>
     <p>Data analysts are usually asked for <b>three</b> things:</p>
@@ -1289,7 +1302,7 @@ function answer(q){
   const C=["#ffd34d","#ff8fb1","#7be0b3","#9fc2ff","#ff9a5a","#b78cff"],K=["c-ci","c-sq","c-st"];
   let s=7;const r=()=>(s=(s*9301+49297)%233280)/233280;
   const bg=document.createElement("div");bg.className="cfbg";bg.setAttribute("aria-hidden","true");
-  for(let i=0;i<30;i++){const sz=11+Math.round(r()*10);
+  for(let i=0;i<44;i++){const sz=11+Math.round(r()*10);
     bg.insertAdjacentHTML("beforeend",`<span class="${K[i%3]}" style="left:${(r()*96).toFixed(1)}%;top:${(r()*94).toFixed(1)}%;width:${sz}px;height:${sz}px;background:${C[i%6]};animation-delay:${(-r()*8).toFixed(1)}s"></span>`)}
   document.body.appendChild(bg);
 })();
