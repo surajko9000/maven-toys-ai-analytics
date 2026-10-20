@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Maven Toys Analytics Hub</title>
 <style>
+@font-face{font-family:"Fredoka";src:url(fonts/Fredoka.ttf) format("truetype");font-weight:300 700;font-display:swap}
 :root{
   --bg:#fff7e8; --surface:#ffffff; --line:#f0e3c8; --grid:#f3ead6;
   --ink:#1f1a17; --ink2:#5e564e; --ink3:#948a7f;
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s7:#6250d6;
   --good:#0e7a4f; --bad:#b4332f; --radius:20px;
+  --display:"Fredoka",ui-rounded,"SF Pro Rounded","Nunito","Trebuchet MS",system-ui,sans-serif;
   --font:ui-rounded,"SF Pro Rounded","Nunito","Varela Round","Trebuchet MS",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box}
@@ -28,6 +30,28 @@ nav button:hover{background:#fff1d6;transform:translateY(-1px)}
 nav button.on{color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.2)}
 .badge{font-size:11.5px;font-weight:700;color:var(--ink2);background:#fff1d6;border-radius:999px;padding:5px 10px;white-space:nowrap}
 @media(max-width:1180px){.badge{display:none}}
+/* ---- playful layer ---- */
+h1,h2,h3,.brand,nav button,.btn,.chip,.hchips span,.tag,.hunlock,.eyebrow{font-family:var(--display)}
+h1,h2.sec{letter-spacing:0;font-weight:600}
+h3,.card h3,.hcard h3{font-weight:600}
+header{background:#fffaf0 radial-gradient(circle at 12px 12px,#f6e8c8 3.2px,transparent 3.6px) 0 0/24px 24px}
+nav button.on{box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.hherowrap{position:relative}
+.ht{position:absolute;width:92px;height:92px;pointer-events:none;filter:drop-shadow(0 7px 4px rgba(60,40,10,.14));animation:htf 6s ease-in-out infinite}
+.ht svg{width:100%;height:100%;display:block}
+.ht:nth-child(1){left:3%;top:4px;transform:rotate(-10deg)}
+.ht:nth-child(2){left:10%;top:62px;width:72px;height:72px;transform:rotate(9deg);animation-delay:-2s}
+.ht:nth-child(3){right:3%;top:2px;transform:rotate(9deg);animation-delay:-1s}
+.ht:nth-child(4){right:10%;top:62px;width:72px;height:72px;transform:rotate(-8deg);animation-delay:-3s}
+@keyframes htf{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@media(prefers-reduced-motion:reduce){.ht{animation:none}}
+@media(max-width:1000px){.ht{display:none}}
+.hcard:nth-child(1) .hb{background:#f4f8ff}.hcard:nth-child(2) .hb{background:#fffaf0}.hcard:nth-child(3) .hb{background:#f1fbf6}.hcard:nth-child(4) .hb{background:#fff3f8}
+.hcard:hover{transform:translateY(-5px) rotate(-.7deg)}
+.hcard:nth-child(even):hover{transform:translateY(-5px) rotate(.7deg)}
+.hctx{background:#fffdf7}
+.card.t:hover{transform:translateY(-3px) rotate(-.6deg)}
+
 main{max-width:1200px;margin:0 auto;padding:24px 20px 70px}
 h1{font-size:30px;margin:0 0 4px;letter-spacing:-.02em;font-weight:800} .sub{color:var(--ink2);margin:0 0 18px;font-size:15px}
 h2.sec{font-size:22px;font-weight:800;margin:34px 0 12px;display:flex;align-items:center;gap:10px}
@@ -375,9 +399,13 @@ function renderStart(){
                ["toys","✨","Toy Finder","img/home-toys.jpg","A custom data app: browse all 35 toys like a store catalog. I asked for a picture of every toy, and Claude drew all 35 as original illustrations. Normally this takes a developer, a designer and weeks of work.","Open the Toy Finder","#d6336c","Bonus · only possible with Claude"]]
     .map(([k,n,h,img,d,b,c,tag])=>`<div class="hcard" onclick="show('${k}')"><img src="${img}" alt="Preview of the ${h} tab" loading="lazy"><div class="hb">${tag?`<span class="hunlock">${tag}</span>`:`<span class="hn" style="background:${c}">${n}</span>`}<h3>${h}</h3><p>${d}</p><span class="btn pri" style="background:${c};border-color:${c}">${b} →</span></div></div>`).join("");
   document.getElementById("start").innerHTML=`
-  <div class="hhero">
-    <span class="eyebrow">A Claude Code experiment</span>
-    <h1>Maven Toys Analytics Hub</h1>
+  <div class="hherowrap">
+    <div class="ht" aria-hidden="true">${ILLUS[18]}</div><div class="ht" aria-hidden="true">${ILLUS[29]}</div>
+    <div class="ht" aria-hidden="true">${ILLUS[6]}</div><div class="ht" aria-hidden="true">${ILLUS[28]}</div>
+    <div class="hhero">
+      <span class="eyebrow">A Claude Code experiment</span>
+      <h1>Maven Toys Analytics Hub</h1>
+    </div>
   </div>
   <div class="card hctx">
     <p>This site is a <b>demonstration</b> of what Claude Code can build for a data analyst.</p>
