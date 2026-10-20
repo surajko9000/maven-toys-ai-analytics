@@ -73,6 +73,12 @@ nav button.on{box-shadow:0 4px 0 rgba(0,0,0,.18)}
 
 main{max-width:1200px;margin:0 auto;padding:24px 20px 70px}
 h1{font-size:30px;margin:0 0 4px;letter-spacing:-.02em;font-weight:800} .sub{color:var(--ink2);margin:0 0 18px;font-size:15px}
+.smartbar{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:10px;font-size:13.5px;line-height:1.45}
+.smartbar .sbi{font-size:22px}.smartbar .sbt{flex:1;color:var(--ink2)}.smartbar .sbt b{color:var(--ink)}
+.smartbar.on{background:#f1fbf6;border-color:#9fdcc0}.smartbar.failed{background:#fff3f0;border-color:#f0b4a8}
+.pbar{height:8px;background:#e9efe8;border-radius:99px;margin-top:6px;overflow:hidden}.pbar i{display:block;height:100%;background:#1baf7a;border-radius:99px;transition:width .2s}
+.sbres{margin-top:5px;color:var(--ink);font-size:13px}
+@media(max-width:700px){.smartbar{flex-wrap:wrap}}
 .demobadge{display:inline-block;vertical-align:middle;margin-left:10px;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:0;background:#ffd34d;color:#4a3200;border:2px solid #e0a800;border-radius:999px;padding:5px 14px;box-shadow:0 3px 0 #e0a800;white-space:nowrap}
 p.sub{display:inline-block;max-width:100%;background:var(--bg);border:0;border-radius:10px;padding:3px 10px 3px 0;margin:6px 0 18px;box-shadow:none;line-height:1.45;color:var(--ink2);position:relative;z-index:2}
 h2.sec{font-size:22px;font-weight:800;margin:34px 0 12px;display:flex;align-items:center;gap:10px}
@@ -1221,6 +1227,59 @@ function runEval(){
     if(b!==e)o.fails.push({q,exp:e,got:b,score:+(match2(q).score).toFixed(2)})}
   return o}
 
+
+/* ---------- optional in-browser embedding model (opt-in, falls back to the keyword matcher) ---------- */
+const SMART={state:"off",pct:0,embed:null,vecs:null,err:"",model:"Xenova/all-MiniLM-L6-v2",evalOut:""};
+const EMB_MIN=0.5,KW_SURE=0.6,KW_MARGIN=0.15;       // starting guesses, to be tuned with the in-page accuracy test
+const normQ=s=>{let o=" "+s.toLowerCase().replace(/['’]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ")+" ";for(const re of ALIASRE)o=o.replace(re," this toy ");return o.replace(/\s+/g," ").trim()};
+function renderSmart(){
+  const el=document.getElementById("smartbar");if(!el)return;
+  const S=SMART;let h="";
+  if(S.state=="off")h=`<span class="sbi">🧠</span><div class="sbt"><b>Smarter matching is off.</b> Turn it on to download a small AI model (about 25 MB, one time) into your browser. It only helps pick which prepared question you mean.</div><button class="btn pri" onclick="smartLoad()">Turn on</button>`;
+  else if(S.state=="loading")h=`<span class="sbi">⏳</span><div class="sbt"><b>${S.pct<100?`Downloading the model… ${S.pct}%`:"Getting ready…"}</b><div class="pbar"><i style="width:${S.pct}%"></i></div></div>`;
+  else if(S.state=="on")h=`<span class="sbi">🧠</span><div class="sbt"><b>Smarter matching is on.</b> A small AI model running in your browser helps pick the question. The numbers still come from the CSVs.${S.evalOut?`<div class="sbres">${S.evalOut}</div>`:""}</div><button class="btn" onclick="smartRunEval()">Test accuracy</button><button class="btn" onclick="SMART.state='off';renderSmart()">Turn off</button>`;
+  else h=`<span class="sbi">⚠️</span><div class="sbt"><b>The model could not load.</b> The chat still works with the standard matcher. <span class="mut">(${esc(S.err)})</span></div><button class="btn" onclick="SMART.state='off';smartLoad()">Try again</button>`;
+  el.className="smartbar "+S.state;el.innerHTML=h}
+async function smartLoad(){
+  if(SMART.state=="loading")return;
+  if(SMART.vecs&&SMART.embed){SMART.state="on";renderSmart();return}
+  SMART.state="loading";SMART.pct=0;SMART.err="";renderSmart();
+  try{
+    let embed;
+    if(window.__embedFactory)embed=await window.__embedFactory();
+    else{
+      const tf=await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3");
+      const files={};
+      const fe=await tf.pipeline("feature-extraction",SMART.model,{progress_callback:p=>{
+        if(p.status=="progress"&&p.total){files[p.file]=[p.loaded,p.total];let a=0,b=0;for(const [l,tt] of Object.values(files)){a+=l;b+=tt}SMART.pct=Math.min(99,Math.round(a/b*100));renderSmart()}}});
+      embed=async texts=>{const o=await fe(texts,{pooling:"mean",normalize:true});const d=o.data,n=texts.length,k=d.length/n;return Array.from({length:n},(_,i)=>Array.from(d.slice(i*k,(i+1)*k)))};
+    }
+    SMART.pct=100;renderSmart();
+    const items=[];for(const [id,list] of Object.entries(PARA))for(const p of list)items.push([id,normQ(p)]);
+    const vecs=[];for(let i=0;i<items.length;i+=24){const chunk=items.slice(i,i+24),vs=await embed(chunk.map(x=>x[1]));chunk.forEach((x,j)=>vecs.push({id:x[0],v:vs[j]}))}
+    SMART.embed=embed;SMART.vecs=vecs;SMART.state="on";
+  }catch(e){SMART.state="failed";SMART.err=String(e&&e.message||e).slice(0,140)}
+  renderSmart()}
+async function smartMatch(q){
+  const [qv]=await SMART.embed([normQ(q)]);const by={};
+  for(const b of SMART.vecs){let s=0;const v=b.v;for(let i=0;i<v.length;i++)s+=v[i]*qv[i];if(!(by[b.id]>=s))by[b.id]=s}
+  const all=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+  return {best:QI[all[0][0]],score:all[0][1],margin:all[0][1]-(all[1]?all[1][1]:0),near:all.slice(0,3).map(x=>QI[x[0]]),via:"embedding"}}
+async function decide(q){
+  const kw=match2(q);kw.via="keywords";
+  if(SMART.state!="on")return kw;
+  if(kw.score>=KW_SURE&&kw.margin>=KW_MARGIN)return kw;
+  return smartMatch(q)}
+async function smartRunEval(){
+  SMART.evalOut="Running…";renderSmart();
+  let ok=0,inOk=0,inN=0,viaE=0;const fails=[];
+  for(const [q,exp] of EVAL.cases){const e=exp=="none"?null:exp;let got=null;
+    if(!(UNSUP.test(q)||/\bwhy\b/i.test(q))){const r=await decide(q);if(r.via=="embedding")viaE++;if(r.best&&r.score>=(r.via=="embedding"?EMB_MIN:MATCH_MIN))got=r.best.id}
+    if(got===e)ok++;if(e){inN++;if(got===e)inOk++}else if(got)fails.push(q);if(got!==e&&e)fails.push(q+" → "+got)}
+  const n=EVAL.cases.length;
+  SMART.evalOut=`Test set: <b>${ok} of ${n} correct (${(100*ok/n).toFixed(1)}%)</b>. Of the in-scope questions, ${inOk} of ${inN} matched. The model decided ${viaE} questions; keywords handled the rest.`;
+  window.__smartEval={ok,n,inOk,inN,viaE,fails};renderSmart()}
+
 const chat=[];let askBusy=false;let lastAsk=null;let askHelpOpen=false;
 function renderAsk(){
   const groups={};for(const q of QS)(groups[q.group]??=[]).push(q);
@@ -1235,7 +1294,8 @@ function renderAsk(){
         <li>It handles new questions and follow-ups.</li>
         <li>Examples: Claude with an MCP connector (a plug-in for AI tools) to BigQuery, Snowflake or Postgres. Or built-in tools like Databricks Genie, Snowflake Cortex Analyst and Looker Conversational Analytics.</li></ul></div>
       <div><h4>🧪 This page is a demo, not the real thing</h4><ul>
-        <li>There is no AI here. Your question is matched to 1 of 15 prepared questions.</li>
+        <li>By default there is no AI here. Your question is matched to 1 of 15 prepared questions.</li>
+        <li><b>Optional:</b> turn on <b>Smarter matching</b> to use a small AI model in your browser. It only helps pick the question. The numbers still come from the CSVs.</li>
         <li>The answer is calculated from the CSV files in your browser.</li>
         <li>It remembers your last question, so "what about Electronics?" works.</li>
         <li>Anything else gets "I can't answer that."</li></ul></div>
@@ -1246,17 +1306,18 @@ function renderAsk(){
     </div>
   </details>
   <div class="askwrap"><div>
+    <div class="smartbar off" id="smartbar"></div>
     <div class="chat" id="chatlog">${chat.length?chat.map(m=>m.html).join(""):`<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>Hi! I'm a demo analyst, not real AI. Ask about toys, stores, categories, time or stock, and add a toy, category or time period, like <i>“best-selling toys in Games last quarter”</i>. I remember your last question, so you can follow up with <i>“what about Electronics?”</i><div class="sugg">${["Which toys generated the most profit last quarter?","How does 2023 compare with 2022?","Which category has the best gross margin?","Where do popular toys have zero stock?"].map(q=>`<button class="chip" onclick="ask(this.textContent)">${q}</button>`).join("")}</div></div>`}</div>
     <div class="askrow"><input type="text" id="askin" placeholder="Ask about toys, stores, categories, time or stock…" onkeydown="if(event.key=='Enter')ask()"><button class="btn pri" onclick="ask()">Ask</button></div>
   </div>
   <div class="card side"><h3>📚 Browse approved questions</h3>${Object.entries(groups).map(([g,qs])=>`<div class="grp"><div class="gt">${g}</div>${qs.map(q=>`<button onclick="ask(this.textContent,true)">${q.title}</button>`).join("")}</div>`).join("")}<div class="note">Tip: add a toy, category or time period to any question.</div></div></div>`;
-  const l=document.getElementById("chatlog");if(chat.length)l.scrollTop=l.scrollHeight;
+  renderSmart();const l=document.getElementById("chatlog");if(chat.length)l.scrollTop=l.scrollHeight;
 }
 function ask(text,instant){
   if(askBusy&&!instant)return;
   const inp=document.getElementById("askin");const q=(text??inp?.value??"").trim();if(!q)return;
   chat.push({html:`<div class="msg u">${esc(q)}</div>`});while(chat.length>60)chat.shift();
-  const done=()=>{chat.pop();chat.push({html:answer(q)});askBusy=false;renderAsk()};
+  const done=async()=>{let pre=null;if(SMART.state=="on"&&!UNSUP.test(q)&&!/\bwhy\b/i.test(q)){try{pre=await decide(q)}catch(e){pre=null}}chat.pop();chat.push({html:answer(q,pre)});askBusy=false;renderAsk()};
   if(instant){chat.push({html:""});done();return}
   askBusy=true;const steps=["Reading your question…","Matching it to an approved calculation…","Computing from the CSVs…"];
   const tp=s=>`<div class="msg a typing"><span></span><span></span><span></span><i class="stp">${s}</i></div>`;
@@ -1265,19 +1326,19 @@ function ask(text,instant){
   setTimeout(done,steps.length*380);
 }
 const chips=(arr)=>`<div class="sugg">${arr.map(t=>`<button class="chip" onclick="ask(this.textContent)">${esc(t)}</button>`).join("")}</div>`;
-function answer(q){
+function answer(q,pre){
   const slots=parseSlots(q);
   const FOLLOW=/^\s*(and|what about|how about|same|now|ok|okay|then|what if|also|instead|just)\b/i;
   const metric=METRICW.test(q);
   if(UNSUP.test(q)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div><b>I can't answer that from this dataset.</b> It has sales, toys, stores and a stock snapshot, but no customer, survey, review, promotion or forecast data. Closest things I can answer:${chips(["Which toys generated the most profit?","How has revenue changed over time?","How does 2023 compare with 2022?"])}</div>`;
   if(/\bwhy\b/i.test(q)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div><b>I can show you <i>what</i> changed, but not <i>why</i>.</b> The data has no information about causes like promotions or supply problems. I can show where the change happened:${chips(["How has revenue changed over time?","How does 2023 compare with 2022?","Which category has the best gross margin?"])}</div>`;
   if(AMBIG.test(q)&&!metric&&/\b(toy|toys|product|products)\b/i.test(q)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>“Best” can mean different things. Which do you mean?${chips(["What were the best-selling toys?","Which toys generated the most profit?","Which toys brought in the most revenue?"])}</div>`;
-  let {best,score,near}=match2(q);
-  const isFollow=!!lastAsk&&slots.chips.length>0&&(!best||score<MATCH_MIN||FOLLOW.test(q));
+  let {best,score,near,via}=pre||match2(q);const thr=via=="embedding"?EMB_MIN:MATCH_MIN;
+  const isFollow=!!lastAsk&&slots.chips.length>0&&(!best||score<thr||FOLLOW.test(q));
   if(isFollow){best=lastAsk.q;near=[best,...best.rel.map(id=>QI[id])]}
   const ctx=isFollow?{m0:0,m1:20,...lastAsk.slots,...slots}:{m0:0,m1:20,...slots};
   if(isFollow){const key=c=>c.split(":")[0];const mine=new Set(slots.chips.map(key));slots.chips=[...slots.chips,...lastAsk.chips.filter(c=>!mine.has(key(c)))]}
-  if(!isFollow&&(!best||score<MATCH_MIN)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>I'm not sure I have an approved answer for that. Did you mean one of these?${chips(near.map(x=>x.title))}</div>`;
+  if(!isFollow&&(!best||score<thr)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>I'm not sure I have an approved answer for that. Did you mean one of these?${chips(near.map(x=>x.title))}</div>`;
   if(best.needs=="pid"&&!ctx.pid) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>Which toy do you mean?${chips(["Lego Bricks","Colorbuds","Rubik's Cube","Nerf Gun","Monopoly","Jenga"].map(n=>`Which stores sell the most ${n}?`))}</div>`;
   const r=best.run(ctx);
   if(r)lastAsk={q:best,slots:{...ctx},chips:[...slots.chips]};
@@ -1289,7 +1350,7 @@ function answer(q){
   const follow=[...best.rel.map(id=>QI[id].title)];
   const extra=[];if(!ctx.period&&best.needs!="pid"&&best.id!="yoy"&&best.id!="low_stock"&&best.id!="zero_stock")extra.push(best.title.replace(/\?$/,"")+" last quarter?");if(!ctx.cats&&best.needs!="pid"&&!["low_stock","zero_stock"].includes(best.id))extra.push(best.title.replace(/\?$/,"")+" in Games?");
   return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>
-    <div style="font-size:12px;color:var(--ink2);margin-bottom:6px">${isFollow?"Following up on your last question. ":""}I understood this as: <b>${best.title}</b>${slots.chips.length?`<br>${slots.chips.map(c=>`<span class="slot">${esc(c)}</span>`).join("")}`:""}</div>${esc(r.text)}
+    <div style="font-size:12px;color:var(--ink2);margin-bottom:6px">${isFollow?"Following up on your last question. ":""}${via=="embedding"?"🧠 Matched by the in-browser model. ":""}I understood this as: <b>${best.title}</b>${slots.chips.length?`<br>${slots.chips.map(c=>`<span class="slot">${esc(c)}</span>`).join("")}`:""}</div>${esc(r.text)}
     <div style="margin:6px 0">${chart}</div>
     <div class="meta"><span class="ok">✓ Approved question</span> · computed live from the CSVs · Source: ${r.src}<br><b>How it's calculated:</b> ${r.def}
     <button class="btn" style="margin-left:8px" onclick='csvDownload("answer.csv",[${JSON.stringify(r.cols)},...${JSON.stringify(r.rows.map(x=>[x.label,x.v]))}])'>⬇ Download CSV</button></div>
@@ -1331,6 +1392,8 @@ function show(t){current=t;history.replaceState(null,"","#"+t);
   else if(h.startsWith("deck:")){slide=+h.slice(5);show("presentation")}
   else if(h=="ask-demo"){show("ask");["which toys made the most profit last quarter","best selling toys in games in 2022","which stores sell the most lego","how satisfied are our customers?","which toy is the best?","wich category has the best margn"].forEach(q=>ask(q,true))}
   else if(h=="ask-home"){show("ask");ask("which toys made the most profit",true)}
+  else if(h=="ask-smart-fake"){window.__embedFactory=async()=>{const D=96,hv=s=>{let x=2166136261;for(const c of s)x=Math.imul(x^c.charCodeAt(0),16777619);return Math.abs(x)};
+      return async texts=>texts.map(s=>{const v=new Array(D).fill(0);for(const w of t2(s))v[hv(w)%D]+=1;for(let i=0;i<s.length-2;i++)v[hv(s.slice(i,i+3))%D]+=.3;const n=Math.hypot(...v)||1;return v.map(x=>x/n)})};show("ask");smartLoad()}
   else if(h=="ask-help"){askHelpOpen=true;show("ask")}
   else if(h=="ask-ex"){show("ask")}
   else if(h=="ask-eval"){show("ask");const o=runEval();document.getElementById("ask").insertAdjacentHTML("afterbegin",`<pre id="evalout">${JSON.stringify(o)}</pre>`)}
