@@ -33,14 +33,18 @@ Planning and data validation complete. Front-end build in progress. See `docs/ar
 ## Repository layout
 
 ```
-site-src/template.html   the app (HTML, CSS, JavaScript for all tabs), the file you edit
-site/                    the published site (index.html is generated), deck files, fonts, images
+site-src/                the app source (edit these)
+  index.html               page shell: header and tab containers
+  css/01-05-*.css          styles: base, home, presentation, toys, ask
+  js/*.js                  scripts in load order: data, metrics, charts, one file per tab (Ask is 4 files), confetti, router
+site/                    the published site: index.html (generated), deck files, fonts, images
 public/data/             original CSVs (unmodified)
 data/                    data dictionary and validation notes
-scripts/                 build_site.py, gen_data.py, build_deck.py, toy illustrations, verify_totals.py
+scripts/                 build_site.py, gen_data.py, build_deck.py, toy_illustrations*.py, verify_totals.py
+tests/                   data, build, deck and browser checks
 evaluations/             Ask phrasing bank and test set, prompt log, iteration log, limitations, risks
 docs/                    architecture notes and design mockups
-.github/workflows/       deploys site/ to GitHub Pages on every push
+.github/workflows/       deploy.yml publishes site/ to GitHub Pages on every push
 ```
 
 ## Verify the headline numbers
@@ -68,11 +72,20 @@ python3 scripts/build_site.py      # no arguments: rebuilds site/index.html from
 
 | Part | What it is |
 |---|---|
-| `site-src/template.html` | The whole app: HTML, CSS and JavaScript for all five tabs (Home, Dashboard, Toy Finder, Presentation, Ask) |
+| `site-src/index.html`, `css/`, `js/` | The app. Files load in name order, so the numeric prefixes matter |
 | `public/data/*.csv` | The four original CSVs, unmodified. `scripts/gen_data.py` compacts them for the browser |
-| `scripts/mockup_illustrations_all.py` | The 35 original toy drawings (SVG) |
+| `scripts/toy_illustrations.py` | The 35 original toy drawings (SVG) |
 | `evaluations/ask_paraphrases.json` | About 200 example phrasings for the 15 approved Ask questions |
 | `evaluations/ask_eval.json` | Held-out test phrasings for the Ask matcher |
+
+## Run the tests
+
+```
+python3 -m unittest discover -s tests -v
+```
+
+Checks the reference totals against the raw CSVs, that `site/index.html` is up to date with its source, that the deck builds (and its
+numbers hold), that the Ask data is consistent, and, if Chromium is installed, that every tab renders and the Ask matcher scores at least 85% on the held-out set.
 
 The Ask tab matches questions against the phrasing bank. Open `site/index.html#ask-eval` to see the accuracy of the old and new keyword matchers, or turn on
 "Smarter matching" in the Ask tab and press "Test accuracy" to test the in-browser model.

@@ -1,9 +1,10 @@
-# Temporary: publishes the static mockup. Replaced by the real app's build workflow later.
-name: Deploy mockup to GitHub Pages
+# Publishes the prebuilt static site (site/) to GitHub Pages on every push to main.
+# site/index.html is generated: run `python3 scripts/build_site.py` and commit the result.
+name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: [site/**, .github/workflows/deploy-mockup.yml]
+    paths: [site/**, .github/workflows/deploy.yml]
   workflow_dispatch:
 permissions:
   contents: read

@@ -2,8 +2,8 @@
 
 ```
 public/data/*.csv  --scripts/gen_data.py-->  compact data  \
-scripts/mockup_illustrations_all.py -------->  toy drawings  }--scripts/build_site.py-->  site/index.html  --GitHub Actions-->  GitHub Pages
-evaluations/ask_*.json --------------------->  Ask phrasings /          (template: site-src/template.html)
+scripts/toy_illustrations.py -------->  toy drawings  }--scripts/build_site.py-->  site/index.html  --GitHub Actions-->  GitHub Pages
+evaluations/ask_*.json --------------------->  Ask phrasings /          (source: site-src/)
 
 In the browser: one agg() function computes revenue / profit / units from the compact data for every tab
   -> Dashboard, Toy Finder, Presentation viewer, Ask

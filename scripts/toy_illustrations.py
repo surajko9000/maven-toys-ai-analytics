@@ -1,10 +1,10 @@
 """Draws all 35 original toy illustrations (vector, no photos).
-Run: python3 scripts/mockup_illustrations_all.py out.json sheet_prefix
+Run: python3 scripts/toy_illustrations.py out.json sheet_prefix
 (out.json is embedded into site/index.html; sheet_*.html are contact sheets for review.)"""
 import json, math, random, sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from mockup_illustrations import shade, wrap, SH, ILLUS as BASE
+from toy_illustrations_base import shade, wrap, SH, ILLUS as BASE
 
 def R(x,y,w,h,rx,fill,ex=""): return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{fill}" {ex}/>'
 def E(cx,cy,rx,ry,fill,ex=""): return f'<ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" fill="{fill}" {ex}/>'

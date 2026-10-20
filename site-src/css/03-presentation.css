@@ -1,0 +1,13 @@
+/* Presentation tab. */
+/* presentation */
+.deck{background:linear-gradient(150deg,#1d2b64,#3b2f8f 60%,#7a3fa0);color:#fff;border-radius:28px;min-height:470px;padding:44px 52px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;box-shadow:0 8px 0 #1a1550}
+.deck h2{font-size:34px;line-height:1.15;margin:0 0 14px;letter-spacing:-.02em;max-width:780px;font-weight:800}
+.deck p{color:#dcd7ff;max-width:720px;font-size:16px}
+.deck .big{font-size:76px;font-weight:800;letter-spacing:-.04em}
+.deck svg text{fill:#dcd7ff!important}
+.deck .ctl{display:flex;justify-content:space-between;align-items:center;color:#c1bbf5;font-size:13px;position:relative;z-index:1}
+.deck .ctl button{background:#ffffff22;color:#fff;border:0;border-radius:14px;padding:9px 16px;cursor:pointer;font:inherit;font-weight:700}
+.deck .ctl button:hover{background:#ffffff40}
+.dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:#ffffff40;display:block}.dots i.on{background:#ffd34d}
+.src{font-size:12px;color:var(--ink2);margin-top:12px}
+.pair{display:flex;gap:30px;flex-wrap:wrap;margin:6px 0 10px}.pair div{font-size:14px;color:#dcd7ff}.pair b{display:block;font-size:44px;color:#fff;letter-spacing:-.03em}
