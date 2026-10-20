@@ -17,7 +17,7 @@ no server, no API keys.
 | **Toy Finder** | Visual catalog of the 35 toys with detail view, comparison, stock by store |
 | **Ask** | Chat-style Q&A that matches a typed question to ~20-30 verified questions; declines what it can't answer |
 
-All tabs share `src/lib/metrics.ts`, so revenue, profit and margin mean the same thing everywhere.
+All tabs share one `agg()` function in the template, so revenue, profit and margin mean the same thing everywhere.
 
 ## Status
 
@@ -33,14 +33,14 @@ Planning and data validation complete. Front-end build in progress. See `docs/ar
 ## Repository layout
 
 ```
-public/data/        original CSVs (unmodified)
-data/               data dictionary and validation notes
-scripts/            independent verification (pandas)
-src/lib/            data loader + shared metric definitions
-src/pages/          Dashboard, Presentation, ToyFinder, Ask
-tests/              metric tests against the raw CSVs
-evaluations/        prompt log, iteration log, benchmark, limitations, risks (capstone evidence)
-docs/               architecture and capstone workflow notes
+site-src/template.html   the app (HTML, CSS, JavaScript for all tabs), the file you edit
+site/                    the published site (index.html is generated), deck files, fonts, images
+public/data/             original CSVs (unmodified)
+data/                    data dictionary and validation notes
+scripts/                 build_site.py, gen_data.py, build_deck.py, toy illustrations, verify_totals.py
+evaluations/             Ask phrasing bank and test set, prompt log, iteration log, limitations, risks
+docs/                    architecture notes and design mockups
+.github/workflows/       deploys site/ to GitHub Pages on every push
 ```
 
 ## Verify the headline numbers
@@ -61,9 +61,18 @@ pdftoppm -jpeg -r 110 site/deck/Colorbuds_to_Playfoam.pdf site/deck/preview/slid
 ## Rebuild the site and test the Ask matcher
 
 ```
-python3 scripts/build_site.py <template.html> <data.json> <illustrations.json>   # splices data, art, Ask phrasing bank and test set into site/index.html
+python3 scripts/build_site.py      # no arguments: rebuilds site/index.html from its parts
 ```
 
-The Ask tab matches questions against `evaluations/ask_paraphrases.json` (about 200 example phrasings for the 15 approved questions).
-`evaluations/ask_eval.json` holds held-out test phrasings. Open `site/index.html#ask-eval` in a browser (or dump the DOM headlessly) to see
-the accuracy of the old keyword matcher versus the phrasing-bank matcher.
+`site/index.html` is a generated file. Do not edit it by hand. Edit the parts instead:
+
+| Part | What it is |
+|---|---|
+| `site-src/template.html` | The whole app: HTML, CSS and JavaScript for all five tabs (Home, Dashboard, Toy Finder, Presentation, Ask) |
+| `public/data/*.csv` | The four original CSVs, unmodified. `scripts/gen_data.py` compacts them for the browser |
+| `scripts/mockup_illustrations_all.py` | The 35 original toy drawings (SVG) |
+| `evaluations/ask_paraphrases.json` | About 200 example phrasings for the 15 approved Ask questions |
+| `evaluations/ask_eval.json` | Held-out test phrasings for the Ask matcher |
+
+The Ask tab matches questions against the phrasing bank. Open `site/index.html#ask-eval` to see the accuracy of the old and new keyword matchers, or turn on
+"Smarter matching" in the Ask tab and press "Test accuracy" to test the in-browser model.

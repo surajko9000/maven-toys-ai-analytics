@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maven Toys Analytics Hub</title>
+<style>
+@font-face{font-family:"Fredoka";src:url(fonts/Fredoka.ttf) format("truetype");font-weight:300 700;font-display:swap}
+:root{
+  --bg:#fff7e8; --surface:#ffffff; --line:#dcc594; --grid:#f3ead6;
+  --ink:#1f1a17; --ink2:#5e564e; --ink3:#948a7f;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s7:#6250d6;
+  --good:#0e7a4f; --bad:#b4332f; --radius:20px;
+  --display:"Fredoka",ui-rounded,"SF Pro Rounded","Nunito","Trebuchet MS",system-ui,sans-serif;
+  --font:ui-rounded,"SF Pro Rounded","Nunito","Varela Round","Trebuchet MS",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font:15px/1.5 var(--font);
+  background:var(--bg) radial-gradient(#f3dfb4 1.2px,transparent 1.2px) 0 0/22px 22px}
+header{background:#fff;position:sticky;top:0;z-index:10;border-bottom:4px solid transparent;
+  border-image:linear-gradient(90deg,var(--s1),var(--s3),var(--s4),var(--s2),var(--s5),var(--s7)) 1}
+.bar{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:12px;height:68px}
+.brand{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer;letter-spacing:-.01em}
+.logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--s4),var(--s2));display:grid;place-items:center;font-size:20px;box-shadow:0 3px 0 #c9560f;transition:transform .2s}
+.brand:hover .logo{transform:rotate(-12deg) scale(1.08)}
+nav{display:flex;gap:2px;flex:1;overflow-x:auto;padding:6px 2px;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
+nav button{border:2px solid transparent;background:none;padding:8px 11px;border-radius:999px;font:inherit;font-weight:700;color:var(--ink2);cursor:pointer;white-space:nowrap;transition:transform .12s,background .12s}
+nav button:hover{background:#fff1d6;transform:translateY(-1px)}
+nav button.on{color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.badge{font-size:11.5px;font-weight:700;color:var(--ink2);background:#fff9e8;border-radius:999px;padding:5px 10px;white-space:nowrap}
+@media(max-width:1180px){.badge{display:none}}
+main{position:relative;z-index:1}
+.cfbg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.cfbg span{position:absolute;opacity:.55;animation:cff 8s ease-in-out infinite}
+.cfbg .c-ci{border-radius:50%}.cfbg .c-sq{border-radius:4px;rotate:18deg}
+.cfbg .c-st{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+@media(max-width:700px){.cfbg span:nth-child(even){display:none}}
+@media(prefers-reduced-motion:reduce){.cfbg span{animation:none}}
+
+@media(prefers-reduced-motion:reduce){.side .stoy,.side .sstar{animation:none}}
+
+/* ---- playful layer ---- */
+h1,h2,h3,.brand,nav button,.btn,.chip,.hchips span,.tag,.hunlock,.eyebrow{font-family:var(--display)}
+h1,h2.sec{letter-spacing:0;font-weight:600}
+h3,.card h3,.hcard h3{font-weight:600}
+header{background:#ffeec6}
+nav button.on{box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.hherowrap{position:relative}
+
+.cf{position:absolute;opacity:.7;pointer-events:none;animation:cff 7s ease-in-out infinite}
+.c-ci{border-radius:50%}.c-sq{border-radius:4px;rotate:18deg}
+.c-st{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+@keyframes cff{0%,100%{translate:0 0}50%{translate:0 -9px}}
+.shelf{display:flex;justify-content:center;align-items:flex-end;gap:6px;max-width:1010px;margin:0 auto;padding:0 6px}
+.shelf button{flex:1;max-width:78px;aspect-ratio:1;background:none;border:0;cursor:pointer;padding:0;filter:drop-shadow(0 6px 3px rgba(60,40,10,.15));animation:bob 5s ease-in-out infinite;animation-delay:calc(var(--i)*-.45s);transition:scale .15s,rotate .15s}
+.shelf button svg{width:100%;height:100%;display:block}
+.shelf button:hover,.shelf button:focus-visible{animation-play-state:paused;scale:1.18;rotate:0deg;outline:none}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -8px}}
+.shelfboard{height:14px;max-width:1010px;margin:-7px auto 0;border-radius:10px;background:linear-gradient(#f3dcab,#e6c07a);box-shadow:0 5px 0 #d4ac66}
+.ey{display:inline-block;width:20px;height:20px;vertical-align:-4px;margin:0 8px;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.ey.sm{width:10px;height:10px;vertical-align:1px;margin:0 2px}
+.shelfhint{text-align:center;color:var(--ink3);font-size:13px;margin:10px 0 14px;font-weight:700}
+.h1t{display:inline-block;width:50px;height:50px;vertical-align:-12px;margin-right:8px}.h1t svg{width:100%;height:100%;display:block}
+.bot{display:inline-block;width:22px;height:22px;vertical-align:-6px;margin-right:2px}.bot svg{width:100%;height:100%;display:block}
+@media(max-width:900px){.shelf button:nth-child(n+7){display:none}}
+@media(prefers-reduced-motion:reduce){.cf,.shelf button{animation:none}}
+.hcard:nth-child(1) .hb{background:#f4f8ff}.hcard:nth-child(2) .hb{background:#fffaf0}.hcard:nth-child(3) .hb{background:#f1fbf6}.hcard:nth-child(4) .hb{background:#fff3f8}
+.hcard:hover{transform:translateY(-5px) rotate(-.7deg)}
+.hcard:nth-child(even):hover{transform:translateY(-5px) rotate(.7deg)}
+.hctx{background:#fffdf7}
+.card.t:hover{transform:translateY(-3px) rotate(-.6deg)}
+
+main{max-width:1200px;margin:0 auto;padding:24px 20px 70px}
+h1{font-size:30px;margin:0 0 4px;letter-spacing:-.02em;font-weight:800} .sub{color:var(--ink2);margin:0 0 18px;font-size:15px}
+.smartbar{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:10px;font-size:13.5px;line-height:1.45}
+.smartbar .sbi{font-size:22px}.smartbar .sbt{flex:1;color:var(--ink2)}.smartbar .sbt b{color:var(--ink)}
+.smartbar.on{background:#f1fbf6;border-color:#9fdcc0}.smartbar.failed{background:#fff3f0;border-color:#f0b4a8}
+.pbar{height:8px;background:#e9efe8;border-radius:99px;margin-top:6px;overflow:hidden}.pbar i{display:block;height:100%;background:#1baf7a;border-radius:99px;transition:width .2s}
+.sbres{margin-top:5px;color:var(--ink);font-size:13px}
+@media(max-width:700px){.smartbar{flex-wrap:wrap}}
+.demobadge{display:inline-block;vertical-align:middle;margin-left:10px;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:0;background:#ffd34d;color:#4a3200;border:2px solid #e0a800;border-radius:999px;padding:5px 14px;box-shadow:0 3px 0 #e0a800;white-space:nowrap}
+p.sub{display:inline-block;max-width:100%;background:var(--bg);border:0;border-radius:10px;padding:3px 10px 3px 0;margin:6px 0 18px;box-shadow:none;line-height:1.45;color:var(--ink2);position:relative;z-index:2}
+h2.sec{font-size:22px;font-weight:800;margin:34px 0 12px;display:flex;align-items:center;gap:10px}
+.card{background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:0 5px 0 var(--line)}
+.card h3{margin:0 0 2px;font-size:15px;font-weight:800} .card .note{color:var(--ink3);font-size:12px;margin-bottom:10px}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.fgroup{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:18px;padding:8px 12px;margin-bottom:14px;box-shadow:0 4px 0 var(--line)}
+.fbar{background:#fff;border:2px solid var(--line);border-radius:18px;box-shadow:0 4px 0 var(--line);margin-bottom:14px}
+.fhead{width:100%;display:flex;align-items:center;gap:10px;background:none;border:0;padding:10px 14px;cursor:pointer;font:inherit;text-align:left;border-radius:16px;color:var(--ink)}
+.fhead:hover{background:#fffaf0}
+.fsum{flex:1;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sc{background:#f4efe6;border-radius:999px;padding:3px 11px;font-weight:700;font-size:13px;color:var(--ink2)}
+.sc.on{background:#e3eefb;color:#1c5cab}
+.fch{font-weight:800;font-size:13px;color:var(--ink2);white-space:nowrap}
+.freset{font-weight:800;font-size:12px;color:var(--bad);text-decoration:underline;white-space:nowrap}
+.fbody{padding:2px 12px 12px;border-top:2px dashed var(--line)}
+.fbody .fgroup{border:0;box-shadow:none;padding:6px 0;margin:6px 0 0}
+.fdone{margin-top:8px}
+.fgroup .lbl{font-weight:800;font-size:12px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em;margin-right:4px}
+.chip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:6px 13px;cursor:pointer;font:inherit;font-weight:700;color:var(--ink2);transition:transform .1s}
+.chip:hover{border-color:#e2cf9f;transform:translateY(-1px)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+input[type=search],input[type=text],select{border:2px solid var(--line);background:#fff;border-radius:14px;padding:8px 12px;font:inherit;min-width:170px;color:var(--ink)}
+input:focus,select:focus{outline:none;border-color:var(--s1)}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.seg button{border:0;background:none;padding:7px 12px;font:inherit;font-weight:700;color:var(--ink2);cursor:pointer}
+.seg button.on{background:#e3eefb;color:#1c5cab}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+.kpi{border-radius:20px;padding:14px 16px;border:2px solid rgba(0,0,0,.06);box-shadow:0 5px 0 rgba(0,0,0,.07)}
+.kpi .e{font-size:22px}
+.kpi .l{color:var(--ink2);font-size:12px;font-weight:700;margin-top:2px} .kpi .v{font-size:25px;font-weight:800;margin-top:0;letter-spacing:-.02em}
+.kpi .d{font-size:12px;color:var(--ink2);margin-top:2px}
+.up{color:var(--good);font-weight:800}.down{color:var(--bad);font-weight:800}
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+svg text{font:11px var(--font);fill:var(--ink2)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:var(--ink2);font-weight:800;padding:8px 6px;border-bottom:2px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;background:#fff}
+.tbl th.r,.tbl td.r{text-align:right;font-variant-numeric:tabular-nums}
+.tbl td{padding:7px 6px;border-bottom:1px solid var(--grid)}
+.btn{border:2px solid var(--line);background:#fff;border-radius:14px;padding:7px 13px;font:inherit;font-weight:700;cursor:pointer;color:var(--ink);box-shadow:0 3px 0 var(--line);transition:transform .08s,box-shadow .08s}
+.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.btn.pri{background:var(--s1);color:#fff;border-color:var(--s1);box-shadow:0 3px 0 #1c5cab}
+.defs{font-size:12px;color:var(--ink2);margin-top:16px;border-top:2px dashed var(--line);padding-top:10px}
+#tip{position:fixed;pointer-events:none;background:#1f1a17;color:#fff;border-radius:10px;padding:6px 10px;font-size:12px;opacity:0;transition:opacity .08s;z-index:60;white-space:nowrap}
+.tab{display:none}.tab.on{display:block;animation:tabin .3s ease-out}
+@keyframes tabin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+main.leaving{opacity:0;transform:translateY(-8px);transition:opacity .2s ease,transform .2s ease}
+.shelf button.pop{animation:popt .28s ease-out forwards !important;scale:1.35;z-index:3}
+@keyframes popt{0%{translate:0 0}50%{translate:0 -22px}100%{translate:0 -10px;opacity:.9}}
+.drawer.on .panel{animation:panelin .28s ease-out}
+.drawer.on{animation:fadein .22s ease-out}
+@keyframes panelin{from{transform:translateX(48px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.tab.on,.drawer.on,.drawer.on .panel{animation:none}main.leaving{transition:none}}
+/* combo */
+.combo{position:relative}
+.combo input{min-width:220px;padding-right:30px}
+.combo .list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:2px solid var(--line);border-radius:14px;max-height:190px;overflow:auto;z-index:20;display:none;box-shadow:0 10px 24px #0002}
+.combo .list.on{display:block}
+.combo .opt{padding:7px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;height:38px}
+.combo .opt:hover,.combo .opt.hl{background:#fff1d6}
+.combo .opt small{color:var(--ink3);margin-left:auto;font-size:11px}
+.combo .x{position:absolute;right:8px;top:7px;cursor:pointer;color:var(--ink3);font-weight:800}
+/* start page */
+.hero{position:relative;overflow:hidden;border-radius:28px;padding:44px 40px;color:#fff;background:linear-gradient(135deg,#2a78d6,#6250d6 55%,#e87ba4);box-shadow:0 8px 0 #4a3aa7}
+.hero h1{font-size:42px;line-height:1.08;max-width:760px;margin-bottom:12px}
+.hero p{font-size:18px;max-width:700px;margin:0 0 18px;color:#f1ecff}
+.hero .pill{display:inline-block;background:#ffffff26;border-radius:999px;padding:6px 14px;font-weight:700;margin:0 6px 6px 0;font-size:14px}
+.conf{position:absolute;border-radius:6px;opacity:.9}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card ul{margin:6px 0 0;padding-left:20px}.card li{margin:5px 0}
+.flow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;justify-content:center}
+.node{border-radius:18px;padding:14px 16px;text-align:center;font-weight:800;border:2px solid rgba(0,0,0,.08);min-width:150px}
+.node small{display:block;font-weight:600;color:var(--ink2);margin-top:2px}
+.arrow{display:grid;place-items:center;font-size:28px;color:var(--ink3)}
+.outs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tour{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tour .t{cursor:pointer;transition:transform .12s;text-align:left}
+.tour .t:hover{transform:translateY(-4px) rotate(-.6deg)}
+.tour .e{font-size:34px}.tour h3{font-size:17px;margin:6px 0 4px}.tour p{margin:0;color:var(--ink2);font-size:13.5px}
+.tour .job{margin-top:10px;font-size:12px;font-weight:800;color:var(--ink2);background:#fff7e8;border-radius:999px;display:inline-block;padding:3px 10px}
+.tour .go{display:block;margin-top:10px;font-weight:800;color:var(--s1)}
+.quick{display:flex;flex-wrap:wrap;gap:10px}
+/* presentation */
+.deck{background:linear-gradient(150deg,#1d2b64,#3b2f8f 60%,#7a3fa0);color:#fff;border-radius:28px;min-height:470px;padding:44px 52px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;box-shadow:0 8px 0 #1a1550}
+.deck h2{font-size:34px;line-height:1.15;margin:0 0 14px;letter-spacing:-.02em;max-width:780px;font-weight:800}
+.deck p{color:#dcd7ff;max-width:720px;font-size:16px}
+.deck .big{font-size:76px;font-weight:800;letter-spacing:-.04em}
+.deck svg text{fill:#dcd7ff!important}
+.deck .ctl{display:flex;justify-content:space-between;align-items:center;color:#c1bbf5;font-size:13px;position:relative;z-index:1}
+.deck .ctl button{background:#ffffff22;color:#fff;border:0;border-radius:14px;padding:9px 16px;cursor:pointer;font:inherit;font-weight:700}
+.deck .ctl button:hover{background:#ffffff40}
+.dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:#ffffff40;display:block}.dots i.on{background:#ffd34d}
+.src{font-size:12px;color:var(--ink2);margin-top:12px}
+.pair{display:flex;gap:30px;flex-wrap:wrap;margin:6px 0 10px}.pair div{font-size:14px;color:#dcd7ff}.pair b{display:block;font-size:44px;color:#fff;letter-spacing:-.03em}
+/* toys */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.toy{background:#fff;border:2px solid var(--line);border-radius:22px;overflow:hidden;cursor:pointer;transition:transform .12s;box-shadow:0 5px 0 var(--line);position:relative}
+.toy:hover{transform:translateY(-4px) rotate(-.8deg)}
+.toy .img{height:128px;display:grid;place-items:center;font-size:58px;position:relative;border-bottom:2px solid var(--line)}
+.toy .img img,.hero-img img{width:100%;height:100%;object-fit:cover}
+.toy .b{padding:10px 13px 13px}
+.toy .n{font-weight:800}.toy .c{font-size:12px;color:var(--ink2)}
+.toy .m{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--ink2)}
+.toy .m b{color:var(--ink)}
+.art{display:block;width:116px;height:116px}.hero-img .art{width:164px;height:164px}
+.rank{position:absolute;top:8px;left:8px;background:var(--ink);color:#fff;border-radius:999px;font-weight:800;font-size:13px;padding:3px 10px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.rank.r1{background:#f2b400;color:#3a2a00}.rank.r2{background:#c9ced6;color:#222}.rank.r3{background:#d98a4e;color:#2d1600}
+.toy .img{border-bottom:2px solid var(--line)}
+.toy .c i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:var(--cc)}
+.toy .n{font-size:15px}
+.toy .m{gap:8px}.toy .m span{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;color:var(--ink2);line-height:1.25}
+.toy .m b{display:block;font-size:15px}
+.toy.off{opacity:.55}
+.toy .na{margin-top:8px;font-size:12px;color:var(--ink3);background:#f4efe6;border-radius:10px;padding:6px 8px;text-align:center}
+.oos{position:absolute;top:8px;right:8px;background:#fff0ee;color:var(--bad);border-radius:999px;font-weight:800;font-size:11px;padding:2px 8px}
+.drawer{position:fixed;inset:0;background:#1f1a1766;display:none;z-index:40;justify-content:flex-end}
+.drawer.on{display:flex}
+.panel{width:min(580px,100%);background:#fffdf8;height:100%;overflow:auto;padding:22px;border-left:4px solid var(--line)}
+.panel .hero-img{height:170px;border-radius:20px;display:grid;place-items:center;font-size:86px;margin-bottom:14px;overflow:hidden}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat{border:2px solid var(--line);border-radius:16px;padding:10px;background:#fff}
+.stat .l{font-size:11px;color:var(--ink2);font-weight:700}.stat .v{font-size:19px;font-weight:800}
+.tag{font-size:11px;font-weight:700;color:var(--ink2);background:#fff1d6;border-radius:8px;padding:2px 8px}
+.credit{font-size:11px;color:var(--ink3);margin-top:-6px;margin-bottom:10px}
+.sortbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.dir{border:2px solid var(--ink);background:var(--ink);color:#fff;border-radius:14px;padding:7px 13px;font:inherit;font-weight:800;cursor:pointer}
+.cap{color:var(--ink2);margin:0 0 12px;font-size:14px}
+/* ask */
+.askwrap{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+.chat{display:flex;flex-direction:column;gap:12px;height:1000px;max-height:none;min-height:360px;overflow-y:auto;padding:14px;background:#fffdf8;border:2px solid var(--line);border-radius:18px;scroll-behavior:smooth;overscroll-behavior:contain}
+.msg{max-width:740px;border-radius:20px;padding:12px 15px}
+.msg.u{align-self:flex-end;background:var(--s1);color:#fff;border-bottom-right-radius:6px;font-weight:600}
+.msg.a{align-self:flex-start;background:#fff;border:2px solid var(--line);width:min(740px,100%);border-bottom-left-radius:6px;box-shadow:0 4px 0 var(--line)}
+.msg .who{font-size:12px;font-weight:800;color:var(--ink2);margin-bottom:4px}
+.msg .meta{font-size:12px;color:var(--ink2);margin-top:10px;border-top:2px dashed var(--line);padding-top:8px}
+.msg .meta b{color:var(--ink)}
+.ok{color:var(--good);font-weight:800}
+.askrow{display:flex;gap:8px;margin-top:14px}.askrow input{flex:1;padding:11px 14px;font-size:15px}
+.sugg{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}
+.msg.a .sugg .chip{font-size:12.5px;padding:3px 10px;border-width:1.5px}
+.msg.a .meta .btn{padding:4px 10px;font-size:12.5px;box-shadow:0 2px 0 var(--line)}
+.slot{display:inline-block;background:#e3eefb;color:#1c5cab;border-radius:999px;font-size:12px;font-weight:800;padding:2px 10px;margin:0 4px 4px 0}
+.typing span{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ink3);margin-right:4px;animation:b 1s infinite}
+.shero{background:#fff;border:2px solid var(--line);border-left:8px solid var(--s7);border-radius:var(--radius);padding:24px 28px;margin-bottom:18px;box-shadow:0 5px 0 var(--line)}
+.shero h1{margin:12px 0 10px;font-size:34px;line-height:1.15}.shero p{font-size:16.5px;line-height:1.55;margin:8px 0;max-width:820px;color:var(--ink)}
+.cta{display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;margin-top:22px;font-size:15.5px;line-height:1.5;background:#fff}.cta:hover{transform:translateY(-1px)}
+.lnk{color:#1c5cab;font-weight:800;cursor:pointer;text-decoration:none;white-space:nowrap;margin-left:6px}.lnk:hover{text-decoration:underline}
+.mut{color:var(--ink2)}
+.h3b{margin:0 0 6px !important;font-size:17px !important}
+.two ul.plain li{font-size:15px}
+.whom{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:22px}.whom p{margin:0;font-size:15px;line-height:1.5;color:var(--ink2)}
+.hhero{text-align:center;max-width:860px;margin:0 auto;padding:26px 10px 24px}
+.hhero .eyebrow{font-weight:800;letter-spacing:.09em;text-transform:uppercase;font-size:12.5px;color:var(--s7)}
+.hhero h1{font-size:44px;line-height:1.1;margin:10px 0 14px;letter-spacing:-.025em}
+.hhero p{font-size:19px;line-height:1.5;color:var(--ink2);margin:0}
+.hctx{max-width:860px;margin:0 auto 24px;text-align:center;padding:22px 26px}
+.hctx p{margin:8px 0;font-size:17px;line-height:1.55;color:var(--ink)}
+.hchips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 12px}
+.hchips span{background:#e3eefb;color:#1c5cab;font-weight:800;border-radius:999px;padding:7px 16px;font-size:15.5px}
+.hchips span:nth-child(2){background:#fcf0d2;color:#9a5b00}.hchips span:nth-child(3){background:#def5ec;color:#0e7a4f}
+.hdown{font-size:26px;margin-top:6px}
+.hcards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.hcard{background:#fff;border:2px solid var(--line);border-radius:22px;overflow:hidden;cursor:pointer;box-shadow:0 6px 0 var(--line);transition:transform .15s;display:flex;flex-direction:column}
+.hcard:hover{transform:translateY(-4px)}
+.hcard img{width:100%;display:block;border-bottom:2px solid var(--line);aspect-ratio:16/10;object-fit:cover;object-position:top;background:#fff7e8}
+.hcard .hb{padding:14px 16px 16px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;flex:1}
+.hcard .hn{width:30px;height:30px;border-radius:50%;color:#fff;font-weight:800;display:grid;place-items:center;font-size:15px}
+.hcard h3{font-size:20px;margin:0}.hcard p{margin:0;color:var(--ink2);font-size:14.5px;line-height:1.5;flex:1}
+.hwide{flex-direction:row !important;margin-top:20px;align-items:stretch}
+.hwide img{width:52%;aspect-ratio:auto !important;border-bottom:0 !important;border-right:2px solid var(--line);object-fit:cover;object-position:top left}
+.hwide .hb{justify-content:center;padding:22px 26px !important}
+.hwide h3{font-size:24px !important}
+.hunlock{font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#d6336c;background:#fbe6ee;border-radius:999px;padding:4px 12px}
+@media(max-width:900px){.hwide{flex-direction:column !important}.hwide img{width:100%;border-right:0;border-bottom:2px solid var(--line) !important}}
+.halso{text-align:center;color:var(--ink2);margin:18px 0 0;font-size:15px}
+.hfacts{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:30px auto 0;max-width:980px;padding-top:24px;border-top:2px dashed var(--line)}
+.hfacts>div{display:flex;gap:14px;font-size:15.5px;line-height:1.55;color:var(--ink2)}.hfacts b{color:var(--ink);font-size:16.5px}
+.hfi{font-size:30px;line-height:1}
+.hfoot{text-align:center;color:var(--ink2);font-size:14px;margin-top:30px;line-height:1.8}
+@media(max-width:1100px){.hcards{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.hcards,.hfacts{grid-template-columns:1fr}.hhero h1{font-size:32px}}
+.shl{margin:6px 0 10px !important}.shl li{font-size:16.5px !important;margin:4px 0 !important}
+.lead{font-size:16px;line-height:1.55;max-width:820px;margin:0 0 14px;color:var(--ink2)}
+.jobs{display:grid;gap:10px}
+.job{display:flex;gap:14px;background:#fff;border:2px solid var(--line);border-radius:18px;padding:14px 16px;align-items:flex-start}
+.job .jn{flex:none;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:800;display:grid;place-items:center}
+.job h3{margin:0 0 4px;font-size:16.5px}.job p{margin:0 0 6px;font-size:15px;line-height:1.5;color:var(--ink2);max-width:780px}
+.job .jw{display:inline-block;font-size:12.5px;font-weight:700;background:#e3eefb;color:#1c5cab;border-radius:999px;padding:2px 10px}
+.flowrow{display:flex;align-items:stretch;gap:6px}
+.fstep{flex:1;min-width:0;border:2px solid;border-radius:20px;padding:16px 12px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.fic{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:28px;box-shadow:0 3px 0 rgba(0,0,0,.18);margin-bottom:8px}
+.fnum{font-size:11.5px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+.fstep h3{margin:2px 0 6px;font-size:16px}.fstep p{margin:0 0 8px;font-size:14px;line-height:1.45;color:var(--ink2);flex:1}
+.flink{border:0;background:none;font:inherit;font-weight:800;font-size:13px;cursor:pointer;padding:2px 0}.flink.off{cursor:default}
+.farrow{align-self:center;font-size:26px;font-weight:800;flex:none}
+.fbase{display:flex;gap:14px;align-items:center;background:#fff;border:2px dashed var(--s4);border-radius:18px;padding:12px 16px;margin-top:12px;font-size:14.5px;line-height:1.5}
+.fbi{flex:none;width:44px;height:44px;border-radius:12px;background:#fcf0d2;display:grid;place-items:center;font-size:24px}
+.floop{text-align:center;margin-top:10px;font-weight:700;color:var(--ink2);font-size:14px}
+@media(max-width:980px){.flowrow{flex-direction:column}.farrow{transform:rotate(90deg);margin:-2px 0}}
+.helpt{padding:6px 14px}
+.hrow{display:grid;grid-template-columns:190px 1fr 210px;gap:14px;align-items:center;padding:11px 4px;border-bottom:2px solid var(--line);font-size:14.5px;line-height:1.45}
+.hrow:last-child{border-bottom:0}.hhead{font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2);padding:8px 4px}
+.hstep{display:flex;align-items:center;gap:10px}.hic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:17px;flex:none}
+.hme{color:var(--ink2)}
+@media(max-width:900px){.hrow{grid-template-columns:1fr}.hhead{display:none}}
+.sub3{margin:22px 0 8px;font-size:18px}
+ul.plain{margin:0;padding-left:20px}ul.plain li{margin:8px 0;font-size:15px;line-height:1.5}
+.ftbl td,.ftbl th{padding:9px 8px;font-size:14.5px}.ftbl th{cursor:default;position:static}
+.stp{font-size:12px;color:var(--ink2);margin-left:8px;font-style:normal}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.side h3{margin:0 0 8px;font-size:15px}.side .grp{margin-bottom:12px}.side .gt{font-size:12px;font-weight:800;color:var(--ink2);margin-bottom:4px}
+.side button{display:block;width:100%;text-align:left;border:0;background:#fff7e8;border-radius:12px;padding:7px 10px;margin:4px 0;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+.side button:hover{background:#ffe9bf}
+.bignum{display:flex;gap:18px;flex-wrap:wrap}.bignum div{background:#fff7e8;border-radius:16px;padding:10px 16px;min-width:140px}.bignum b{display:block;font-size:26px;letter-spacing:-.02em}
+.demo{margin-bottom:16px;background:#fff9dc;border-color:#f0dc8a;box-shadow:0 5px 0 #f0dc8a}
+.demo summary{cursor:pointer;font-weight:800;font-size:15px;list-style:none;display:flex;align-items:center;gap:10px}
+.demo summary::-webkit-details-marker{display:none}
+.demo summary:after{content:"▾";margin-left:auto;color:var(--ink3)}
+.demo[open] summary:after{content:"▴"}
+.cmp{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+.cmp>div{background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 16px}
+.cmp h4{margin:0 0 4px;font-size:14px}.cmp ul{margin:4px 0 0;padding-left:18px}.cmp li{margin:5px 0;font-size:14px;line-height:1.45}
+.mini{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px 0 2px;justify-content:center}
+.mini .node{min-width:0;padding:8px 12px;font-size:13px}.mini .arrow{font-size:20px}
+@media(max-width:980px){.cmp{grid-template-columns:1fr}}
+.deckbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.deckbar .dlabel{font-weight:800;font-size:12px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em}
+.deckbar .btn{text-decoration:none;display:inline-block}
+.deckbar .hint{margin-left:auto;color:var(--ink2);font-size:14px}.deckbar .hint b{color:var(--ink)}
+.viewer{display:flex;align-items:center;gap:12px}
+.stage{flex:1;min-width:0;position:relative;border:2px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;box-shadow:0 8px 24px #0002;line-height:0}
+.stage img{width:100%;height:auto;display:block;user-select:none}
+.stage .count{position:absolute;right:12px;bottom:10px;background:#051c2cb3;color:#fff;border-radius:999px;padding:3px 12px;font:700 13px/1.4 var(--font)}
+.stage:fullscreen{display:grid;place-items:center;background:#000;border:0;border-radius:0}
+.stage:fullscreen img{max-width:100vw;max-height:100vh;width:auto;height:auto}
+.navb{width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:#fff;font-size:28px;line-height:1;cursor:pointer;color:var(--ink);flex:none;box-shadow:0 3px 0 var(--line)}
+.navb:hover:not(:disabled){transform:translateY(-1px)}.navb:disabled{opacity:.35;cursor:default}
+.thumbs{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:16px 58px 0}
+.thumb{position:relative;border:3px solid transparent;border-radius:8px;padding:0;background:#fff;cursor:pointer;overflow:hidden;line-height:0;box-shadow:0 2px 0 var(--line)}
+.thumb img{width:100%;height:auto;display:block;opacity:.75}
+.thumb.on{border-color:var(--s1)}.thumb.on img{opacity:1}
+.thumb b{position:absolute;left:6px;top:6px;font:800 13px/1.5 var(--font);background:var(--ink);color:#fff;border-radius:999px;padding:1px 9px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.thumb.on b{background:var(--s1)}
+@media(max-width:700px){.navb{width:36px;height:36px;font-size:22px}.thumbs{margin:14px 0 0;grid-template-columns:repeat(3,1fr)}.deckbar .hint{margin-left:0;width:100%}}
+@media(max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.two,.askwrap{grid-template-columns:1fr}.tour{grid-template-columns:1fr 1fr}.deck{padding:28px}.deck h2{font-size:26px}.hero{padding:28px 22px}.hero h1{font-size:30px}.badge{display:none}.bar{gap:10px}}
+@media(max-width:560px){.tour{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <div class="brand" onclick="show('start')"><span class="logo">🧸</span>Maven Toys Analytics Hub</div>
+  <nav id="nav"></nav>
+  <span class="badge">Data to Sep 30, 2023</span>
+</div></header>
+<main>
+  <div id="start" class="tab"></div>
+  <div id="dashboard" class="tab"></div>
+  <div id="presentation" class="tab"></div>
+  <div id="toys" class="tab"></div>
+  <div id="ask" class="tab"></div>
+</main>
+<div id="tip"></div>
+<div class="drawer" id="drawer"><div class="panel" id="panel"></div></div>
+
+<script>
+const DATA = __DATA__;
+const MN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const mlabel = i => `${MN[i%12]} ${String(2022+Math.floor(i/12)).slice(2)}`;
+const mlong = i => `${MN[i%12]} ${2022+Math.floor(i/12)}`;
+const CATS = ["Toys","Art & Crafts","Games","Sports & Outdoors","Electronics"];
+const CCOL = {"Toys":"var(--s1)","Art & Crafts":"var(--s2)","Games":"var(--s3)","Sports & Outdoors":"var(--s4)","Electronics":"var(--s5)"};
+const CTINT = {"Toys":"#e3eefb","Art & Crafts":"#fdebe3","Games":"#def5ec","Sports & Outdoors":"#fcf0d2","Electronics":"#fbe6ee"};
+const EMOJI = {1:"🦸",2:"🦁",3:"🧪",4:"🪜",5:"🎲",6:"🎧",7:"🎯",8:"🃏",9:"🥚",10:"🦖",11:"✏️",12:"🥏",13:"🎧",14:"🔮",15:"🏎️",16:"🧱",17:"💄",18:"🧱",19:"⏳",20:"🏀",21:"🏓",22:"🎩",23:"🥔",24:"🔫",25:"🎨",26:"🎨",27:"🛠️",28:"☁️",29:"🐴",30:"🧩",31:"💦",32:"💧",33:"🧸",34:"🤖",35:"🃏"};
+/* Real photos go here once image sources are reachable. Shape: {pid:{src,credit,license,url}}. Anything missing falls back to the emoji tile. */
+const IMG = {};
+/* Original illustrations drawn for this project (not photos). Shape: {pid: svgString}. */
+const ILLUS = __ILLUS__;
+const P = Object.fromEntries(DATA.P.map(p=>[p.id,p]));
+const ST = Object.fromEntries(DATA.ST.map(s=>[s.id,s]));
+const PSORT = [...DATA.P].sort((a,b)=>a.name.localeCompare(b.name));
+const INV = {}; for(const p of DATA.P) INV[p.id]={stock:0,stocked:0,zero:0,zeroStores:[]};
+for(const [sid,pid,q] of DATA.INVS){const r=INV[pid];r.stock+=q;r.stocked++;if(q==0){r.zero++;r.zeroStores.push(sid)}}
+const fmt$ = v => Math.abs(v)>=1e6?`$${(v/1e6).toFixed(2)}M`:Math.abs(v)>=1e3?`$${(v/1e3).toFixed(0)}K`:`$${v.toFixed(0)}`;
+const fmt$f = v => "$"+Math.round(v).toLocaleString();
+const fmtN = v => Math.round(v).toLocaleString();
+const pct = v => (v*100).toFixed(1)+"%";
+const rev = (pid,u)=>u*P[pid].price, gp=(pid,u)=>u*(P[pid].price-P[pid].cost);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- shared "metrics" layer: one set of definitions for every tab ---------- */
+function agg({cats=null,pid=null,m0=0,m1=20}={}){
+  const byMonth=Array.from({length:21},()=>({rev:0,gp:0,units:0}));
+  const byProd={}, byStore={}, byCat={}, tot={rev:0,gp:0,units:0};
+  for(const [sid,p,mi,u] of DATA.SMP){
+    if(mi<m0||mi>m1) continue; if(pid&&p!=pid) continue; if(cats&&!cats.includes(P[p].cat)) continue;
+    const r=rev(p,u),g=gp(p,u);
+    const M=byMonth[mi];M.rev+=r;M.gp+=g;M.units+=u;
+    const b=byProd[p]??={rev:0,gp:0,units:0};b.rev+=r;b.gp+=g;b.units+=u;
+    const s=byStore[sid]??={rev:0,gp:0,units:0};s.rev+=r;s.gp+=g;s.units+=u;
+    const c=byCat[P[p].cat]??={rev:0,gp:0,units:0};c.rev+=r;c.gp+=g;c.units+=u;
+    tot.rev+=r;tot.gp+=g;tot.units+=u;}
+  return {tot,byMonth,byProd,byStore,byCat};
+}
+const ALL = agg();
+
+/* ---------- tooltip ---------- */
+const tip=document.getElementById("tip");
+document.addEventListener("mousemove",e=>{const t=e.target.closest("[data-tip]");
+  if(t){tip.innerHTML=t.dataset.tip;tip.style.opacity=1;tip.style.left=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8)+"px";tip.style.top=(e.clientY+14)+"px"}else tip.style.opacity=0});
+
+/* ---------- chart helpers (plain SVG) ---------- */
+function hbars(rows,{w=520,color="var(--s1)",fmt=fmt$,label=r=>r.label,rowH=26,vw=70}={}){
+  if(!rows.length) return `<div class="note">No data for this selection.</div>`;
+  const max=Math.max(...rows.map(r=>r.v),1e-9),lw=150,h=rows.length*rowH+6;
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%">`+rows.map((r,i)=>{
+    const y=i*rowH+3,bw=Math.max(2,(w-lw-vw)*Math.max(r.v,0)/max),L=label(r);
+    return `<g data-tip="${esc(r.tip??L+": "+fmt(r.v))}"><text x="${lw-8}" y="${y+14}" text-anchor="end">${esc(L.length>24?L.slice(0,23)+"…":L)}</text>
+    <rect x="${lw}" y="${y+3}" width="${bw}" height="${rowH-10}" rx="5" fill="${r.color??color}"/>
+    <text x="${lw+bw+6}" y="${y+14}" style="fill:var(--ink)">${r.vtext??fmt(r.v)}</text></g>`}).join("")+`</svg>`;
+}
+function line(vals,{w=640,h=240,color="var(--s1)",fmt=fmt$,labels=mlabel}={}){
+  const L=46,R=12,T=10,B=26,hi=(Math.max(...vals,0)*1.1)||1e-9,lo=Math.min(...vals,0)*1.1,n=Math.max(vals.length-1,1),x=i=>L+(w-L-R)*i/n,y=v=>T+(h-T-B)*(1-(v-lo)/(hi-lo));
+  const ticks=[0,.25,.5,.75,1].map(t=>lo+t*(hi-lo));
+  const path=vals.map((v,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const area=path+`L${x(vals.length-1)},${y(0)}L${x(0)},${y(0)}Z`;
+  const step=Math.ceil(vals.length/7);
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%">`+
+   ticks.map(t=>`<line x1="${L}" x2="${w-R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--grid)"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${fmt(t)}</text>`).join("")+
+   `<line x1="${L}" x2="${w-R}" y1="${y(0)}" y2="${y(0)}" stroke="#d9cfb2" stroke-width="1.5"/><path d="${area}" fill="${color}" opacity=".10"/><path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`+
+   vals.map((v,i)=>`<g data-tip="<b>${labels(i)}</b><br>${fmt(v)}"><rect x="${x(i)-((w-L-R)/n)/2}" y="${T}" width="${(w-L-R)/n}" height="${h-T-B}" fill="transparent"/><circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="${color}" stroke="#fff" stroke-width="2"/></g>`).join("")+
+   vals.map((v,i)=>i%step==0?`<text x="${x(i)}" y="${h-8}" text-anchor="middle">${labels(i)}</text>`:"").join("")+`</svg>`;
+}
+function csvDownload(name,rows){const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=name;a.click()}
+function imgBlock(pid,cls){const i=IMG[pid];
+  if(i) return `<img src="${i.src}" alt="${esc(P[pid].name)}" loading="lazy" onerror="this.parentNode.innerHTML=EMOJI[${pid}]">`;
+  if(ILLUS[pid]) return `<span class="art">${ILLUS[pid]}</span>`;
+  return EMOJI[pid]}
+const TILE_OVERRIDE={}; /* white products get a soft tint so they stand out */
+const STRONG={"Toys":"#e6effb","Art & Crafts":"#fdeee6","Games":"#e3f6ee","Sports & Outdoors":"#fcf5df","Electronics":"#fbebf2"};
+const tileBg=pid=>TILE_OVERRIDE[pid]||STRONG[P[pid].cat];
+
+/* ================= TAB 0: START HERE ================= */
+function goToy(btn,id){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){show("toys");openToy(id);return}
+  btn.classList.add("pop");document.querySelector("main").classList.add("leaving");
+  setTimeout(()=>{document.querySelector("main").classList.remove("leaving");show("toys");openToy(id)},230)}
+function renderStart(){
+  const cards=[["dashboard","1","Dashboard","img/home-dashboard.jpg","Charts and tables that people can filter themselves, without asking an analyst.","Open the dashboard","#2a78d6",""],
+               ["presentation","2","Presentation","deck/preview/slide-1.jpg","A short deck that tells the story and ends with a recommendation. Download it as PowerPoint or PDF.","Open the presentation","#e08a00",""],
+               ["ask","3","Ask questions","img/home-ask.jpg","Type a one-off question and get an answer with a chart. A demo of ad hoc requests.","Try Ask","#1baf7a",""],
+               ["toys","✨","Toy Finder","img/home-toys.jpg","A custom data app: browse all 35 toys like a store catalog. I asked for a picture of every toy, and Claude drew all 35 as original illustrations. Normally this takes a developer, a designer and weeks of work.","Open the Toy Finder","#d6336c","Bonus · only possible with Claude"]]
+    .map(([k,n,h,img,d,b,c,tag])=>`<div class="hcard" onclick="show('${k}')"><img src="${img}" alt="Preview of the ${h} tab" loading="lazy"><div class="hb">${tag?`<span class="hunlock">${tag}</span>`:`<span class="hn" style="background:${c}">${n}</span>`}<h3>${h}</h3><p>${d}</p><span class="btn pri" style="background:${c};border-color:${c}">${b} →</span></div></div>`).join("");
+  const SH=[[6,"Colorbuds",-6],[18,"Lego Bricks",5],[29,"Plush Pony",-4],[28,"Playfoam",6],[9,"Dino Egg",-5],[33,"Teddy Bear",4],[34,"Toy Robot",-6],[30,"Rubik's Cube",5],[16,"Jenga",-4],[11,"Etch A Sketch",6],[14,"Glass Marbles",-5],[31,"Splash Balls",4]];
+  const shelf=SH.map(([id,n,r],i)=>`<button style="--i:${i};rotate:${r}deg" title="${n}" aria-label="Meet ${n}" onclick="goToy(this,${id})">${ILLUS[id]}</button>`).join("");
+  document.getElementById("start").innerHTML=`
+  <div class="hherowrap">
+    <div class="hhero">
+      <span class="eyebrow">A Claude Code experiment</span>
+      <h1>Maven Toys Analytics Hub</h1>
+    </div>
+  </div>
+  <div class="shelf">${shelf}</div><div class="shelfboard"></div>
+  <p class="shelfhint">Tap a toy to meet it :)</p>
+  <div class="card hctx">
+    <p>This site is a <b>demonstration</b> of what Claude Code can build for a data analyst.</p>
+    <p>Data analysts are usually asked for <b>three</b> things:</p>
+    <div class="hchips"><span>📊 Dashboards</span><span>🎤 Presentations</span><span>💬 Ad hoc data requests</span></div>
+    <p><b>I built all three data artifacts entirely with Claude.</b></p>
+    <p>They are based on free sample data from a fictional toy company in Mexico, <b>Maven Toys</b>. The analysis covers sales, profit, margin and stock. The results are below.</p>
+  </div>
+  <div class="hcards">${cards}</div>
+
+  <div class="hfacts">
+    <div><span class="hfi">🗂️</span><div><b>The data</b><br>Free sample data from Maven Analytics: 50 stores, 35 toys, Jan 2022 to Sep 2023.</div></div>
+    <div><span class="hfi">🤖</span><div><b>Made by Claude, checked by a human</b><br>Claude wrote all the code, charts, slides, drawings and text. I wrote the requests and checked the numbers.</div></div>
+  </div>
+  <div class="hfoot">Built by <a class="lnk" href="https://github.com/surajko9000" target="_blank" rel="noopener" style="margin-left:0">@surajko9000</a> to see how far Claude Code can go on everyday analyst work
+    · <a class="lnk" href="https://github.com/surajko9000/maven-toys-ai-analytics" target="_blank" rel="noopener">View the code on GitHub ↗</a></div>`;
+}
+
+/* ================= TAB 1: DASHBOARD ================= */
+const dash={fopen:false,cats:new Set(CATS),pid:null,m0:0,m1:20,preset:"all",metric:"rev",trend:"values",show:"val",sort:{k:"gp",d:-1}};
+const MET={rev:{n:"Revenue",f:fmt$},gp:{n:"Est. gross profit",f:fmt$},units:{n:"Units sold",f:fmtN},mg:{n:"Gross margin %",f:v=>pct(v)}};
+const val=(b,m)=>m=="mg"?(b.rev?b.gp/b.rev:0):b[m];
+const shr=(x,t)=>t?pct(x/t):"–";
+const PRESETS=[["all","All time",0,20],["2022","2022",0,11],["2023","2023 so far",12,20],["l3","Last 3 months",18,20],["l6","Last 6 months",15,20]];
+function setPreset(k){const p=PRESETS.find(x=>x[0]==k);dash.preset=k;dash.m0=p[2];dash.m1=p[3];renderDash()}
+function setRange(which,v){v=+v;if(which=="m0"){dash.m0=v;if(dash.m1<v)dash.m1=v}else{dash.m1=v;if(dash.m0>v)dash.m0=v}
+  dash.preset=(PRESETS.find(x=>x[2]==dash.m0&&x[3]==dash.m1)||[null])[0];renderDash()}
+function fbar(key,open,sum,inner,reset){const re=key=="dash"?"renderDash":"renderToys";
+  return `<div class="fbar"><button class="fhead" onclick="${key}.fopen=!${key}.fopen;${re}()" aria-expanded="${!!open}"><span class="fsum">${sum}</span>${reset?`<span class="freset" onclick="event.stopPropagation();${key}Reset()">Reset</span>`:""}<span class="fch">${open?"Hide ▴":"Filters ▾"}</span></button>${open?`<div class="fbody">${inner}<button class="btn fdone" onclick="${key}.fopen=false;${re}()">Done</button></div>`:""}</div>`}
+const sc=(l,on)=>`<span class="sc ${on?"on":""}">${l}</span>`;
+function dashReset(){Object.assign(dash,{cats:new Set(CATS),pid:null,m0:0,m1:20,preset:"all",metric:"rev",show:"val"});renderDash()}
+function renderDash(){
+  const cats=dash.cats.size<5?[...dash.cats]:null;const m=dash.metric;
+  const A=agg({cats,pid:dash.pid,m0:dash.m0,m1:dash.m1});
+  const len=dash.m1-dash.m0+1, hasPrev=dash.m0-len>=0;
+  const B=hasPrev?agg({cats,pid:dash.pid,m0:dash.m0-len,m1:dash.m0-1}):null;
+  const delta=(a,b)=>{if(!B||!b)return null;const d=a/b-1;return `<span class="${d>=0?"up":"down"}">${d>=0?"▲":"▼"} ${Math.abs(d*100).toFixed(1)}%</span> vs prior ${len} mo`};
+  const mg=A.tot.rev?A.tot.gp/A.tot.rev:0, mgB=B&&B.tot.rev?B.tot.gp/B.tot.rev:null;
+  const mgd=mgB==null?null:`<span class="${mg>=mgB?"up":"down"}">${mg>=mgB?"▲":"▼"} ${Math.abs((mg-mgB)*100).toFixed(1)} pts</span> vs prior ${len} mo`;
+  const nprod=Object.keys(A.byProd).length;
+  const T=m=="mg"?null:A.tot[m];
+  const vt=b=>m=="mg"?pct(val(b,m)):dash.show=="pct"?shr(b[m],T):MET[m].f(b[m]);
+  const tipFor=(name,b)=>`<b>${name}</b><br>Revenue ${fmt$(b.rev)} · ${shr(b.rev,A.tot.rev)} of selection<br>Est. profit ${fmt$(b.gp)} · ${shr(b.gp,A.tot.gp)}<br>Units ${fmtN(b.units)} · ${shr(b.units,A.tot.units)}<br>Margin ${pct(b.rev?b.gp/b.rev:0)}`;
+  const catRows=CATS.filter(c=>A.byCat[c]).sort((a,b)=>val(A.byCat[b],m)-val(A.byCat[a],m)).map(c=>({label:c,v:val(A.byCat[c],m),vtext:vt(A.byCat[c]),color:CCOL[c],tip:tipFor(c,A.byCat[c])}));
+  const top=Object.entries(A.byProd).sort((a,b)=>val(b[1],m)-val(a[1],m)).slice(0,10).map(([pid,b])=>({label:P[pid].name,v:val(b,m),vtext:vt(b),color:CCOL[P[pid].cat],tip:tipFor(`${P[pid].name} · ${P[pid].cat}`,b)}));
+  const stores=Object.entries(A.byStore).sort((a,b)=>val(b[1],m)-val(a[1],m)).slice(0,8).map(([sid,b])=>({label:`${ST[sid].city} #${ST[sid].name.split(" ").pop()}`,v:val(b,m),vtext:vt(b),tip:tipFor(`${ST[sid].name} (${ST[sid].loc})`,b)}));
+  const shareNote=m=="mg"?"Hover a bar for the revenue behind each margin":dash.show=="pct"?"Labels = % share of the current selection":"Hover a bar for share, profit and units";
+  const ser=A.byMonth.slice(dash.m0,dash.m1+1).map(b=>val(b,m));
+  const asPct=dash.trend=="pct"&&ser.length>1;
+  let tvals=ser,tfmt=MET[m].f,tlabels=i=>mlabel(i+dash.m0);
+  if(asPct){tvals=ser.slice(1).map((v,i)=>m=="mg"?(v-ser[i])*100:(ser[i]?(v/ser[i]-1)*100:0));
+    tfmt=m=="mg"?(v=>(v>=0?"+":"")+v.toFixed(1)+" pts"):(v=>(v>=0?"+":"")+v.toFixed(0)+"%");tlabels=i=>mlabel(i+1+dash.m0)}
+  const rows=Object.entries(A.byProd).map(([pid,b])=>({pid,name:P[pid].name,cat:P[pid].cat,units:b.units,rev:b.rev,gp:b.gp,mg:b.rev?b.gp/b.rev:0,shRev:A.tot.rev?b.rev/A.tot.rev:0,shGp:A.tot.gp?b.gp/A.tot.gp:0}));
+  rows.sort((a,b)=>(a[dash.sort.k]>b[dash.sort.k]?1:-1)*dash.sort.d);
+  const th=(k,l,r)=>`<th class="${r?"r":""}" onclick="dash.sort={k:'${k}',d:dash.sort.k=='${k}'?-dash.sort.d:-1};renderDash()">${l}${dash.sort.k==k?(dash.sort.d<0?" ↓":" ↑"):""}</th>`;
+  const mopts=(sel)=>Array.from({length:21},(_,i)=>`<option value="${i}" ${i==sel?"selected":""}>${mlong(i)}</option>`).join("");
+  const tl=(PRESETS.find(x=>x[0]==dash.preset)||[0,`${mlong(dash.m0)} – ${mlong(dash.m1)}`])[1];
+  const dashSum=sc("📅 "+tl,dash.preset!="all")+sc("🏷️ "+(cats?cats.join(", "):"All categories"),!!cats)+sc("🧸 "+(dash.pid?P[dash.pid].name:"All toys"),!!dash.pid)+sc("📐 "+MET[m].n+(m!="mg"&&dash.show=="pct"?" · % share":""),m!="rev"||dash.show!="val");
+  const dashDirty=dash.preset!="all"||!!cats||!!dash.pid||m!="rev"||dash.show!="val";
+  document.getElementById("dashboard").innerHTML=`
+  <h1><span class="h1t">${ILLUS[30]}</span>Sales Performance Dashboard</h1><p class="sub">Revenue, profit and units across 50 stores and 35 toys, Jan 2022 – Sep 2023. Click the filter bar to change the time window, category, toy or measure.</p>
+  ${fbar("dash",dash.fopen,dashSum,`<div class="fgroup"><span class="lbl">📅 Time</span>
+    ${PRESETS.map(([k,l])=>`<button class="chip ${dash.preset==k?"on":""}" onclick="setPreset('${k}')">${l}</button>`).join("")}
+    <span style="color:var(--ink3)">or</span>
+    <select onchange="setRange('m0',this.value)">${mopts(dash.m0)}</select> to <select onchange="setRange('m1',this.value)">${mopts(dash.m1)}</select></div>
+  <div class="fgroup"><span class="lbl">🏷️ Category</span>
+    ${CATS.map(c=>`<button class="chip ${dash.cats.size<5&&dash.cats.has(c)?"on":""}" onclick="toggleCat('${c}')"><i style="background:${CCOL[c]}"></i>${c}</button>`).join("")}
+    <span class="lbl" style="margin-left:10px">🧸 Toy</span>
+    <div class="combo" id="combo"><input type="text" id="prodin" placeholder="All toys (type to search)" autocomplete="off" value="${dash.pid?esc(P[dash.pid].name):""}" onfocus="comboOpen()" oninput="comboOpen(this.value)" onkeydown="comboKey(event)">
+      ${dash.pid?`<span class="x" onclick="comboPick(0)" title="Clear">✕</span>`:""}<div class="list" id="combolist"></div></div></div>
+  <div class="fgroup"><span class="lbl">📐 Chart measure</span><span class="seg">${Object.entries(MET).map(([k,v])=>`<button class="${m==k?"on":""}" onclick="dash.metric='${k}';renderDash()">${v.n}</button>`).join("")}</span></div>
+  <div class="fgroup"><span class="lbl">🔢 Bar labels</span><span class="seg">${m=="mg"?`<button class="on" disabled>Margin %</button>`:`<button class="${dash.show=="val"?"on":""}" onclick="dash.show='val';renderDash()">Value</button><button class="${dash.show=="pct"?"on":""}" onclick="dash.show='pct';renderDash()">% of selection</button>`}</span></div>`,dashDirty)}
+  <div class="kpis">
+    <div class="kpi" style="background:#e3eefb"><div class="e">💰</div><div class="l">Revenue</div><div class="v">${fmt$(A.tot.rev)}</div><div class="d">${delta(A.tot.rev,B?.tot.rev)??"units × price"}</div></div>
+    <div class="kpi" style="background:#def5ec"><div class="e">🪙</div><div class="l">Est. gross profit</div><div class="v">${fmt$(A.tot.gp)}</div><div class="d">${delta(A.tot.gp,B?.tot.gp)??"units × (price − cost)"}</div></div>
+    <div class="kpi" style="background:#fcf0d2"><div class="e">📈</div><div class="l">Gross margin</div><div class="v">${A.tot.rev?pct(mg):"–"}</div><div class="d">${mgd??"profit ÷ revenue"}</div></div>
+    <div class="kpi" style="background:#fbe6ee"><div class="e">📦</div><div class="l">Units sold</div><div class="v">${fmtN(A.tot.units)}</div><div class="d">${delta(A.tot.units,B?.tot.units)??"transaction units"}</div></div>
+    <div class="kpi" style="background:#ece8fb"><div class="e">🏬</div><div class="l">Stores</div><div class="v">${Object.keys(A.byStore).length}</div><div class="d">with sales</div></div>
+    <div class="kpi" style="background:#fdebe3"><div class="e">🧸</div><div class="l">Toys sold</div><div class="v">${nprod}</div><div class="d">of 35</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><h3>${MET[m].n} by month${asPct?" (change vs prior month)":""}</h3><div class="note">Hover a dot for the value</div></div>
+      <span class="seg"><button class="${asPct?"":"on"}" onclick="dash.trend='values';renderDash()">Values</button><button class="${asPct?"on":""}" onclick="dash.trend='pct';renderDash()">% change</button></span></div>${line(tvals,{fmt:tfmt,labels:tlabels})}</div>
+    <div class="card"><h3>${MET[m].n} by category</h3><div class="note">Colors match the category buttons · ${shareNote}</div>${hbars(catRows,{fmt:MET[m].f,vw:80})}</div>
+  </div>
+  <div class="grid3">
+    <div class="card"><h3>Top 10 toys by ${MET[m].n.toLowerCase()}</h3><div class="note">Bar color = category · ${shareNote}</div>${hbars(top,{fmt:MET[m].f,vw:80})}</div>
+    <div class="card"><h3>Top 8 stores by ${MET[m].n.toLowerCase()}</h3><div class="note">Same time window and filters · ${shareNote}</div>${hbars(stores,{fmt:MET[m].f,vw:80})}</div>
+  </div>
+  <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>All toys in this view</h3><div class="note">Click a column to sort</div></div>
+    <button class="btn" onclick="csvDownload('toys_filtered.csv',[['Toy','Category','Units','Revenue','% of revenue','Est gross profit','% of profit','Margin'],...dashRows.map(r=>[r.name,r.cat,r.units,r.rev.toFixed(2),(r.shRev*100).toFixed(1)+'%',r.gp.toFixed(2),(r.shGp*100).toFixed(1)+'%',(r.mg*100).toFixed(1)+'%'])])">⬇ Export CSV</button></div>
+    ${rows.length?`<div style="max-height:340px;overflow:auto"><table class="tbl"><tr>${th("name","Toy")}${th("cat","Category")}${th("units","Units",1)}${th("rev","Revenue",1)}${th("shRev","% of rev.",1)}${th("gp","Est. profit",1)}${th("shGp","% of profit",1)}${th("mg","Margin",1)}</tr>
+    ${rows.map(r=>`<tr><td>${EMOJI[r.pid]} ${r.name}</td><td>${r.cat}</td><td class="r">${fmtN(r.units)}</td><td class="r">${fmt$f(r.rev)}</td><td class="r">${pct(r.shRev)}</td><td class="r">${fmt$f(r.gp)}</td><td class="r">${pct(r.shGp)}</td><td class="r">${pct(r.mg)}</td></tr>`).join("")}</table></div>`:`<div class="note">No sales for this combination. Try widening the time window.</div>`}</div>
+  <div class="defs"><b>Definitions.</b> Revenue = units × product price. Estimated gross profit = units × (price − cost). These are <i>reconstructed</i> from one current price per toy; the data has no price history, so they are not accounting figures. Deltas compare with the equal-length window just before the selected one (shown when the data goes back far enough). Percent labels show each item's share of the current selection (the filters above), so the bars shown may not add up to 100%. Gross margin % = estimated gross profit ÷ revenue. Source: sales.csv, products.csv, stores.csv.</div>`;
+  window.dashRows=rows;
+}
+function toggleCat(c){ if(dash.cats.size==5){dash.cats=new Set([c])} else if(dash.cats.has(c)){dash.cats.delete(c);if(!dash.cats.size)dash.cats=new Set(CATS)} else dash.cats.add(c); renderDash()}
+/* toy dropdown: alphabetical, ~5 rows visible, scrolls */
+let comboHl=0;
+function comboItems(q){q=(q||"").toLowerCase();return PSORT.filter(p=>p.name.toLowerCase().includes(q))}
+function comboOpen(q){const inp=document.getElementById("prodin");const val=q===undefined?"":q;const items=comboItems(val);comboHl=0;
+  const l=document.getElementById("combolist");
+  l.innerHTML=(val?"":`<div class="opt ${comboHl==-1?"hl":""}" onmousedown="comboPick(0)"><b>All toys</b></div>`)+
+    (items.length?items.map((p,i)=>`<div class="opt ${i==0&&val?"hl":""}" data-id="${p.id}" onmousedown="comboPick(${p.id})"><span>${EMOJI[p.id]}</span>${esc(p.name)}<small>${p.cat}</small></div>`).join(""):`<div class="opt" style="color:var(--ink3)">No toys match “${esc(val)}”</div>`);
+  l.classList.add("on")}
+function comboPick(id){dash.pid=id||null;renderDash()}
+function comboKey(e){if(e.key=="Enter"){const first=document.querySelector("#combolist .opt[data-id]");if(first)comboPick(+first.dataset.id)}if(e.key=="Escape")document.getElementById("combolist").classList.remove("on")}
+document.addEventListener("click",e=>{if(!e.target.closest(".combo"))document.getElementById("combolist")?.classList.remove("on")});
+
+/* ================= TAB 2: PRESENTATION ================= */
+const catStats=CATS.map(c=>({c,...ALL.byCat[c],mg:ALL.byCat[c].gp/ALL.byCat[c].rev})).sort((a,b)=>b.rev-a.rev);
+const byMg=[...catStats].sort((a,b)=>b.mg-a.mg), topProf=Object.entries(ALL.byProd).sort((a,b)=>b[1].gp-a[1].gp).slice(0,5);
+const peak=ALL.byMonth.map((b,i)=>[i,b.rev]).sort((a,b)=>b[1]-a[1])[0];
+const share=c=>catStats.find(x=>x.c==c).rev/ALL.tot.rev;
+const Y22=agg({m0:0,m1:8}).tot, Y23=agg({m0:12,m1:20}).tot;
+const chg=(a,b)=>(a/b-1)*100;
+const DECK={pptx:"deck/Colorbuds_to_Playfoam.pptx",pdf:"deck/Colorbuds_to_Playfoam.pdf",
+ titles:["Title slide: Colorbuds, our #1 profit toy, is in decline","Our top profit toy is fading, and a newer toy is already making up part of the gap","Colorbuds sales have fallen 68% since January 2022, across almost every store","Fading is normal for our toys: 9 of 10 recent launches are 40%+ below their peak","Playfoam is the early bright spot, but 13 empty stores are costing us about $5K a month","We recommend three moves: back newer, higher-margin toys, test a Colorbuds refresh, and review in 8 weeks"]};
+let slide=0;
+const deckImg=i=>`deck/preview/slide-${i+1}.jpg`;
+function renderDeck(){
+  const n=DECK.titles.length;
+  document.getElementById("presentation").innerHTML=`<h1><span class="h1t">${ILLUS[6]}</span>From Colorbuds to Playfoam: The Business Review</h1>
+  <p class="sub">The deck Claude drafted from the data. Click through it here, or download it to edit.</p>
+  <div class="deckbar"><span class="dlabel">⬇ Download</span>
+    <a class="btn pri" href="${DECK.pptx}" download>PowerPoint (.pptx)</a>
+    <a class="btn" href="${DECK.pdf}" download>PDF</a>
+    <button class="btn" onclick="deckFull()" title="Full screen">⛶ Full screen</button>
+    <span class="hint"><b id="dcount"></b> &nbsp;·&nbsp; click the slide or use ← → keys</span></div>
+  <div class="viewer">
+    <button class="navb" id="dprev" onclick="go(-1)" aria-label="Previous slide">‹</button>
+    <div class="stage" id="stage" onclick="go(1)"><img id="deckimg" alt="" draggable="false"></div>
+    <button class="navb" id="dnext" onclick="go(1)" aria-label="Next slide">›</button>
+  </div>
+  <div class="thumbs">${Array.from({length:n},(_,i)=>`<button class="thumb" id="th${i}" onclick="goTo(${i})" aria-label="Go to slide ${i+1}"><img src="${deckImg(i)}" alt="" loading="lazy"><b>#${i+1}</b></button>`).join("")}</div>
+  <p class="src">Snapshot of the data through Sep 30, 2023. Numbers are computed from the CSVs and checked against an independent calculation. Profit is estimated from current price and cost.</p>`;
+  showSlide();
+}
+function showSlide(){
+  const n=DECK.titles.length,img=document.getElementById("deckimg");if(!img)return;
+  img.src=deckImg(slide);img.alt=`Slide ${slide+1} of ${n}: ${DECK.titles[slide]}`;
+  document.getElementById("dcount").textContent=`Slide ${slide+1} of ${n}`;
+  document.getElementById("dprev").disabled=slide==0;document.getElementById("dnext").disabled=slide==n-1;
+  document.querySelectorAll(".thumb").forEach((b,i)=>b.classList.toggle("on",i==slide));
+  for(const j of [slide-1,slide+1]) if(j>=0&&j<n){const p=new Image();p.src=deckImg(j)}
+}
+function goTo(i){slide=Math.min(DECK.titles.length-1,Math.max(0,i));showSlide()}
+function go(d){goTo(slide+d)}
+function deckFull(){const el=document.getElementById("stage");(el.requestFullscreen||el.webkitRequestFullscreen||(()=>{})).call(el)}
+document.addEventListener("keydown",e=>{if(current=="presentation"&&!(e.target instanceof HTMLInputElement)){if(e.key=="ArrowRight")go(1);if(e.key=="ArrowLeft")go(-1);if(e.key=="Home")goTo(0);if(e.key=="End")goTo(DECK.titles.length-1)}});
+
+/* ================= TAB 3: TOY FINDER ================= */
+const toys={fopen:false,q:"",cat:"All",sort:"gp",dir:-1,m0:0,m1:20,preset:"all"};
+function toysReset(){Object.assign(toys,{q:"",cat:"All",sort:"gp",dir:-1,m0:0,m1:20,preset:"all"});renderToys()}
+function toyPreset(k){const p=PRESETS.find(x=>x[0]==k);toys.preset=k;toys.m0=p[2];toys.m1=p[3];renderToys()}
+function toyRange(w,v){v=+v;if(w=="m0"){toys.m0=v;if(toys.m1<v)toys.m1=v}else{toys.m1=v;if(toys.m0>v)toys.m0=v}toys.preset=(PRESETS.find(x=>x[2]==toys.m0&&x[3]==toys.m1)||[null])[0];renderToys()}
+const SORTS={gp:"Profit",rev:"Revenue",units:"Units sold",price:"Price",name:"Name"};
+const dirWord=(k,d)=>k=="name"?(d>0?"A → Z":"Z → A"):(d<0?"Highest first":"Lowest first");
+function setSort(k){if(toys.sort==k)toys.dir*=-1;else{toys.sort=k;toys.dir=k=="name"?1:-1}renderToys()}
+function renderToys(){
+  const val=p=>toys.sort=="name"?p.p.name:toys.sort=="price"?p.p.price:p[toys.sort];
+  const R=agg({m0:toys.m0,m1:toys.m1}),Z={rev:0,gp:0,units:0};
+  const mopts=sel=>Array.from({length:21},(_,i)=>`<option value="${i}" ${i==sel?"selected":""}>${mlong(i)}</option>`).join("");
+  const ttl=(PRESETS.find(x=>x[0]==toys.preset)||[0,`${mlong(toys.m0)} – ${mlong(toys.m1)}`])[1];
+  const tSum=sc("📅 "+ttl,toys.preset!="all")+sc("🏷️ "+toys.cat,toys.cat!="All")+sc("↕️ "+SORTS[toys.sort]+" · "+dirWord(toys.sort,toys.dir),toys.sort!="gp"||toys.dir!=-1)+(toys.q?sc("🔎 “"+esc(toys.q)+"”",true):"");
+  const tDirty=toys.preset!="all"||toys.cat!="All"||toys.sort!="gp"||toys.dir!=-1||!!toys.q;
+  const list=DATA.P.filter(p=>(toys.cat=="All"||p.cat==toys.cat)&&p.name.toLowerCase().includes(toys.q.toLowerCase()))
+    .map(p=>({p,...(R.byProd[p.id]||Z)})).sort((a,b)=>{const x=val(a),y=val(b);return (typeof x=="string"?x.localeCompare(y):x-y)*toys.dir});
+  document.getElementById("toys").innerHTML=`<h1><span class="h1t">${ILLUS[33]}</span>Toy Catalog: How Every Toy Performs</h1><p class="sub">Browse the catalog and tap any toy to see how it performs. <span class="tag">Toy art is original illustration, not product photos.</span></p>
+  ${fbar("toys",toys.fopen,tSum,`<div class="fgroup"><span class="lbl">📅 Time</span>
+    ${PRESETS.map(([k,l])=>`<button class="chip ${toys.preset==k?"on":""}" onclick="toyPreset('${k}')">${l}</button>`).join("")}
+    <span style="color:var(--ink3)">or</span>
+    <select onchange="toyRange('m0',this.value)">${mopts(toys.m0)}</select> to <select onchange="toyRange('m1',this.value)">${mopts(toys.m1)}</select></div>
+  <div class="fgroup"><span class="lbl">🔎 Find</span><input type="search" id="toyq" placeholder="Search toys…" value="${esc(toys.q)}" oninput="toys.q=this.value;renderToys();const i=document.getElementById('toyq');i.focus();i.setSelectionRange(99,99)">
+   <span class="lbl" style="margin-left:8px">🏷️ Category</span>${["All",...CATS].map(c=>`<button class="chip ${toys.cat==c?"on":""}" onclick="toys.cat='${c}';renderToys()">${c}</button>`).join("")}</div>
+  <div class="fgroup"><span class="lbl">↕️ Sort by</span><span class="seg">${Object.entries(SORTS).map(([k,l])=>`<button class="${toys.sort==k?"on":""}" onclick="toys.sort='${k}';toys.dir=${k=="name"?1:-1};renderToys()">${l}</button>`).join("")}</span>
+   <button class="dir" onclick="toys.dir*=-1;renderToys()" title="Flip the order">⇅ ${dirWord(toys.sort,toys.dir)}</button></div>`,tDirty)}
+  <p class="cap">${mlong(toys.m0)} – ${mlong(toys.m1)}: <b>${list.length}</b> toy${list.length==1?"":"s"}, sorted by <b>${SORTS[toys.sort].toLowerCase()}</b>, <b>${dirWord(toys.sort,toys.dir).toLowerCase()}</b>.</p>
+  ${list.length?`<div class="cards">${list.map(({p,rev,gp,units},i)=>`<div class="toy ${units?"":"off"}" style="--cc:${CCOL[p.cat]}" onclick="openToy(${p.id})"><div class="img" style="background:${tileBg(p.id)}"><span class="rank ${i<3?"r"+(i+1):""}">#${i+1}</span>${INV[p.id].zero>=8?`<span class="oos">Out in ${INV[p.id].zero} stores</span>`:""}${imgBlock(p.id)}</div>
+   <div class="b"><div class="n">${p.name}</div><div class="c"><i></i>${p.cat} · $${p.price.toFixed(2)}</div>
+   ${units?`<div class="m"><span>Units<b>${fmtN(units)}</b></span><span>Profit<b>${fmt$(gp)}</b></span></div>`:`<div class="na">No sales in this window</div>`}</div></div>`).join("")}</div>`:`<div class="card">No toys match “${esc(toys.q)}”. Try a different search or category.</div>`}`;
+}
+function openToy(id){
+  const p=P[id],R=agg({m0:toys.m0,m1:toys.m1}),b=R.byProd[id]||{rev:0,gp:0,units:0},iv=INV[id],ms=ALL_BY_PROD_MONTH(id);
+  const A=agg({pid:id,m0:toys.m0,m1:toys.m1});
+  const stores=Object.entries(A.byStore).map(([sid,s])=>({label:ST[sid].city+" #"+ST[sid].name.split(" ").pop(),v:s.rev})).sort((a,b)=>b.v-a.v).slice(0,6);
+  const rankP=DATA.P.map(q=>[q.id,(R.byProd[q.id]||{gp:0}).gp]).sort((a,b)=>b[1]-a[1]).findIndex(([k])=>k==id)+1;
+  const im=IMG[id];
+  document.getElementById("panel").innerHTML=`<div style="display:flex;justify-content:space-between"><span class="tag">${p.cat}</span><button class="btn" onclick="closeToy()">✕ Close</button></div>
+  <div class="hero-img" style="background:${tileBg(id)};margin-top:10px;border:2px solid var(--line)">${imgBlock(id)}</div>${im?`<div class="credit">Photo: ${esc(im.credit)} · ${esc(im.license)}</div>`:(ILLUS[id]?`<div class="credit">Original illustration, not a product photo.</div>`:`<div class="credit">Placeholder icon, not a product photo.</div>`)}
+  <h2 style="margin:0;font-size:26px">${p.name}</h2>
+  <div class="sub" style="margin:2px 0 0">Price $${p.price.toFixed(2)} · Cost $${p.cost.toFixed(2)} · Unit margin ${pct((p.price-p.cost)/p.price)}</div>
+  <div class="stats"><div class="stat"><div class="l">Units sold</div><div class="v">${fmtN(b.units)}</div></div><div class="stat"><div class="l">Revenue</div><div class="v">${fmt$(b.rev)}</div></div><div class="stat"><div class="l">Est. profit</div><div class="v">${fmt$(b.gp)}</div></div></div>
+  <div class="cap">🏆 Ranks <b>#${rankP}</b> of 35 by estimated profit, ${mlong(toys.m0)} – ${mlong(toys.m1)}.</div>
+  <div class="card" style="margin:12px 0"><h3>Monthly revenue</h3>${line(ms,{w:500,h:170})}</div>
+  <div class="card" style="margin:12px 0"><h3>Top stores</h3><div class="note">By revenue, ${mlong(toys.m0)} – ${mlong(toys.m1)}</div>${hbars(stores,{w:500})}</div>
+  <div class="card" style="margin:12px 0"><h3>📦 Stock on hand (current snapshot)</h3><div class="note">One undated snapshot, not a history</div>
+  ${iv.stocked?`<b style="font-size:22px">${fmtN(iv.stock)}</b> units across ${iv.stocked} of 50 stores<br><b>${iv.zero}</b> store${iv.zero==1?"":"s"} at zero stock${iv.zero?`: ${iv.zeroStores.slice(0,6).map(s=>ST[s].city).join(", ")}${iv.zero>6?`, +${iv.zero-6} more`:""}`:""}`:"No inventory rows for this toy."}</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn pri" onclick="closeToy();show('ask');ask('Which stores sell the most ${p.name}?',true)">💬 Ask about this toy</button>
+  <a class="btn" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(p.name+" toy")}">🔎 Search the web for it ↗</a></div>
+  <div class="credit" style="margin-top:8px">The web link is a plain search, not an official product page.</div>`;
+  document.getElementById("drawer").classList.add("on");
+}
+function ALL_BY_PROD_MONTH(id){return agg({pid:id}).byMonth.map(b=>b.rev)}
+function closeToy(){document.getElementById("drawer").classList.remove("on")}
+document.getElementById("drawer").addEventListener("click",e=>{if(e.target.id=="drawer")closeToy()});
+
+/* ================= TAB 4: ASK ================= */
+const FULL={m0:0,m1:20};
+const ALIAS=(()=>{const first={};for(const p of DATA.P){const w=p.name.toLowerCase().replace(/[^a-z0-9 ]/g,"").split(" ")[0];first[w]=(first[w]||[]).concat(p.id)}
+  const m=[];for(const p of DATA.P){m.push([p.name.toLowerCase().replace(/[^a-z0-9 ]/g,""),p.id]);const w=p.name.toLowerCase().replace(/[^a-z0-9 ]/g,"").split(" ")[0];if(w.length>=4&&first[w].length==1)m.push([w,p.id])}
+  m.sort((a,b)=>b[0].length-a[0].length);return m})();
+function parseSlots(q){
+  const t=" "+q.toLowerCase().replace(/['’]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ")+" ";const slots={chips:[]};
+  // toy
+  for(const [a,id] of ALIAS){const re=new RegExp(`\\b${a}s?\\b`);if(re.test(t)){slots.pid=id;slots.chips.push("Toy: "+P[id].name);break}}
+  // category
+  const cm=[[/\b(games?)\b/,"Games"],[/\b(art|crafts?|arts)\b/,"Art & Crafts"],[/\b(sports?|outdoors?)\b/,"Sports & Outdoors"],[/\b(electronics?|gadgets?)\b/,"Electronics"],[/\b(in|for|within|of) (the )?toys\b|\btoys category\b|\btoy category\b/,"Toys"]];
+  for(const [re,c] of cm) if(re.test(t)&&!(slots.pid&&P[slots.pid].cat!==c&&c!="Toys")){slots.cats=[c];slots.chips.push("Category: "+c);break}
+  // period
+  let m;
+  if(/\blast quarter\b|\blatest quarter\b/.test(t)){slots.m0=18;slots.m1=20;slots.period="Q3 2023 (last full quarter in the data)"}
+  else if(m=t.match(/\bq([1-4])\s*(?:20)?(22|23)?\b/)){const qn=+m[1];let yr=m[2]?+("20"+m[2]):(qn<=3?2023:2022);const s=(yr-2022)*12+(qn-1)*3;if(s+2<=20&&s>=0){slots.m0=s;slots.m1=s+2;slots.period=`Q${qn} ${yr}`+(m[2]?"":" (assumed)")}}
+  else if(/\blast (3|three) months\b/.test(t)){slots.m0=18;slots.m1=20;slots.period="last 3 months of data (Jul–Sep 2023)"}
+  else if(/\blast month\b/.test(t)){slots.m0=20;slots.m1=20;slots.period="Sep 2023 (last month in the data)"}
+  else if((m=t.match(/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|(?:in|during|for) may)\s*(?:20)?(22|23)?\b/))){const w=m[1].replace(/^(in|during|for) /,"").slice(0,3);const mi=MN.map(x=>x.toLowerCase()).indexOf(w);let yr=m[2]?+("20"+m[2]):(mi<=8?2023:2022);const idx=(yr-2022)*12+mi;if(mi>=0&&idx>=0&&idx<=20){slots.m0=idx;slots.m1=idx;slots.period=mlong(idx)+(m[2]?"":" (assumed)")}}
+  else if(m=t.match(/\b(2022|2023)\b/)){const y=+m[1];slots.m0=y==2022?0:12;slots.m1=y==2022?11:20;slots.period=y==2022?"2022":"2023 (Jan–Sep, the data ends in Sep)"}
+  if(slots.period) slots.chips.push("Period: "+slots.period);
+  return slots;
+}
+const scopeOf=(c)=>{const bits=[];if(c.pid)bits.push(P[c.pid].name);if(c.cats)bits.push(c.cats.join(", "));bits.push(c.period||"full period (Jan 2022 – Sep 2023)");return bits.join(", ")};
+const topN=(obj,k,n=5,asc=false)=>Object.entries(obj).sort((a,b)=>asc?a[1][k]-b[1][k]:b[1][k]-a[1][k]).slice(0,n);
+const nm=id=>P[id].name, sn=id=>ST[id].city+" #"+ST[id].name.split(" ").pop();
+const QS=[
+ {id:"top_profit",group:"🧸 Toys",title:"Which toys generated the most profit?",kw:"toys products profit most generated top earn profitable highest",rel:["top_units","cat_margin"],
+  run:(c)=>{const A=agg(c),r=topN(A.byProd,"gp");if(!r.length)return null;return {text:`${nm(r[0][0])} generated the most estimated profit: ${fmt$f(r[0][1].gp)} (${scopeOf(c)}).`,rows:r.map(([id,b])=>({label:nm(id),v:b.gp})),fmt:fmt$f,cols:["Toy","Est. profit"],src:"sales.csv · products.csv",def:"Est. gross profit = units × (price − cost)."}}},
+ {id:"top_units",group:"🧸 Toys",title:"What were the best-selling toys?",kw:"best selling toys products units sold popular top",rel:["top_rev","top_profit"],
+  run:(c)=>{const A=agg(c),r=topN(A.byProd,"units");if(!r.length)return null;return {text:`${nm(r[0][0])} sold the most units (${fmtN(r[0][1].units)}) (${scopeOf(c)}). “Best-selling” here means units sold, not revenue.`,rows:r.map(([id,b])=>({label:nm(id),v:b.units})),fmt:fmtN,cols:["Toy","Units sold"],src:"sales.csv · products.csv",def:"Units sold = sum of transaction units."}}},
+ {id:"top_rev",group:"🧸 Toys",title:"Which toys brought in the most revenue?",kw:"toys products revenue most brought money sales top highest",rel:["top_profit","low_margin"],
+  run:(c)=>{const A=agg(c),r=topN(A.byProd,"rev");if(!r.length)return null;return {text:`${nm(r[0][0])} brought in the most revenue: ${fmt$f(r[0][1].rev)} (${scopeOf(c)}).`,rows:r.map(([id,b])=>({label:nm(id),v:b.rev})),fmt:fmt$f,cols:["Toy","Revenue"],src:"sales.csv · products.csv",def:"Revenue = units × price."}}},
+ {id:"low_margin",group:"🧸 Toys",title:"Which toys have the lowest margin?",kw:"toys products lowest margin worst thin low profitability",rel:["top_rev","cat_margin"],
+  run:(c)=>{const A=agg(c),r=Object.entries(A.byProd).map(([id,b])=>[id,b.gp/b.rev]).sort((a,b)=>a[1]-b[1]).slice(0,5);if(!r.length)return null;return {text:`${nm(r[0][0])} has the lowest gross margin at ${pct(r[0][1])} (${scopeOf(c)}).`,rows:r.map(([id,v])=>({label:nm(id),v:v*100})),fmt:v=>v.toFixed(1)+"%",cols:["Toy","Gross margin"],src:"sales.csv · products.csv",def:"Margin = estimated gross profit ÷ revenue."}}},
+ {id:"store_rev",group:"🏬 Stores",title:"Which stores had the highest revenue?",kw:"stores store highest revenue best location sales most",rel:["store_profit","top_rev"],
+  run:(c)=>{const A=agg(c),r=topN(A.byStore,"rev");if(!r.length)return null;return {text:`${sn(r[0][0])} had the highest revenue: ${fmt$f(r[0][1].rev)} (${scopeOf(c)}).`,rows:r.map(([id,b])=>({label:sn(id),v:b.rev})),fmt:fmt$f,cols:["Store","Revenue"],src:"sales.csv · products.csv · stores.csv",def:"Revenue = units × price."}}},
+ {id:"store_profit",group:"🏬 Stores",title:"Which stores had the greatest estimated profit?",kw:"stores store greatest estimated profit most profitable",rel:["store_rev","top_profit"],
+  run:(c)=>{const A=agg(c),r=topN(A.byStore,"gp");if(!r.length)return null;return {text:`${sn(r[0][0])} had the greatest estimated profit: ${fmt$f(r[0][1].gp)} (${scopeOf(c)}).`,rows:r.map(([id,b])=>({label:sn(id),v:b.gp})),fmt:fmt$f,cols:["Store","Est. profit"],src:"sales.csv · products.csv · stores.csv",def:"Est. gross profit = units × (price − cost)."}}},
+ {id:"store_for_toy",group:"🏬 Stores",title:"Which stores sell the most of a particular toy?",kw:"stores store sell most particular toy specific lego nerf where sold",needs:"pid",rel:["store_rev","trend"],
+  run:(c)=>{const A=agg(c),r=topN(A.byStore,"units");if(!r.length)return null;return {text:`${sn(r[0][0])} sold the most ${nm(c.pid)}: ${fmtN(r[0][1].units)} units (${scopeOf(c)}).`,rows:r.map(([id,b])=>({label:sn(id),v:b.units})),fmt:fmtN,cols:["Store","Units sold"],src:"sales.csv · stores.csv",def:"Units sold = sum of transaction units, for the selected toy."}}},
+ {id:"cat_margin",group:"🏷️ Categories",title:"Which category has the best gross margin?",kw:"category categories margin best gross profitability highest",rel:["cat_rev","low_margin"],
+  run:(c)=>{const A=agg(c),r=Object.entries(A.byCat).map(([k,b])=>[k,b.gp/b.rev]).sort((a,b)=>b[1]-a[1]);if(!r.length)return null;return {text:`${r[0][0]} has the best gross margin at ${pct(r[0][1])}${r.length>1?`, while ${r[r.length-1][0]} has the lowest at ${pct(r[r.length-1][1])}`:""} (${scopeOf(c)}).`,rows:r.map(([k,v])=>({label:k,v:v*100,color:CCOL[k]})),fmt:v=>v.toFixed(1)+"%",cols:["Category","Gross margin"],src:"sales.csv · products.csv",def:"Margin = estimated gross profit ÷ revenue."}}},
+ {id:"cat_rev",group:"🏷️ Categories",title:"How does revenue compare across categories?",kw:"category categories revenue compare comparison breakdown split sales",rel:["cat_margin","trend"],
+  run:(c)=>{const A=agg(c),r=topN(A.byCat,"rev",5);if(!r.length)return null;return {text:`${r[0][0]} is the biggest category by revenue: ${fmt$f(r[0][1].rev)}, ${pct(r[0][1].rev/A.tot.rev)} of the total (${scopeOf(c)}).`,rows:r.map(([k,b])=>({label:k,v:b.rev,color:CCOL[k]})),fmt:fmt$f,cols:["Category","Revenue"],src:"sales.csv · products.csv",def:"Revenue = units × price."}}},
+ {id:"trend",group:"📅 Time",title:"How has revenue changed over time?",kw:"revenue changed change over time trend monthly month history growth",rel:["best_month","yoy"],
+  run:(c)=>{const A=agg(c),v=A.byMonth.slice(c.m0,c.m1+1).map(b=>b.rev);if(!A.tot.rev)return null;return {text:`Monthly revenue ${scopeOf(c)}: total ${fmt$f(A.tot.rev)}${v.length>1?`, from ${fmt$f(v[0])} in ${mlong(c.m0)} to ${fmt$f(v[v.length-1])} in ${mlong(c.m1)}`:""}.`,chart:"line",series:v,offset:c.m0,rows:v.map((x,i)=>({label:mlong(i+c.m0),v:x})),fmt:fmt$f,cols:["Month","Revenue"],src:"sales.csv · products.csv",def:"Revenue = units × price, summed by month."}}},
+ {id:"best_month",group:"📅 Time",title:"Which month had the highest revenue?",kw:"month highest revenue peak best busiest season",rel:["trend","yoy"],
+  run:(c)=>{const A=agg(c),r=A.byMonth.map((b,i)=>({label:mlong(i),v:b.rev,i})).filter(x=>x.i>=c.m0&&x.i<=c.m1).sort((a,b)=>b.v-a.v).slice(0,5);if(!r.length||!r[0].v)return null;return {text:`${r[0].label} had the highest revenue: ${fmt$f(r[0].v)} (${scopeOf(c)}).`,rows:r,fmt:fmt$f,cols:["Month","Revenue"],src:"sales.csv · products.csv",def:"Revenue = units × price, summed by month."}}},
+ {id:"yoy",group:"📅 Time",title:"How does 2023 compare with 2022?",kw:"2023 compare comparison 2022 year over year growth versus yoy grown growing",rel:["trend","cat_rev"],
+  run:(c)=>{const a=agg({...c,m0:12,m1:20}).tot,b=agg({...c,m0:0,m1:8}).tot;if(!b.rev||!a.rev)return null;const d=(x,y)=>(x/y-1)*100;
+    const o=[["Revenue",d(a.rev,b.rev)],["Units sold",d(a.units,b.units)],["Est. profit",d(a.gp,b.gp)]];
+    return {text:`Comparing the same months (Jan–Sep): revenue is ${o[0][1]>=0?"up":"down"} ${Math.abs(o[0][1]).toFixed(1)}%, units ${o[1][1]>=0?"up":"down"} ${Math.abs(o[1][1]).toFixed(1)}%, and estimated profit ${o[2][1]>=0?"up":"down"} ${Math.abs(o[2][1]).toFixed(1)}% (${c.pid?nm(c.pid)+", ":""}${c.cats?c.cats.join(", ")+", ":""}2023 vs 2022).`,
+      chart:"cards",cards:o.map(([l,v])=>({l,v})),rows:o.map(([l,v])=>({label:l,v:+v.toFixed(1)})),fmt:v=>v+"%",cols:["Measure","Change vs 2022"],src:"sales.csv · products.csv",def:"Jan–Sep 2023 vs Jan–Sep 2022, so the two periods are the same length. Time words in the question are ignored here."}}},
+ {id:"low_stock",group:"📦 Stock",title:"Which toys have the least stock right now?",kw:"toys products least stock inventory low lowest running out left",rel:["zero_stock","restock"],
+  run:(c)=>{const r=DATA.P.filter(p=>(!c.cats||c.cats.includes(p.cat))&&(!c.pid||c.pid==p.id)).map(p=>[p.id,INV[p.id].stock]).sort((a,b)=>a[1]-b[1]).slice(0,5);return {text:`${nm(r[0][0])} has the least stock on hand across all stores: ${fmtN(r[0][1])} units. This is a single snapshot, not a trend. Time filters don't apply to stock.`,rows:r.map(([id,v])=>({label:nm(id),v})),fmt:fmtN,cols:["Toy","Units in stock"],src:"inventory.csv · products.csv",def:"Stock on hand summed across stores from the supplied snapshot. Not a historical quantity."}}},
+ {id:"zero_stock",group:"📦 Stock",title:"Which toys are out of stock in the most stores?",kw:"toys products out of stock zero empty stockout stockouts stores most",rel:["restock","low_stock"],
+  run:(c)=>{const r=DATA.P.filter(p=>(!c.cats||c.cats.includes(p.cat))&&(!c.pid||c.pid==p.id)).map(p=>[p.id,INV[p.id].zero]).sort((a,b)=>b[1]-a[1]).slice(0,5);return {text:`${nm(r[0][0])} is at zero stock in ${r[0][1]} stores, the most of any toy. This is a single snapshot.`,rows:r.map(([id,v])=>({label:nm(id),v})),fmt:fmtN,cols:["Toy","Stores at zero stock"],src:"inventory.csv · products.csv",def:"Count of stores whose stock-on-hand is 0 in the snapshot."}}},
+ {id:"restock",group:"📦 Stock",title:"Where do popular toys have zero stock?",kw:"popular toys products zero stock restock reorder demand empty out where stores",rel:["zero_stock","top_units"],
+  run:(c)=>{const A=agg({...c}),sold={};for(const [sid,p,mi,u] of DATA.SMP){if(mi<c.m0||mi>c.m1)continue;if(c.pid&&p!=c.pid)continue;if(c.cats&&!c.cats.includes(P[p].cat))continue;sold[sid+"|"+p]=(sold[sid+"|"+p]||0)+u}
+    const r=DATA.INVS.filter(x=>x[2]==0).map(([s,p])=>({label:`${nm(p)} @ ${ST[s].city} #${ST[s].name.split(" ").pop()}`,v:sold[s+"|"+p]||0})).sort((a,b)=>b.v-a.v).slice(0,5);if(!r.length||!r[0].v)return null;
+    return {text:`The biggest gap: ${r[0].label} has zero stock now but sold ${fmtN(r[0].v)} units (${scopeOf(c)}). This ranks by past sales only; it is not an optimized restock plan.`,rows:r,fmt:fmtN,cols:["Toy @ store","Units sold in period"],src:"inventory.csv · sales.csv · products.csv · stores.csv",def:"Store-toy pairs with zero stock in the snapshot, ranked by units sold in the selected period."}}},
+];
+const QI=Object.fromEntries(QS.map(q=>[q.id,q]));
+const AMBIG=/\b(best|favorite|favourite|greatest|top)\b/i, METRICW=/(selling|profit|revenue|units|margin|sold|sales|money|earn|stock|store|month|category|categories)/i;
+const UNSUP=/(customer|satisf|review|rating|survey|return|refund|forecast|predict|next year|next month|employee|staff|competitor|weather|discount|promo|coupon)/i;
+const STOP=new Set("the a an of in is are what which who how do we our to for and was were had has have with on at by me show tell most more than that this those these it its right now from as be can you i my your any all some".split(" "));
+const toks=s=>s.toLowerCase().replace(/['’]/g,"").replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(w=>w&&!STOP.has(w));
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);for(let j=0;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]==b[j-1]?0:1));return d[m][n]}
+const stem=w=>w.replace(/(ing|es|s)$/,"");
+function match(q){const t=toks(q);let all=[];
+  for(const Q of QS){const kws=[...new Set(toks(Q.kw+" "+Q.title))];let hit=0;
+    for(const w of t){if(kws.includes(w)||kws.some(k=>stem(k)==stem(w))){hit++;continue}
+      if(w.length>=5&&kws.some(k=>k.length>=5&&lev(w,k)<=(w.length>=8?2:1)))hit+=.8}
+    all.push([Q,hit/Math.max(3,t.length)])}
+  all.sort((a,b)=>b[1]-a[1]);return {best:all[0][0],score:all[0][1],near:all.slice(0,3).map(x=>x[0])}}
+
+/* ---------- improved matcher: phrasing bank + IDF cosine + synonyms + typo repair ---------- */
+const PARA=__PARA__;
+const EVAL=__EVAL__;
+const CANON={};
+[["toy","toys","product","products","item","items"],["store","stores","shop","shops","location","locations","branch","branches"],
+ ["sell","sells","selling","sold","sale","sales","seller","sellers"],["revenue","revenues","gross","grossing","dollars","money"],
+ ["profit","profits","profitable","profitability","earn","earns","earned","earner","earners","earnings"],["margin","margins"],
+ ["stock","inventory","stocked","shelf","shelves","shelved","hand"],["stockout","stockouts","unavailable","missing"],
+ ["zero","empty","none"],["low","lowest","least","fewest","smallest","thin","thinnest","slim","worst","short","little","weakest","thinner"],
+ ["top","best","biggest","highest","largest","greatest","strongest","hottest","peak","busiest"],
+ ["month","months","monthly"],["year","years","yearly","annual","annually","yoy"],["compare","compared","comparison","versus","vs","against"],
+ ["grow","growing","growth","rising","grew"],["trend","trending","history"],["category","categories","department","type"],
+ ["unit","units"],["restock","reorder","restocking"],["low","nearly","almost","running"]].forEach(g=>g.slice(1).forEach(w=>CANON[w]=g[0]));
+const NOISE=new Set(("last latest recent recently lately past this quarter q1 q2 q3 q4 2022 2023 games game art crafts sports outdoors electronics gadgets "+
+  "january february march april may june july august september october november december all right now from do does did was were is are the a an of in on at by to for and with me my our we us you your show tell give list what which who how when where why many much each every ever per than that them these those it its be can will would should have has had get got into out as or one specific particular given any some made make makes making bring brings brought generate generated generates").split(" "));
+NOISE.delete("out");NOISE.delete("month");
+const ALIASRE=ALIAS.map(([a])=>new RegExp(`\\b${a}s?\\b`,"g"));
+const DIMW=new Set(["toy","store","category","month","year"]);
+const KEYW=new Set(["toy","store","category","month","year","stock","stockout","zero","margin","profit","revenue","unit","restock","popular","compare","trend","toyname","low","top"]);
+const t2=s=>{const o=[];const yrs=new Set((s.match(/\b(2022|2023)\b/g)||[]));
+  let s2=s.toLowerCase().replace(/['’]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ");for(const re of ALIASRE)s2=s2.replace(re," toyname ");
+  for(let w of s2.split(/\s+/)){if(!w)continue;
+    w=CANON[w]||CANON[w.replace(/s$/,"")]||w;if(NOISE.has(w))continue;if(!o.includes(w))o.push(w)}
+  if(yrs.size>1)for(const w of["year","compare"])if(!o.includes(w))o.push(w);
+  if(!o.some(w=>DIMW.has(w)||w=="stock"||w=="stockout"))o.push("toy");
+  return o};
+const BANK=[];const DF={};
+for(const [id,list] of Object.entries(PARA))for(const p of list){const tk=t2(p);BANK.push({id,tk});for(const w of tk)DF[w]=(DF[w]||0)+1}
+const VOCAB=Object.keys(DF),NB=BANK.length,idf=w=>Math.log(1+NB/(DF[w]||0.5))*(KEYW.has(w)?1.6:1);
+function repair(w){if(DF[w])return w;if(w.length<5)return w;let b=null,bd=9;for(const v of VOCAB){if(v.length<5)continue;const d=lev(w,v);if(d<bd&&d<=(w.length>=8?2:1)){bd=d;b=v}}return b||w}
+function match2(q){
+  const qt=t2(q).map(repair);if(!qt.length)return {best:null,score:0,near:[],via:"none"};
+  const qn=Math.sqrt(qt.reduce((s,w)=>s+idf(w)**2,0));const by={};
+  for(const b of BANK){let dot=0;for(const w of qt)if(b.tk.includes(w))dot+=idf(w)**2;
+    const bn=Math.sqrt(b.tk.reduce((s,w)=>s+idf(w)**2,0))||1;const sc=dot/(qn*bn);if(!(by[b.id]>=sc))by[b.id]=sc}
+  const all=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+  return {best:QI[all[0][0]],score:all[0][1],margin:all[0][1]-(all[1]?all[1][1]:0),near:all.slice(0,3).map(x=>QI[x[0]]),via:"phrasing bank"}}
+const MATCH_MIN=0.34;
+/* route(): the intent decision the chat makes, reused by the self-test */
+function route(q,m=match2){
+  if(UNSUP.test(q)||/\bwhy\b/i.test(q))return null;
+  const r=m(q);if(!r.best)return null;
+  const s=m===match2?r.score:r.score;if(s<(m===match2?MATCH_MIN:0.4))return null;return r.best.id}
+function runEval(){
+  const cases=EVAL.cases;let o={old:0,neu:0,n:cases.length,inScope:0,oldIn:0,neuIn:0,fails:[]};
+  for(const [q,exp] of cases){const e=exp=="none"?null:exp;const a=route(q,match),b=route(q,match2);
+    if(a===e)o.old++;if(b===e)o.neu++;if(e){o.inScope++;if(a===e)o.oldIn++;if(b===e)o.neuIn++}
+    if(b!==e)o.fails.push({q,exp:e,got:b,score:+(match2(q).score).toFixed(2)})}
+  return o}
+
+
+/* ---------- optional in-browser embedding model (opt-in, falls back to the keyword matcher) ---------- */
+const SMART={state:"off",pct:0,embed:null,vecs:null,err:"",model:"Xenova/all-MiniLM-L6-v2",evalOut:""};
+const EMB_MIN=0.5,KW_SURE=0.6,KW_MARGIN=0.15;       // starting guesses, to be tuned with the in-page accuracy test
+const normQ=s=>{let o=" "+s.toLowerCase().replace(/['’]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ")+" ";for(const re of ALIASRE)o=o.replace(re," this toy ");return o.replace(/\s+/g," ").trim()};
+function renderSmart(){
+  const el=document.getElementById("smartbar");if(!el)return;
+  const S=SMART;let h="";
+  if(S.state=="off")h=`<span class="sbi">🧠</span><div class="sbt"><b>Smarter matching is off.</b> Turn it on to download a small AI model (about 25 MB, one time) into your browser. It only helps pick which prepared question you mean.</div><button class="btn pri" onclick="smartLoad()">Turn on</button>`;
+  else if(S.state=="loading")h=`<span class="sbi">⏳</span><div class="sbt"><b>${S.pct<100?`Downloading the model… ${S.pct}%`:"Getting ready…"}</b><div class="pbar"><i style="width:${S.pct}%"></i></div></div>`;
+  else if(S.state=="on")h=`<span class="sbi">🧠</span><div class="sbt"><b>Smarter matching is on.</b> A small AI model running in your browser helps pick the question. The numbers still come from the CSVs.${S.evalOut?`<div class="sbres">${S.evalOut}</div>`:""}</div><button class="btn" onclick="smartRunEval()">Test accuracy</button><button class="btn" onclick="SMART.state='off';renderSmart()">Turn off</button>`;
+  else h=`<span class="sbi">⚠️</span><div class="sbt"><b>The model could not load.</b> The chat still works with the standard matcher. <span class="mut">(${esc(S.err)})</span></div><button class="btn" onclick="SMART.state='off';smartLoad()">Try again</button>`;
+  el.className="smartbar "+S.state;el.innerHTML=h}
+async function smartLoad(){
+  if(SMART.state=="loading")return;
+  if(SMART.vecs&&SMART.embed){SMART.state="on";renderSmart();return}
+  SMART.state="loading";SMART.pct=0;SMART.err="";renderSmart();
+  try{
+    let embed;
+    if(window.__embedFactory)embed=await window.__embedFactory();
+    else{
+      const tf=await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3");
+      const files={};
+      const fe=await tf.pipeline("feature-extraction",SMART.model,{progress_callback:p=>{
+        if(p.status=="progress"&&p.total){files[p.file]=[p.loaded,p.total];let a=0,b=0;for(const [l,tt] of Object.values(files)){a+=l;b+=tt}SMART.pct=Math.min(99,Math.round(a/b*100));renderSmart()}}});
+      embed=async texts=>{const o=await fe(texts,{pooling:"mean",normalize:true});const d=o.data,n=texts.length,k=d.length/n;return Array.from({length:n},(_,i)=>Array.from(d.slice(i*k,(i+1)*k)))};
+    }
+    SMART.pct=100;renderSmart();
+    const items=[];for(const [id,list] of Object.entries(PARA))for(const p of list)items.push([id,normQ(p)]);
+    const vecs=[];for(let i=0;i<items.length;i+=24){const chunk=items.slice(i,i+24),vs=await embed(chunk.map(x=>x[1]));chunk.forEach((x,j)=>vecs.push({id:x[0],v:vs[j]}))}
+    SMART.embed=embed;SMART.vecs=vecs;SMART.state="on";
+  }catch(e){SMART.state="failed";SMART.err=String(e&&e.message||e).slice(0,140)}
+  renderSmart()}
+async function smartMatch(q){
+  const [qv]=await SMART.embed([normQ(q)]);const by={};
+  for(const b of SMART.vecs){let s=0;const v=b.v;for(let i=0;i<v.length;i++)s+=v[i]*qv[i];if(!(by[b.id]>=s))by[b.id]=s}
+  const all=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+  return {best:QI[all[0][0]],score:all[0][1],margin:all[0][1]-(all[1]?all[1][1]:0),near:all.slice(0,3).map(x=>QI[x[0]]),via:"embedding"}}
+async function decide(q){
+  const kw=match2(q);kw.via="keywords";
+  if(SMART.state!="on")return kw;
+  if(kw.score>=KW_SURE&&kw.margin>=KW_MARGIN)return kw;
+  return smartMatch(q)}
+async function smartRunEval(){
+  SMART.evalOut="Running…";renderSmart();
+  let ok=0,inOk=0,inN=0,viaE=0;const fails=[];
+  for(const [q,exp] of EVAL.cases){const e=exp=="none"?null:exp;let got=null;
+    if(!(UNSUP.test(q)||/\bwhy\b/i.test(q))){const r=await decide(q);if(r.via=="embedding")viaE++;if(r.best&&r.score>=(r.via=="embedding"?EMB_MIN:MATCH_MIN))got=r.best.id}
+    if(got===e)ok++;if(e){inN++;if(got===e)inOk++}else if(got)fails.push(q);if(got!==e&&e)fails.push(q+" → "+got)}
+  const n=EVAL.cases.length;
+  SMART.evalOut=`Test set: <b>${ok} of ${n} correct (${(100*ok/n).toFixed(1)}%)</b>. Of the in-scope questions, ${inOk} of ${inN} matched. The model decided ${viaE} questions; keywords handled the rest.`;
+  window.__smartEval={ok,n,inOk,inN,viaE,fails};renderSmart()}
+
+const chat=[];let askBusy=false;let lastAsk=null;let askHelpOpen=false;
+function renderAsk(){
+  const groups={};for(const q of QS)(groups[q.group]??=[]).push(q);
+  document.getElementById("ask").innerHTML=`<h1><span class="h1t">${ILLUS[34]}</span>Ask the Data: Questions in Plain English <span class="demobadge">🧪 Demo, not real AI</span></h1><p class="sub">Type a question in plain English. This page picks from 15 prepared questions and shows its work.</p>
+  <details class="card demo" ${askHelpOpen?"open":""} ontoggle="askHelpOpen=this.open"><summary><span class="tag" style="background:#ffe9a0">💡 How it works</span> How does this demo work? How will this work in practice? Click to learn more</summary>
+    <div class="mini"><div class="node" style="background:#e3eefb">🙋 You<small>ask in chat</small></div><div class="arrow">→</div><div class="node" style="background:#ece8fb">💬 Claude<small>or another AI chat tool</small></div><div class="arrow">→</div><div class="node" style="background:#fcf0d2">🗄️ Company data<small>AI writes and runs SQL</small></div><div class="arrow">→</div><div class="node" style="background:#def5ec">📊 Answer<small>in the chat: text, tables, charts</small></div></div>
+    <p class="note" style="text-align:center;margin:6px 0 0;font-size:12.5px">In real life, you ask Claude (or a similar AI chat tool) connected to your company's data, and it answers right in the chat.</p>
+    <div class="cmp">
+      <div><h4>🚀 The real thing</h4><ul>
+        <li>Open Claude (or ChatGPT, Gemini or similar), connected to your company's database.</li>
+        <li>Ask anything in plain English. The AI writes the SQL, runs it, and answers in the chat, with a table or chart if you want.</li>
+        <li>It handles new questions and follow-ups.</li>
+        <li>Examples: Claude with an MCP connector (a plug-in for AI tools) to BigQuery, Snowflake or Postgres. Or built-in tools like Databricks Genie, Snowflake Cortex Analyst and Looker Conversational Analytics.</li></ul></div>
+      <div><h4>🧪 This page is a demo, not the real thing</h4><ul>
+        <li>By default there is no AI here. Your question is matched to 1 of 15 prepared questions.</li>
+        <li><b>Optional:</b> turn on <b>Smarter matching</b> to use a small AI model in your browser. It only helps pick the question. The numbers still come from the CSVs.</li>
+        <li>The answer is calculated from the CSV files in your browser.</li>
+        <li>It remembers your last question, so "what about Electronics?" works.</li>
+        <li>Anything else gets "I can't answer that."</li></ul></div>
+      <div><h4>🤔 Why not real AI here?</h4><ul>
+        <li>Real AI costs money for every question, plus a live database.</li>
+        <li>It also needs safety rules.</li>
+        <li>A free public page can't cover that.</li></ul></div>
+    </div>
+  </details>
+  <div class="askwrap"><div>
+    <div class="smartbar off" id="smartbar"></div>
+    <div class="chat" id="chatlog">${chat.length?chat.map(m=>m.html).join(""):`<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>Hi! I'm a demo analyst, not real AI. Ask about toys, stores, categories, time or stock, and add a toy, category or time period, like <i>“best-selling toys in Games last quarter”</i>. I remember your last question, so you can follow up with <i>“what about Electronics?”</i><div class="sugg">${["Which toys generated the most profit last quarter?","How does 2023 compare with 2022?","Which category has the best gross margin?","Where do popular toys have zero stock?"].map(q=>`<button class="chip" onclick="ask(this.textContent)">${q}</button>`).join("")}</div></div>`}</div>
+    <div class="askrow"><input type="text" id="askin" placeholder="Ask about toys, stores, categories, time or stock…" onkeydown="if(event.key=='Enter')ask()"><button class="btn pri" onclick="ask()">Ask</button></div>
+  </div>
+  <div class="card side"><h3>📚 Browse approved questions</h3>${Object.entries(groups).map(([g,qs])=>`<div class="grp"><div class="gt">${g}</div>${qs.map(q=>`<button onclick="ask(this.textContent,true)">${q.title}</button>`).join("")}</div>`).join("")}<div class="note">Tip: add a toy, category or time period to any question.</div></div></div>`;
+  renderSmart();const l=document.getElementById("chatlog");if(chat.length)l.scrollTop=l.scrollHeight;
+}
+function ask(text,instant){
+  if(askBusy&&!instant)return;
+  const inp=document.getElementById("askin");const q=(text??inp?.value??"").trim();if(!q)return;
+  chat.push({html:`<div class="msg u">${esc(q)}</div>`});while(chat.length>60)chat.shift();
+  const done=async()=>{let pre=null;if(SMART.state=="on"&&!UNSUP.test(q)&&!/\bwhy\b/i.test(q)){try{pre=await decide(q)}catch(e){pre=null}}chat.pop();chat.push({html:answer(q,pre)});askBusy=false;renderAsk()};
+  if(instant){chat.push({html:""});done();return}
+  askBusy=true;const steps=["Reading your question…","Matching it to an approved calculation…","Computing from the CSVs…"];
+  const tp=s=>`<div class="msg a typing"><span></span><span></span><span></span><i class="stp">${s}</i></div>`;
+  chat.push({html:tp(steps[0])});renderAsk();
+  steps.slice(1).forEach((s,k)=>setTimeout(()=>{if(askBusy){chat[chat.length-1].html=tp(s);renderAsk()}},(k+1)*380));
+  setTimeout(done,steps.length*380);
+}
+const chips=(arr)=>`<div class="sugg">${arr.map(t=>`<button class="chip" onclick="ask(this.textContent)">${esc(t)}</button>`).join("")}</div>`;
+function answer(q,pre){
+  const slots=parseSlots(q);
+  const FOLLOW=/^\s*(and|what about|how about|same|now|ok|okay|then|what if|also|instead|just)\b/i;
+  const metric=METRICW.test(q);
+  if(UNSUP.test(q)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div><b>I can't answer that from this dataset.</b> It has sales, toys, stores and a stock snapshot, but no customer, survey, review, promotion or forecast data. Closest things I can answer:${chips(["Which toys generated the most profit?","How has revenue changed over time?","How does 2023 compare with 2022?"])}</div>`;
+  if(/\bwhy\b/i.test(q)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div><b>I can show you <i>what</i> changed, but not <i>why</i>.</b> The data has no information about causes like promotions or supply problems. I can show where the change happened:${chips(["How has revenue changed over time?","How does 2023 compare with 2022?","Which category has the best gross margin?"])}</div>`;
+  if(AMBIG.test(q)&&!metric&&/\b(toy|toys|product|products)\b/i.test(q)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>“Best” can mean different things. Which do you mean?${chips(["What were the best-selling toys?","Which toys generated the most profit?","Which toys brought in the most revenue?"])}</div>`;
+  let {best,score,near,via}=pre||match2(q);const thr=via=="embedding"?EMB_MIN:MATCH_MIN;
+  const isFollow=!!lastAsk&&slots.chips.length>0&&(!best||score<thr||FOLLOW.test(q));
+  if(isFollow){best=lastAsk.q;near=[best,...best.rel.map(id=>QI[id])]}
+  const ctx=isFollow?{m0:0,m1:20,...lastAsk.slots,...slots}:{m0:0,m1:20,...slots};
+  if(isFollow){const key=c=>c.split(":")[0];const mine=new Set(slots.chips.map(key));slots.chips=[...slots.chips,...lastAsk.chips.filter(c=>!mine.has(key(c)))]}
+  if(!isFollow&&(!best||score<thr)) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>I'm not sure I have an approved answer for that. Did you mean one of these?${chips(near.map(x=>x.title))}</div>`;
+  if(best.needs=="pid"&&!ctx.pid) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>Which toy do you mean?${chips(["Lego Bricks","Colorbuds","Rubik's Cube","Nerf Gun","Monopoly","Jenga"].map(n=>`Which stores sell the most ${n}?`))}</div>`;
+  const r=best.run(ctx);
+  if(r)lastAsk={q:best,slots:{...ctx},chips:[...slots.chips]};
+  if(!r) return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>I understood this as <b>${best.title}</b>, but there are no sales for that combination${slots.chips.length?` (${slots.chips.join(", ")})`:""}. Try a wider time period.${chips(near.map(x=>x.title))}</div>`;
+  let chart="";
+  if(r.chart=="line") chart=line(r.series,{w:600,h:200,fmt:r.fmt,labels:i=>mlabel(i+r.offset)});
+  else if(r.chart=="cards") chart=`<div class="bignum">${r.cards.map(c=>`<div><span style="font-size:12px;color:var(--ink2);font-weight:700">${c.l}</span><b class="${c.v>=0?"up":"down"}">${c.v>=0?"▲":"▼"} ${Math.abs(c.v).toFixed(1)}%</b></div>`).join("")}</div>`;
+  else chart=hbars(r.rows,{w:600,fmt:r.fmt});
+  const follow=[...best.rel.map(id=>QI[id].title)];
+  const extra=[];if(!ctx.period&&best.needs!="pid"&&best.id!="yoy"&&best.id!="low_stock"&&best.id!="zero_stock")extra.push(best.title.replace(/\?$/,"")+" last quarter?");if(!ctx.cats&&best.needs!="pid"&&!["low_stock","zero_stock"].includes(best.id))extra.push(best.title.replace(/\?$/,"")+" in Games?");
+  return `<div class="msg a"><div class="who"><span class="bot">${ILLUS[34]}</span>Toy-Box Analyst</div>
+    <div style="font-size:12px;color:var(--ink2);margin-bottom:6px">${isFollow?"Following up on your last question. ":""}${via=="embedding"?"🧠 Matched by the in-browser model. ":""}I understood this as: <b>${best.title}</b>${slots.chips.length?`<br>${slots.chips.map(c=>`<span class="slot">${esc(c)}</span>`).join("")}`:""}</div>${esc(r.text)}
+    <div style="margin:6px 0">${chart}</div>
+    <div class="meta"><span class="ok">✓ Approved question</span> · computed live from the CSVs · Source: ${r.src}<br><b>How it's calculated:</b> ${r.def}
+    <button class="btn" style="margin-left:8px" onclick='csvDownload("answer.csv",[${JSON.stringify(r.cols)},...${JSON.stringify(r.rows.map(x=>[x.label,x.v]))}])'>⬇ Download CSV</button></div>
+    ${chips([...follow,...extra].slice(0,4))}</div>`;
+}
+
+
+
+/* ---------- soft confetti behind every page ---------- */
+(function(){
+  const C=["#ffd34d","#ff8fb1","#7be0b3","#9fc2ff","#ff9a5a","#b78cff"],K=["c-ci","c-sq","c-st"];
+  let s=7;const r=()=>(s=(s*9301+49297)%233280)/233280;
+  const bg=document.createElement("div");bg.className="cfbg";bg.setAttribute("aria-hidden","true");
+  const COLS=8,ROWS=6;let i=0;
+  for(let row=0;row<ROWS;row++)for(let col=0;col<COLS;col++,i++){const sz=11+Math.round(r()*10);
+    const left=(col+.15+r()*.7)/COLS*96,top=14+(row+.15+r()*.7)/ROWS*82;
+    bg.insertAdjacentHTML("beforeend",`<span class="${K[(i+row)%3]}" style="left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;width:${sz}px;height:${sz}px;background:${C[(i*5+row)%6]};animation-delay:${(-r()*8).toFixed(1)}s"></span>`)}
+  document.body.appendChild(bg);
+})();
+
+/* ---------- router ---------- */
+const TABS=[["start","🏠","Home","var(--s7)"],["dashboard","📊","Dashboard","var(--s1)"],["toys","🧸","Toy Finder","var(--s5)"],["presentation","🎤","Presentation","#d68700"],["ask","💬","Ask","var(--s3)"]];
+let current="start";
+function show(t){current=t;history.replaceState(null,"","#"+t);
+  document.querySelectorAll(".tab").forEach(e=>e.classList.toggle("on",e.id==t));
+  document.getElementById("nav").innerHTML=TABS.map(([k,e,l,c])=>`<button class="${k==t?"on":""}" style="${k==t?`background:${c}`:""}" onclick="show('${k}')">${e} ${l}</button>`).join("");
+  ({start:renderStart,dashboard:renderDash,presentation:renderDeck,toys:renderToys,ask:renderAsk})[t]();
+  closeToy();scrollTo(0,0)}
+(function(){const h=location.hash.slice(1);
+  if(h=="dash-open"){dash.fopen=true;show("dashboard");return}
+  if(h=="dash-filt"){setPreset("l3");dash.cats=new Set(["Games"]);show("dashboard");return}
+  if(h=="toys-open"){toys.fopen=true;show("toys");return}
+  if(h=="toys-l3"){toyPreset("l3");show("toys");return}
+  if(h.startsWith("toy:")){show("toys");openToy(+h.slice(4))}
+  else if(h.startsWith("dash:")){dash.cats=new Set([h.slice(5)]);show("dashboard")}
+  else if(h.startsWith("pid:")){dash.pid=+h.slice(4);show("dashboard")}
+  else if(h=="dash-mg"){dash.metric="mg";dash.trend="pct";show("dashboard")}
+  else if(h=="dash-pct"){dash.trend="pct";dash.show="pct";show("dashboard")}
+  else if(h.startsWith("deck:")){slide=+h.slice(5);show("presentation")}
+  else if(h=="ask-demo"){show("ask");["which toys made the most profit last quarter","best selling toys in games in 2022","which stores sell the most lego","how satisfied are our customers?","which toy is the best?","wich category has the best margn"].forEach(q=>ask(q,true))}
+  else if(h=="ask-home"){show("ask");ask("which toys made the most profit",true)}
+  else if(h=="ask-smart-fake"){window.__embedFactory=async()=>{const D=96,hv=s=>{let x=2166136261;for(const c of s)x=Math.imul(x^c.charCodeAt(0),16777619);return Math.abs(x)};
+      return async texts=>texts.map(s=>{const v=new Array(D).fill(0);for(const w of t2(s))v[hv(w)%D]+=1;for(let i=0;i<s.length-2;i++)v[hv(s.slice(i,i+3))%D]+=.3;const n=Math.hypot(...v)||1;return v.map(x=>x/n)})};show("ask");smartLoad()}
+  else if(h=="ask-help"){askHelpOpen=true;show("ask")}
+  else if(h=="ask-ex"){show("ask")}
+  else if(h=="ask-eval"){show("ask");const o=runEval();document.getElementById("ask").insertAdjacentHTML("afterbegin",`<pre id="evalout">${JSON.stringify(o)}</pre>`)}
+  else if(h=="ask-follow"){show("ask");["which toys made the most profit","what about electronics?","and in 2022?","best selling toys","which stores sell the most lego"].forEach(q=>ask(q,true))}
+  else show(TABS.some(t=>t[0]==h)?h:"start")})();
+</script>
+</body>
+</html>
